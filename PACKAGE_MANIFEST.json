@@ -111,8 +111,8 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 160,
-      "sha256": "0ffd52ee765a7a07e6c0b0b645a4d7f93b5111c083b40d80b06a421222208412"
+      "bytes": 198,
+      "sha256": "6a22f01e4ae8d364a4e1a74d8b8be227edf2f8543c994e552adaeda85539d0cf"
     },
     {
       "path": "AGENTS.md",
