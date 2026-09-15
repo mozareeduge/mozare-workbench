@@ -32,6 +32,12 @@ export type CanonicalRelation = {
   use_status: string;
   claimability: string;
   origin: { kind: string };
+  descriptors?: string[];
+  evidence_refs?: string[];
+  counterevidence_refs?: string[];
+  uncertainty?: string;
+  use_contexts?: string[];
+  history_event_refs?: string[];
 };
 
 export type CanonicalProject = {
