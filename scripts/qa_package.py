@@ -189,7 +189,8 @@ def main(report_path: str | None = None):
     if not destination.is_relative_to(ROOT):
       raise ValueError("report path must stay inside the package root")
     destination.parent.mkdir(parents=True,exist_ok=True)
-    destination.write_text("\n".join(lines),encoding="utf-8")
+    with destination.open("w",encoding="utf-8",newline="\n") as report:
+      report.write("\n".join(lines))
     notes.append(f"local report written: {destination.relative_to(ROOT).as_posix()}")
   print("PACKAGE QA:","FAIL" if failures else "PASS")
   for x in failures or notes: print("-",x)

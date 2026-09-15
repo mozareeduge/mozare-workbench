@@ -43,5 +43,6 @@ payload = {
     "file_count": len(entries),
     "files": entries,
 }
-MANIFEST.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+with MANIFEST.open("w", encoding="utf-8", newline="\n") as output:
+    output.write(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
 print(f"Wrote {MANIFEST.name}: {len(entries)} files")

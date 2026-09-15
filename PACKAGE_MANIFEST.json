@@ -366,8 +366,8 @@
     },
     {
       "path": "EXECUTION/TRACEABILITY.csv",
-      "bytes": 9048,
-      "sha256": "f882b3ea40fa2f1ac29229e81384f671243c75ffb0533c5a33ee818cf426267c"
+      "bytes": 8934,
+      "sha256": "0899fa14008366835dffe840dd9ecfa4037f3862bca99e1745c18880bbaa2fc3"
     },
     {
       "path": "GENUI/component-registry.yaml",
@@ -556,8 +556,8 @@
     },
     {
       "path": "QA_REPORT.md",
-      "bytes": 1013,
-      "sha256": "9a3e5f14f81f9a100bf132b60b262d082a305a047db9a4b5e4f3b51779bb61c4"
+      "bytes": 988,
+      "sha256": "e1547b2cc66b6aebb24be3bc40d619e507f85c4b5cdb3f57c74bf4c742af5e7e"
     },
     {
       "path": "README.md",
@@ -591,13 +591,13 @@
     },
     {
       "path": "scripts/make_manifest.py",
-      "bytes": 1320,
-      "sha256": "7c0793ecb3a34795381d197f020fde64ed2810eb972bb4cea91fa489200587ff"
+      "bytes": 1366,
+      "sha256": "d0d338a355f9b169405a156f870e46906ae5dcf37b65908c2e6b7ebcce9a4773"
     },
     {
       "path": "scripts/qa_package.py",
-      "bytes": 14325,
-      "sha256": "9d245fc0e24077896f264db8cbce47ad08d8a79d4c6746bc2bbb3c44b3316658"
+      "bytes": 14372,
+      "sha256": "d636765e853625ce36c647642f97b6a2307dcffe50902f6705b62a34a3c3cb73"
     },
     {
       "path": "scripts/sync_skills.py",
