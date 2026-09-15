@@ -3,6 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { CACHE_DIRECTORY, DERIVED_DIRECTORY, WorkspaceValidationError, canonicalHash, clearDerivedWorkspace, isCanonicalPath, rebuildDerivedWorkspace } from '../../src/core/workspace.js';
+import { WorkspaceEngine } from '../../src/core/workspace/WorkspaceEngine.js';
+import { FOCUS_SURFACE, MAX_FOCUS_FACT_BLOCKS } from '../../src/core/projection/projectionTypes.js';
 
 const roots: string[] = [];
 function fixture(): string {
@@ -41,5 +43,29 @@ describe('canonical workspace reconstruction (TEST-001)', () => {
     const root = fixture();
     expect(isCanonicalPath(root, join(root, 'objects', 'q_20260914_example01.md'))).toBe(true);
     expect(isCanonicalPath(root, join(root, DERIVED_DIRECTORY, 'cache', 'projection.json'))).toBe(false);
+  });
+
+  it('projects a valid workspace into bounded deterministic Focus facts', () => {
+    const root = fixture();
+    const objectsRoot = join(root, 'objects');
+    const source = readFileSync(join(objectsRoot, 'src_20260914_example01.md'), 'utf8');
+    for (let index = 0; index < 50; index += 1) {
+      writeFileSync(join(objectsRoot, `history-${index}.md`), source.replace('src_20260914_example01', `history-${index}`), 'utf8');
+    }
+
+    const engine = new WorkspaceEngine(root);
+    const before = engine.project();
+    expect(before.surface).toBe(FOCUS_SURFACE);
+    expect(before.currentQuestion.id).toBe('q_20260914_example01');
+    expect(before.nextAction.command).toBe('CMD-WORK');
+    expect(before.latestAcceptedDecision).toBeNull();
+    expect(before.humanReviewNeed).toEqual({ count: 0, status: 'none' });
+    expect(before.facts).toHaveLength(MAX_FOCUS_FACT_BLOCKS);
+    expect(before.historySummary.hiddenHistoricalItems).toBeGreaterThan(0);
+    expect(readFileSync(join(root, CACHE_DIRECTORY, 'project-projection.json'), 'utf8')).toContain('FOCUS');
+
+    clearDerivedWorkspace(root);
+    const after = engine.project();
+    expect(after).toEqual(before);
   });
 });
