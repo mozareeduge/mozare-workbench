@@ -1,0 +1,16 @@
+version: 1
+selection_order: [STATIC, DETERMINISTIC, GENERATIVE_OPENUI]
+static_intents: [orient, ordinary_status, review_queue, output_registry, known_error]
+deterministic_intents: [system_ladder, evidence_path, bounded_decision, known_comparison, next_moves]
+generative_intents: [novel_compare, heterogeneous_synthesis, adaptive_relation_slice, user_requested_reframe]
+micro_libraries:
+  orient: [OrientationBrief, UncertaintyBlock, NextMoves, ArtifactSummary]
+  compare: [CompareMatrix, EvidencePath, UncertaintyBlock, NextMoves]
+  decide: [DecisionGate, EvidencePath, UncertaintyBlock, NextMoves]
+  system: [SystemLadder, EvidencePath, UncertaintyBlock, NextMoves]
+  review: [ProposalReview, EvidencePath, SystemLadder, DecisionGate]
+actions:
+  read_only: [open_object, open_source, expand_reference, open_artifact, inspect_evidence]
+  proposal_only: [create_proposal, request_revision, start_mission]
+  forbidden_to_generated_ui: [canonical_write, accept_proposal, delete_canonical, execute_shell]
+fallback: deterministic_semantic_view

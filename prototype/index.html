@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mozare Workbench v0.3 — Interaction Reference</title>
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="rail" aria-label="Primary navigation">
+    <div class="logo" aria-label="Mozare Workbench">MW</div>
+    <nav class="nav">
+      <button class="nav-btn" data-view="focus" aria-current="page"><span class="nav-icon">◎</span><span class="nav-label">Focus</span></button>
+      <button class="nav-btn" data-view="field"><span class="nav-icon">◇</span><span class="nav-label">Field</span></button>
+      <button class="nav-btn" data-view="flow"><span class="nav-icon">→</span><span class="nav-label">Flow</span></button>
+      <button class="nav-btn" data-view="review"><span class="nav-icon">✓</span><span class="nav-label">Review</span><span class="count">2</span></button>
+      <button class="nav-btn" data-view="output"><span class="nav-icon">□</span><span class="nav-label">Output</span></button>
+    </nav>
+    <div class="rail-bottom"><button class="nav-btn" aria-label="Help and settings"><span class="nav-icon">?</span><span class="nav-label">Help</span></button></div>
+  </aside>
+
+  <header class="topbar">
+    <div class="project-context">
+      <button class="project-button" aria-label="Switch project"><span class="project-name">TAROKE RIMIXER</span><span aria-hidden="true">⌄</span></button>
+      <span class="current-path">Design-development field / visible constraint</span>
+    </div>
+    <div class="top-actions">
+      <div class="safety"><span class="dot"></span><span>Canonical state safe</span></div>
+      <button class="icon-btn" id="searchBtn" aria-label="Search or jump">⌕</button>
+    </div>
+  </header>
+
+  <main class="main" id="main">
+    <section class="view" id="focus" aria-labelledby="focus-title">
+      <div class="content">
+        <div class="eyebrow">Current question</div>
+        <h1 class="display" id="focus-title">How should visible constraint become part of the playable surface rather than an explanation beside it?</h1>
+        <p class="lead">The editable project archive and playable artifact remain separate. The current question is stable enough for one bounded interaction experiment.</p>
+        <div class="representation-bar" aria-label="Representation mode"><span>View as</span><button class="rep-btn active" data-rep="orient">Orient</button><button class="rep-btn" data-rep="compare">Compare</button><button class="rep-btn" data-rep="system">System</button><span class="rep-route" id="repRoute">static · 0 model tokens</span></div>
+        <div class="dynamic-focus" id="dynamicFocus" aria-live="polite"></div>
+        <div class="state-strip" aria-label="Current state">
+          <span class="status"><strong>Active</strong> · design development</span>
+          <span class="status warn">1 unsettled relation</span>
+          <span class="status">2 need your review</span>
+        </div>
+
+        <div class="focus-layout">
+          <article class="panel next-action">
+            <div>
+              <div class="section-label">Next meaningful action</div>
+              <h2>Prototype one reversible “inspect recipe” interaction and compare it with the current Run surface.</h2>
+              <p>Keep the reader inside the poem experience; expose generative procedure without turning Run into a technical dashboard.</p>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="openMission">Work on this</button>
+              <button class="btn" data-view="field">Open field</button>
+              <button class="btn ghost" data-drawer="system">System view</button>
+            </div>
+          </article>
+
+          <div class="side-stack">
+            <article class="panel fact">
+              <div class="fact-head"><h3>Needs you</h3><span class="metric">2</span></div>
+              <div class="list-mini">
+                <div class="mini-item"><span class="mini-icon">✓</span><div><strong>Interaction candidate</strong><small>visual review pending</small></div></div>
+                <div class="mini-item"><span class="mini-icon">T</span><div><strong>Statement wording</strong><small>owner language decision</small></div></div>
+              </div>
+              <div class="actions"><button class="btn" data-view="review">Open review</button></div>
+            </article>
+            <article class="panel fact">
+              <div class="section-label">Latest accepted decision</div>
+              <p>Run remains primarily a poem surface. Constraint can be inspected, but it cannot dominate the encounter.</p>
+            </article>
+            <article class="panel fact">
+              <div class="section-label">Latest verified output</div>
+              <div class="mini-item" style="margin-top:9px"><span class="mini-icon">□</span><div><strong>Playable HTML candidate</strong><small>generated / distributable</small></div></div>
+              <div class="actions"><button class="btn" data-view="output">Open output</button></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="field" hidden aria-labelledby="field-title">
+      <div class="content" style="max-width:none">
+        <div class="eyebrow">Field</div>
+        <h1 class="surface-title" id="field-title">What exists around the current decision?</h1>
+        <p class="lead">A curated projection of active objects and relations. Moving a node changes layout only; connecting objects creates a proposal.</p>
+        <div class="field-layout">
+          <div class="canvas" aria-label="Project relation map">
+            <div class="canvas-tools">
+              <div class="tool-group"><button class="tool" aria-label="Zoom in">+</button><button class="tool" aria-label="Zoom out">−</button><button class="tool" aria-label="Fit current cluster">⊙</button></div>
+              <div class="tool-group"><button class="tool" aria-label="Filters">≡</button><button class="tool" id="listMode" aria-label="Open accessible list">List</button></div>
+            </div>
+            <div class="edge edge-a"></div><div class="edge dashed edge-b"></div><div class="edge edge-c"></div><div class="edge edge-d"></div>
+            <button class="field-node current node-q" data-drawer="relation"><span class="kind">Question · active</span><strong>Visible constraint on playable surface</strong><small>1 unsettled relation</small></button>
+            <button class="field-node node-a" data-drawer="material"><span class="kind">Material</span><strong>Line recipes</strong><small>active in current experiment</small></button>
+            <button class="field-node node-b" data-drawer="decision"><span class="kind">Decision · accepted</span><strong>Run stays a poem surface</strong><small>accepted 2 days ago</small></button>
+            <button class="field-node node-c"><span class="kind">Test</span><strong>Inspect without leaving flow?</strong><small>planned</small></button>
+            <button class="field-node node-d"><span class="kind">Artifact · verified</span><strong>Playable HTML candidate</strong><small>generated / distributable</small></button>
+            <div class="legend">solid = settled/provisional · dashed = unsettled</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="flow" hidden aria-labelledby="flow-title">
+      <div class="content" style="max-width:none">
+        <div class="eyebrow">Flow · outcome level</div>
+        <h1 class="surface-title" id="flow-title">From question to inspectable artifact.</h1>
+        <p class="lead">Engineering subtasks stay inside missions. This view shows only work states that matter to the project.</p>
+        <div class="flow-board">
+          <section class="lane"><div class="lane-head"><strong>Ready</strong><span class="lane-count">1</span></div><article class="work-card"><strong>Prototype recipe inspection</strong><small>target: Run experience · manual/agent</small></article></section>
+          <section class="lane"><div class="lane-head"><strong>Active</strong><span class="lane-count">1</span></div><article class="work-card"><strong>Compare current interaction evidence</strong><small>Researcher · 3 sources</small></article></section>
+          <section class="lane"><div class="lane-head"><strong>Blocked</strong><span class="lane-count">0</span></div></section>
+          <section class="lane"><div class="lane-head"><strong>Review</strong><span class="lane-count">2</span></div><article class="work-card"><strong>Interaction candidate</strong><small>7 observed tests · visual review</small></article><article class="work-card"><strong>Statement wording</strong><small>owner decision</small></article></section>
+          <section class="lane"><div class="lane-head"><strong>Accepted</strong><span class="lane-count">6 recent</span></div><article class="work-card"><strong>Editable archive remains authoritative</strong><small>Decision · accepted</small></article></section>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="review" hidden aria-labelledby="review-title">
+      <div class="review-shell">
+        <aside class="review-list" aria-label="Review queue">
+          <div class="review-list-head"><div class="eyebrow">Review</div><h1 class="surface-title" id="review-title">Needs your judgment</h1></div>
+          <button class="review-item active" data-review="interaction"><strong>Recipe inspection interaction</strong><small><span>Fresh</span><span>·</span><span>7 observed tests</span></small></button>
+          <button class="review-item" data-review="wording"><strong>“Visible constraint” wording</strong><small><span>Owner language</span><span>·</span><span>No runtime effect</span></small></button>
+        </aside>
+        <article class="review-detail" id="reviewDetail"></article>
+      </div>
+    </section>
+
+    <section class="view" id="output" hidden aria-labelledby="output-title">
+      <div class="content">
+        <div class="eyebrow">Output</div>
+        <h1 class="surface-title" id="output-title">Inspect the things produced.</h1>
+        <p class="lead">Canonical/editable, generated/distributable, and evidence artifacts remain visibly distinct.</p>
+        <div class="output-grid">
+          <article class="artifact"><div class="preview"><strong>{ JSON }</strong></div><div class="artifact-body"><p class="artifact-title">Project archive</p><div class="artifact-meta"><span>Canonical / editable</span><span>·</span><span>Verified structure</span></div><div class="artifact-actions"><button class="btn">Inspect structure</button></div></div></article>
+          <article class="artifact"><div class="preview poem">a line arrives<br>its route remains inspectable<br>the poem keeps moving</div><div class="artifact-body"><p class="artifact-title">Playable HTML candidate</p><div class="artifact-meta"><span>Generated / distributable</span><span>·</span><span>Verified</span></div><div class="artifact-actions"><button class="btn primary">Open preview</button><button class="btn">Lineage</button></div></div></article>
+          <article class="artifact"><div class="preview"><strong>7 / 7</strong></div><div class="artifact-body"><p class="artifact-title">Interaction verification</p><div class="artifact-meta"><span>Evidence</span><span>·</span><span>Observed</span></div><div class="artifact-actions"><button class="btn">Read report</button></div></div></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-nav" aria-label="Primary navigation mobile">
+    <button class="nav-btn" data-view="focus" aria-current="page"><span class="nav-icon">◎</span><span class="nav-label">Focus</span></button>
+    <button class="nav-btn" data-view="field"><span class="nav-icon">◇</span><span class="nav-label">Field</span></button>
+    <button class="nav-btn" data-view="flow"><span class="nav-icon">→</span><span class="nav-label">Flow</span></button>
+    <button class="nav-btn" data-view="review"><span class="nav-icon">✓</span><span class="nav-label">Review</span><span class="count">2</span></button>
+    <button class="nav-btn" data-view="output"><span class="nav-icon">□</span><span class="nav-label">Output</span></button>
+  </nav>
+
+  <div class="live"><span class="pulse"></span><span>Agent activity: idle</span></div>
+</div>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Context details"><div id="drawerContent"></div></aside>
+<section class="sheet" id="missionSheet" role="dialog" aria-modal="true" aria-labelledby="missionTitle" hidden>
+  <header class="sheet-head"><div><div class="eyebrow">Mission packet</div><h2 id="missionTitle">Prototype recipe inspection</h2><p>Bounded work from the current project state.</p></div><button class="icon-btn sheet-close" data-close aria-label="Close mission">×</button></header>
+  <div class="sheet-body">
+    <section class="form-section"><h3>Target</h3><div class="context-chip"><div><strong>Current question</strong><small>Visible constraint on playable surface</small></div></div></section>
+    <section class="form-section"><h3>Outcome</h3><label class="field-label" for="outcome">What should become true?</label><textarea class="textarea" id="outcome">Create one reversible recipe-inspection interaction that keeps the reader inside the Run experience.</textarea></section>
+    <section class="form-section"><h3>Context</h3>
+      <label class="context-chip"><input type="checkbox" checked><span><strong>Accepted decision · Run stays a poem surface</strong><small>Included because it constrains interaction hierarchy.</small></span></label>
+      <label class="context-chip"><input type="checkbox" checked><span><strong>Current playable artifact</strong><small>Included as the behavior baseline.</small></span></label>
+      <label class="context-chip"><input type="checkbox" checked><span><strong>Line recipe material</strong><small>Included because it is the content being exposed.</small></span></label>
+      <label class="context-chip"><input type="checkbox"><span><strong>Historical development residue</strong><small>Excluded by default; include only if comparison requires it.</small></span></label>
+    </section>
+    <section class="form-section"><h3>Acceptance</h3><label class="field-label">Observable criteria</label><div class="context-chip"><span>1.</span><div><strong>Reader can inspect a line recipe and return without losing run position.</strong></div></div><div class="context-chip"><span>2.</span><div><strong>Project archive semantics remain unchanged.</strong></div></div><button class="btn">+ Add criterion</button></section>
+    <section class="form-section"><h3>Agent</h3><div class="agent-choice"><button class="agent selected"><strong>Claude Code</strong><small>Available</small></button><button class="agent"><strong>Codex</strong><small>Available</small></button><button class="agent"><strong>Hermes</strong><small>Available</small></button></div></section>
+    <section><button class="btn ghost">Advanced · repo, constraints, protected paths</button></section>
+  </div>
+  <footer class="sheet-foot"><button class="btn" data-close>Save draft</button><button class="btn primary" id="startMission">Start mission</button></footer>
+</section>
+
+<script src="assets/prototype.js"></script>
+</body>
+</html>

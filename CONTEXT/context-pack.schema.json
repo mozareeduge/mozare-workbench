@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContextPack",
+  "type": "object",
+  "required": [
+    "id",
+    "mission_id",
+    "profile",
+    "budget",
+    "authority",
+    "objective",
+    "items",
+    "expansion_handles",
+    "metrics"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "profile": {
+      "enum": [
+        "research",
+        "maker",
+        "technical",
+        "qa",
+        "ui"
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "target_tokens",
+        "hard_tokens"
+      ],
+      "properties": {
+        "target_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hard_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "estimated_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "authority": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "objective": {
+      "type": "string"
+    },
+    "snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "delta_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ref",
+          "level",
+          "critical",
+          "text"
+        ],
+        "properties": {
+          "ref": {
+            "type": "string"
+          },
+          "level": {
+            "enum": [
+              "L0",
+              "L1",
+              "L2",
+              "L3"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          },
+          "source_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "expansion_handles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "omitted": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "escalation_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "duplicate_count",
+        "duplicate_ratio"
+      ],
+      "properties": {
+        "duplicate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicate_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RepresentationPlan",
+  "type": "object",
+  "required": [
+    "id",
+    "mode",
+    "intent",
+    "library",
+    "data_refs",
+    "actions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "STATIC",
+        "DETERMINISTIC",
+        "GENERATIVE_OPENUI"
+      ]
+    },
+    "intent": {
+      "type": "string"
+    },
+    "library": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "data_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fallback": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

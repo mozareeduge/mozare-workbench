@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/object.schema.json",
+  "title": "Mozare Workbench Object",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "project_id",
+    "name",
+    "lifecycle",
+    "origin"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "type": {
+      "enum": [
+        "question",
+        "source",
+        "material",
+        "concept",
+        "claim",
+        "method",
+        "experiment",
+        "decision",
+        "artifact",
+        "task",
+        "mission",
+        "test",
+        "review",
+        "residue",
+        "other"
+      ]
+    },
+    "domain_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lifecycle": {
+      "enum": [
+        "captured",
+        "active",
+        "blocked",
+        "review",
+        "accepted",
+        "superseded",
+        "archived"
+      ]
+    },
+    "evidence_state": {
+      "enum": [
+        "unexamined",
+        "candidate",
+        "supported",
+        "contested",
+        "contradicted",
+        "verified"
+      ]
+    },
+    "use_status": {
+      "enum": [
+        "inactive",
+        "exploratory",
+        "active",
+        "restricted",
+        "rejected"
+      ]
+    },
+    "verification_state": {
+      "enum": [
+        "untested",
+        "partial",
+        "passed",
+        "failed",
+        "not_applicable"
+      ]
+    },
+    "origin": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "agent",
+            "import",
+            "system"
+          ]
+        },
+        "actor_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

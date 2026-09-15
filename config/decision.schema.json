@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/decision.schema.json",
+  "title": "Mozare Decision",
+  "type": "object",
+  "required": [
+    "id",
+    "question",
+    "decision",
+    "consequences",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^DEC-[0-9]{3,}$"
+    },
+    "question": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consequences": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner_only": {
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "accepted",
+        "superseded",
+        "owner_gate"
+      ]
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

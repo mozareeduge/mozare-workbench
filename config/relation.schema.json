@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/relation.schema.json",
+  "title": "Mozare Workbench Relation Object",
+  "type": "object",
+  "required": [
+    "id",
+    "project_id",
+    "participants",
+    "evidence_state",
+    "use_status",
+    "origin",
+    "claimability"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "relation_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "classification_state": {
+      "enum": [
+        "unsettled",
+        "provisional",
+        "settled"
+      ]
+    },
+    "descriptors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "evidence_state": {
+      "enum": [
+        "unexamined",
+        "candidate",
+        "supported",
+        "contested",
+        "contradicted",
+        "verified"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "counterevidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "uncertainty": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "use_status": {
+      "enum": [
+        "inactive",
+        "exploratory",
+        "active",
+        "restricted",
+        "rejected"
+      ]
+    },
+    "use_contexts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "claimability": {
+      "enum": [
+        "blocked",
+        "internal_only",
+        "qualified",
+        "assertable"
+      ]
+    },
+    "origin": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "agent",
+            "import",
+            "system"
+          ]
+        },
+        "actor_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "run_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "history_event_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

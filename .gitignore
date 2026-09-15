@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+.mozare-runtime/
+.mozare/
+workspace.local.yaml
+**/workspace.local.yaml
+**/cache/
+*.log
+.env
+.env.*
+*.pem
+*.key

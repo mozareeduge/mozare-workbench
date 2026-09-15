@@ -1,0 +1,57 @@
+qa_snapshot_id: MWB-QA-2026-09-15-r3
+revision: 3
+authority_snapshot_id: MWB-PD-2026-09-15-r3
+mode: QA_ONLY
+phase: PLAN
+status: QA_CONTRACT_READY_FOR_EXECUTION
+candidate:
+  id: handoff-v0.3-prototype
+  scope: bounded interaction prototype only
+  production_candidate_exists: false
+  identity: generated package prototype files
+  runtime_verdict_scope: prototype/package only
+risk_order:
+- canonical_state_loss
+- unsafe_agent_or_filesystem_mutation
+- false_verification_or_self_acceptance
+- stale_proposal_acceptance
+- technical_interface_overload
+- responsive_or_keyboard_unreachability
+- external_authority_flattening
+- visual_polish_and_aesthetic_fit
+applicable_lenses:
+  functional_acceptance: APPLICABLE
+  state_persistence: APPLICABLE
+  failure_recovery: APPLICABLE
+  integration: APPLICABLE
+  security_privacy: APPLICABLE
+  accessibility: APPLICABLE
+  responsive_visual: APPLICABLE
+  localization_bidi: APPLICABLE
+  deployment: PARTIAL
+  financial_regulated: NOT_APPLICABLE
+  multi_tenant: NOT_APPLICABLE
+  mobile_store: NOT_APPLICABLE
+  public_cloud_release: NOT_APPLICABLE
+current_evidence:
+- package schema/static validation
+- bounded prototype Chromium interaction checks
+- responsive overflow screenshots/checks
+runtime_tests_unavailable_until_implementation:
+- filesystem transaction recovery
+- Git worktree isolation
+- real Claude/Codex/Hermes adapters
+- MCP tool authorization
+- Wiki/QMD live adapter
+- Windows process-tree stop/recovery
+- pilot value metrics
+- context compiler on production-scale project corpus
+- real provider token accounting/model routing
+- OpenUI runtime/micro-library validation
+- adaptive UI fallback/action security
+- token-efficiency quality benchmark
+known_proof_gaps:
+- no production application exists yet
+- prototype does not prove backend/process/security behavior
+- owner aesthetic acceptance must occur on production candidate
+verdict: QA_CONTRACT_READY_FOR_EXECUTION

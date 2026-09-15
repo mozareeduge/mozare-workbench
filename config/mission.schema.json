@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/mission.schema.json",
+  "title": "Mozare Workbench Mission",
+  "type": "object",
+  "required": [
+    "id",
+    "project_id",
+    "target_refs",
+    "desired_outcome",
+    "acceptance_criteria",
+    "agent_adapter",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "desired_outcome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why": {
+      "type": "string"
+    },
+    "context_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "agent_adapter": {
+      "enum": [
+        "claude",
+        "codex",
+        "hermes",
+        "fake",
+        "manual"
+      ]
+    },
+    "role": {
+      "enum": [
+        "orienter",
+        "researcher",
+        "maker",
+        "technical_lead",
+        "reviewer",
+        "handoff",
+        "custom"
+      ]
+    },
+    "repo_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready",
+        "queued",
+        "running",
+        "needs_input",
+        "needs_repair",
+        "completed",
+        "failed",
+        "stopped"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "scenario_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "oracle_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "context_policy": {
+      "type": "object",
+      "properties": {
+        "include_history": {
+          "type": "boolean"
+        },
+        "max_context_items": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

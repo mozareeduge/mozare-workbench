@@ -1,0 +1,79 @@
+version: 1
+blueprint_id: MWB-REPO-2026-09-15-r1
+purpose: deterministic first-candidate file/module map for a light-model executor
+rules:
+  - create these modules incrementally; do not generate empty placeholder architecture in one shot
+  - a task may add a direct-neighbor helper when required, but must record it in the handoff
+  - product authority lives outside src and is never rewritten to fit implementation
+modules:
+  shared:
+    - src/shared/types.ts
+    - src/shared/contracts.ts
+    - src/shared/errors.ts
+  core:
+    workspace:
+      - src/core/workspace/WorkspaceEngine.ts
+      - src/core/workspace/recordLoader.ts
+      - src/core/workspace/recordWriter.ts
+    projection:
+      - src/core/projection/ProjectionEngine.ts
+      - src/core/projection/projectionTypes.ts
+    proposals:
+      - src/core/proposals/ProposalService.ts
+      - src/core/proposals/transaction.ts
+      - src/core/proposals/staleness.ts
+    review:
+      - src/core/review/ReviewService.ts
+    evidence:
+      - src/core/evidence/EvidenceService.ts
+    artifacts:
+      - src/core/artifacts/ArtifactRegistry.ts
+    context:
+      - src/core/context/ContextCompiler.ts
+      - src/core/context/CapsuleStore.ts
+      - src/core/context/SnapshotService.ts
+      - src/core/context/ModelRouter.ts
+      - src/core/context/TokenTelemetry.ts
+    representation:
+      - src/core/representation/RepresentationPlanner.ts
+      - src/core/representation/ActionRegistry.ts
+  server:
+    - src/server/app.ts
+    - src/server/routes.ts
+    - src/server/sse.ts
+    - src/server/git/GitAdapter.ts
+    - src/server/git/WorktreeManager.ts
+    - src/server/process/ProcessRunner.ts
+    - src/server/agents/AgentManager.ts
+    - src/server/agents/adapters/FakeAdapter.ts
+    - src/server/agents/adapters/ClaudeAdapter.ts
+    - src/server/agents/adapters/CodexAdapter.ts
+    - src/server/agents/adapters/HermesAdapter.ts
+    - src/server/adapters/ExternalKnowledgeAdapter.ts
+    - src/server/artifacts/PreviewService.ts
+  web:
+    - src/web/main.tsx
+    - src/web/App.tsx
+    - src/web/styles/tokens.css
+    - src/web/styles/app.css
+    - src/web/surfaces/Focus.tsx
+    - src/web/surfaces/Field.tsx
+    - src/web/surfaces/Flow.tsx
+    - src/web/surfaces/Review.tsx
+    - src/web/surfaces/Output.tsx
+    - src/web/components/MissionSheet.tsx
+    - src/web/components/SystemLadder.tsx
+    - src/web/components/TechnicalTerm.tsx
+    - src/web/components/RelationInspector.tsx
+    - src/web/components/ArtifactPreview.tsx
+  mcp:
+    - src/mcp/server.ts
+  launch:
+    - START_MOZARE.cmd
+    - scripts/start-mozare.ps1
+    - scripts/preflight.ps1
+required_test_layout:
+  - tests/unit
+  - tests/integration
+  - tests/e2e
+  - tests/security

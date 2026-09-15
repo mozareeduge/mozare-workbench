@@ -1,0 +1,59 @@
+version: 1
+profile_id: MWB-CODEX-TERRA-2026-09-15
+scope: implementation_through_candidate_ready_for_review
+
+harness:
+  primary: Codex
+  local_loop: scripts/execution_loop.py
+  continuity: harness-mem
+  authority: Git + execution state + schema-valid task handoffs
+  raw_chat_status: diagnostic_only
+
+model:
+  executor: gpt-5.6-terra
+  reasoning_effort: medium
+  rationale: balanced intelligence and cost for bounded coding tasks
+  independent_final_qa:
+    model: gpt-5.6-terra
+    reasoning_effort: high
+    fresh_context: required
+    may_not_reuse_implementer_success_narrative: true
+  escalation:
+    trigger:
+      - same task fails its characterized gate twice
+      - security or transactional invariant remains ambiguous after exact-source expansion
+      - authority contradiction cannot be resolved deterministically
+    action: open a fresh high-effort context with the same task packet and failure evidence
+    do_not_expand_to_whole_package: true
+
+context:
+  task_packet_command: python scripts/execution_loop.py packet
+  target_tokens: 1800
+  hard_tokens: 3200
+  structured_handoff_target_tokens: 450
+  structured_handoff_hard_tokens: 800
+  source_expansion: exact_handle_only
+  unchanged_context: reference_by_path_and_hash
+
+loop:
+  - status
+  - select_first_ready_task
+  - start_and_freeze
+  - characterize
+  - implement_smallest_sufficient_change
+  - verify_named_gate
+  - commit_exact_candidate
+  - validate_and_record_handoff
+  - record_harness_memory_checkpoint
+  - open_fresh_context_when_context_is_stale_or_task_boundary_requires_it
+
+skill_routing:
+  always_before_contextual_model_work: mozare-context-compile
+  implementation: mozare-make
+  review: mozare-review
+  qa: mozare-qa
+  final_handoff: mozare-handoff
+  research_only_when_task_requires_external_evidence: mozare-research
+
+official_model_reference: https://developers.openai.com/api/docs/models/gpt-5.6-terra
+

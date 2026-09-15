@@ -1,0 +1,84 @@
+seed_version: 1
+source: public GitHub account mozareeduge, inspected 2026-09-14
+projects:
+  - id: the-black-bird-field
+    name: The Black Bird Field
+    remote: https://github.com/mozareeduge/the-black-bird-field.git
+    kind: portfolio_host
+    canonical_branch: main
+    notes: Canonical portfolio/documentation layer for five browser-native works; has semantic content, generated dist, tests, docs.
+  - id: the-black-bird
+    name: The Black Bird
+    remote: https://github.com/mozareeduge/the-black-bird.git
+    kind: born_digital_artwork
+    canonical_branch: main
+    notes: Canonical public source archive for the released work.
+  - id: black-bird-lab
+    name: The Black Bird — Development Lab
+    remote: https://github.com/mozareeduge/black-bird-lab.git
+    kind: development_lab
+    canonical_branch: main
+    notes: Experimental and superseded development history; not the canonical released work.
+  - id: winter-road
+    name: Winter Road
+    remote: https://github.com/mozareeduge/winter-road.git
+    kind: born_digital_artwork
+    canonical_branch: main
+  - id: unhappy-scenario
+    name: UNHAPPY Scenario
+    remote: https://github.com/mozareeduge/UNHAPPY-scenario.git
+    kind: born_digital_artwork
+    canonical_branch: main
+  - id: grave-machine
+    name: Grave-Machine
+    remote: https://github.com/mozareeduge/grave-machine.git
+    kind: born_digital_artwork
+    canonical_branch: main
+  - id: taroke-remixer
+    name: TAROKE RIMIXER
+    remote: https://github.com/mozareeduge/taroke-remixer.git
+    kind: creative_instrument
+    canonical_branch: main
+    known_test_command: ./tests/run_all_tests.sh
+    notes: Visible-constraint generative-poetry workbench; authoritative editable project archive is distinct from generated standalone artifact.
+  - id: taroko-gorge-ecosystem
+    name: Taroko Gorge Ecosystem
+    remote: https://github.com/mozareeduge/Taroko-Gorge-Ecosystem.git
+    kind: research_artifact
+    canonical_branch: main
+  - id: ganjoor-ontogrph
+    name: Ganjoor Ontograph
+    remote: https://github.com/mozareeduge/Ganjoor-Ontogrph.git
+    kind: research_infrastructure
+    canonical_branch: main
+    notes: Agent-ready Persian poetry corpus; local QMD/MCP architecture and explicit agent playbook.
+  - id: the-near-field
+    name: The Near Field
+    remote: https://github.com/mozareeduge/The-Near-Field.git
+    kind: research_tool
+    canonical_branch: main
+  - id: hamlet-pop-upper
+    name: HAMLET POP-UPPER
+    remote: https://github.com/mozareeduge/HAMLET-POP-UPPER.git
+    kind: artwork_prototype
+    canonical_branch: main
+  - id: mozare-deep-research
+    name: Mozare Deep Research
+    remote: https://github.com/mozareeduge/mozare-deep-research.git
+    kind: research_infrastructure
+    canonical_branch: main
+  - id: test-experiment-toolset
+    name: Test Experiment Toolset
+    remote: https://github.com/mozareeduge/test-experiment-toolset.git
+    kind: experimental_tooling
+    canonical_branch: claude/styleseed-design-review-vnoke8
+  - id: dr0
+    name: DR0
+    remote: https://github.com/mozareeduge/DR0.git
+    kind: experimental_project
+    canonical_branch: claude/execute-mission-bahcv8
+  - id: raw-sources
+    name: Raw Sources
+    remote: https://github.com/mozareeduge/raw-sources.git
+    kind: source_repository
+    canonical_branch: main

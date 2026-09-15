@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/proposal.schema.json",
+  "title": "Mozare Workbench Proposal",
+  "type": "object",
+  "required": [
+    "id",
+    "project_id",
+    "status",
+    "base",
+    "intended_effect",
+    "operations",
+    "verification_refs",
+    "created_by"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "submitted",
+        "under_review",
+        "accepted",
+        "revision_requested",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "base": {
+      "type": "object",
+      "properties": {
+        "workspace_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repo_heads": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "record_hashes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "intended_effect": {
+      "type": "string",
+      "minLength": 1
+    },
+    "system_summary": {
+      "type": "string"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "op",
+          "target"
+        ],
+        "properties": {
+          "op": {
+            "enum": [
+              "create",
+              "update",
+              "delete",
+              "register",
+              "link"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "payload_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "expected_hash": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "verification_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "scenario_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "oracle_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "conflicted",
+        "unknown"
+      ]
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,23 @@
+id: mozare-wiki
+kind: external_knowledge_adapter
+required: false
+local_path: null
+mode: read_default
+authority:
+  external_system_retains_authority: true
+  generated_search_results_are_evidence: false
+startup_reads:
+  - SYSTEM_DESIGN.md
+  - _system/RELEASE_MANIFEST.json
+  - SEARCH_GUIDE.md
+mcp:
+  detect_project_config: .mcp.json
+  expected_optional_server: qmd
+mutation:
+  allowed: explicit_mission_only
+  delegate_to_external_controller: true
+  require_external_validation: true
+notes:
+  - Resolve current release metadata dynamically; do not trust copied version/count text.
+  - Preserve Wiki source/canonical/derivative distinctions.
+  - Query score routes attention; it does not establish evidence state.

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/project.schema.json",
+  "title": "Mozare Workbench Project",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "kind",
+    "lifecycle",
+    "current_objective"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_type": {
+      "type": "string",
+      "default": "project"
+    },
+    "lifecycle": {
+      "enum": [
+        "captured",
+        "active",
+        "blocked",
+        "review",
+        "accepted",
+        "superseded",
+        "archived"
+      ]
+    },
+    "current_objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_question_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "repository_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "external_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

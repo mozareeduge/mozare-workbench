@@ -1,0 +1,7 @@
+artifacts:
+  - id: art_20260914_example01
+    name: Interaction reference prototype
+    kind: html
+    ref: ../../prototype/index.html
+    canonicality: generated
+    verification_state: partial

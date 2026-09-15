@@ -1,0 +1,418 @@
+version: 4
+terminal_state: CANDIDATE_READY_FOR_REVIEW
+tasks:
+- id: TASK-P00-01
+  objective: Validate handoff and local tool capabilities
+  deps: []
+  scenarios: []
+  oracles:
+  - ORACLE-043
+  gate: GATE-PACKAGE
+- id: TASK-P00-02
+  objective: Scaffold TypeScript server and React/Vite web application with lockfile
+  deps:
+  - TASK-P00-01
+  scenarios: []
+  oracles:
+  - ORACLE-044
+  gate: GATE-UNIT
+- id: TASK-P00-03
+  objective: Port schemas, fixtures, validation and canonical/derived directory rules
+  deps:
+  - TASK-P00-02
+  scenarios:
+  - SCN-LOC-01
+  - SCN-ERR-01
+  oracles:
+  - ORACLE-001
+  gate: GATE-INTEGRATION
+- id: TASK-P00-04
+  objective: Establish trustworthy unit/integration/E2E test harness with failing
+    canary
+  deps:
+  - TASK-P00-03
+  scenarios: []
+  oracles:
+  - ORACLE-041
+  gate: GATE-UNIT
+- id: TASK-P01-01
+  objective: Implement WorkspaceEngine and ProjectProjection
+  deps:
+  - TASK-P00-03
+  - TASK-P00-04
+  scenarios:
+  - SCN-ORI-01
+  - SCN-ORI-03
+  - SCN-LOC-01
+  oracles:
+  - ORACLE-001
+  - ORACLE-002
+  - ORACLE-003
+  gate: GATE-INTEGRATION
+- id: TASK-P01-02
+  objective: Implement production shell and Focus surface to design authority
+  deps:
+  - TASK-P01-01
+  scenarios:
+  - SCN-FOC-01
+  - SCN-FOC-02
+  - SCN-UI-01
+  - SCN-UI-03
+  - SCN-ORI-02
+  - SCN-ORI-04
+  - SCN-ORI-05
+  - SCN-UI-02
+  oracles:
+  - ORACLE-002
+  - ORACLE-003
+  - ORACLE-020
+  - ORACLE-025
+  gate: GATE-E2E
+- id: TASK-P02-01
+  objective: Implement Field graph/list, relation inspection and derived layout state
+  deps:
+  - TASK-P01-02
+  scenarios:
+  - SCN-FLD-01
+  - SCN-FLD-02
+  - SCN-FLD-03
+  - SCN-FLD-04
+  - SCN-FLD-06
+  - SCN-FLD-07
+  - SCN-FLD-08
+  oracles:
+  - ORACLE-004
+  - ORACLE-005
+  - ORACLE-021
+  gate: GATE-E2E
+- id: TASK-P02-02
+  objective: Implement relation proposal connect mode
+  deps:
+  - TASK-P02-01
+  scenarios:
+  - SCN-FLD-05
+  oracles:
+  - ORACLE-006
+  gate: GATE-INTEGRATION
+- id: TASK-P02-03
+  objective: Implement outcome-level Flow
+  deps:
+  - TASK-P01-02
+  scenarios:
+  - SCN-FLO-01
+  - SCN-FLO-02
+  - SCN-FLO-03
+  - SCN-FLO-04
+  oracles:
+  - ORACLE-025
+  - ORACLE-042
+  gate: GATE-E2E
+- id: TASK-P02-04
+  objective: Implement artifact registry, Output surface and safe previewers
+  deps:
+  - TASK-P01-01
+  scenarios:
+  - SCN-OUT-01
+  - SCN-OUT-02
+  - SCN-OUT-03
+  - SCN-OUT-04
+  - SCN-OUT-05
+  oracles:
+  - ORACLE-013
+  - ORACLE-014
+  - ORACLE-027
+  gate: GATE-SECURITY
+- id: TASK-P03-01
+  objective: Implement proposal lifecycle, stale base and transactional canonical
+    apply
+  deps:
+  - TASK-P01-01
+  scenarios:
+  - SCN-REV-06
+  - SCN-REV-07
+  - SCN-ERR-02
+  - SCN-X-01
+  oracles:
+  - ORACLE-006
+  - ORACLE-011
+  - ORACLE-012
+  gate: GATE-INTEGRATION
+- id: TASK-P03-02
+  objective: Implement Review queue/detail/decision UI and evidence provenance
+  deps:
+  - TASK-P03-01
+  - TASK-P02-04
+  scenarios:
+  - SCN-REV-01
+  - SCN-REV-02
+  - SCN-REV-03
+  - SCN-REV-04
+  - SCN-REV-05
+  - SCN-REV-08
+  - SCN-REV-09
+  - SCN-REV-10
+  - SCN-X-02
+  - SCN-X-10
+  oracles:
+  - ORACLE-009
+  - ORACLE-010
+  gate: GATE-E2E
+- id: TASK-P04-01
+  objective: Implement Git registry/status/diff/test evidence and worktree safety
+  deps:
+  - TASK-P03-02
+  scenarios:
+  - SCN-ERR-03
+  - SCN-TEC-03
+  - SCN-TEC-04
+  - SCN-X-05
+  oracles:
+  - ORACLE-010
+  - ORACLE-017
+  gate: GATE-INTEGRATION
+- id: TASK-P04-02
+  objective: Implement SystemLadder and TechnicalTerm translation
+  deps:
+  - TASK-P04-01
+  scenarios:
+  - SCN-TEC-01
+  - SCN-TEC-02
+  - SCN-TEC-05
+  oracles:
+  - ORACLE-016
+  - ORACLE-026
+  gate: GATE-E2E
+- id: TASK-P04-03
+  objective: Implement ContextCompiler, resolution handles, budgets, deduplication
+    and profile-scoped packets
+  deps:
+  - TASK-P01-01
+  scenarios:
+  - SCN-CTX-01
+  - SCN-CTX-02
+  - SCN-CTX-06
+  - SCN-CTX-07
+  - SCN-CTX-08
+  oracles:
+  - ORACLE-029
+  - ORACLE-030
+  gate: GATE-CONTEXT
+- id: TASK-P04-04
+  objective: Implement checksum-bound CapsuleStore, source reopening triggers, snapshots
+    and delta context
+  deps:
+  - TASK-P04-03
+  scenarios:
+  - SCN-CTX-03
+  - SCN-CTX-04
+  - SCN-CTX-05
+  - SCN-CTX-09
+  oracles:
+  - ORACLE-031
+  - ORACLE-033
+  gate: GATE-CONTEXT
+- id: TASK-P04-05
+  objective: Implement capability-tier ModelRouter and privacy-bounded token telemetry
+  deps:
+  - TASK-P04-03
+  scenarios:
+  - SCN-TOK-02
+  - SCN-TOK-03
+  - SCN-MET-01
+  - SCN-MET-02
+  - SCN-TOK-01
+  oracles:
+  - ORACLE-032
+  - ORACLE-034
+  - ORACLE-039
+  - ORACLE-040
+  gate: GATE-TOKEN
+- id: TASK-P05-01
+  objective: Implement MissionSheet and mission packet builder
+  deps:
+  - TASK-P03-02
+  - TASK-P04-04
+  - TASK-P04-05
+  scenarios:
+  - SCN-MIS-01
+  - SCN-MIS-02
+  - SCN-MIS-03
+  oracles:
+  - ORACLE-007
+  gate: GATE-E2E
+- id: TASK-P05-02
+  objective: Implement common agent lifecycle using deterministic fake adapter
+  deps:
+  - TASK-P04-01
+  - TASK-P04-05
+  - TASK-P05-01
+  scenarios:
+  - SCN-MIS-04
+  - SCN-MIS-05
+  - SCN-LOC-03
+  - SCN-X-09
+  oracles:
+  - ORACLE-008
+  - ORACLE-028
+  gate: GATE-ADAPTER
+- id: TASK-P05-03
+  objective: Implement Claude, Codex and Hermes adapters with graceful unavailable
+    state
+  deps:
+  - TASK-P04-05
+  - TASK-P05-02
+  scenarios:
+  - SCN-MIS-02
+  - SCN-X-06
+  oracles:
+  - ORACLE-023
+  gate: GATE-ADAPTER
+- id: TASK-P05-04
+  objective: Implement RepresentationPlanner, action registry and deterministic semantic
+    compositions
+  deps:
+  - TASK-P01-02
+  - TASK-P04-03
+  scenarios:
+  - SCN-GUI-01
+  - SCN-TOK-02
+  oracles:
+  - ORACLE-032
+  - ORACLE-035
+  gate: GATE-GENUI
+- id: TASK-P05-05
+  objective: Implement OpenUI semantic micro-libraries, bounded generation and deterministic
+    fallback
+  deps:
+  - TASK-P05-04
+  - TASK-P04-05
+  scenarios:
+  - SCN-GUI-02
+  - SCN-GUI-03
+  - SCN-GUI-04
+  - SCN-GUI-06
+  - SCN-GUI-07
+  oracles:
+  - ORACLE-035
+  - ORACLE-036
+  - ORACLE-038
+  gate: GATE-GENUI
+- id: TASK-P05-06
+  objective: Integrate generated actions through read/proposal-only authority boundary
+  deps:
+  - TASK-P05-05
+  - TASK-P03-01
+  scenarios:
+  - SCN-GUI-05
+  oracles:
+  - ORACLE-037
+  gate: GATE-SECURITY
+- id: TASK-P06-01
+  objective: Implement safe stdio MCP read/proposal surface
+  deps:
+  - TASK-P03-01
+  - TASK-P05-02
+  scenarios:
+  - SCN-FLD-05
+  - SCN-ERR-04
+  - SCN-ERR-05
+  - SCN-ERR-06
+  oracles:
+  - ORACLE-006
+  - ORACLE-018
+  gate: GATE-SECURITY
+- id: TASK-P07-01
+  objective: Implement Mozare Wiki/QMD read adapter with authority route and candidate
+    capture
+  deps:
+  - TASK-P06-01
+  scenarios:
+  - SCN-EVD-01
+  - SCN-EVD-02
+  - SCN-EVD-03
+  - SCN-EVD-04
+  - SCN-X-08
+  oracles:
+  - ORACLE-015
+  - ORACLE-023
+  gate: GATE-INTEGRATION
+- id: TASK-P08-01
+  objective: Harden responsive navigation/layout across required matrix
+  deps:
+  - TASK-P02-01
+  - TASK-P02-03
+  - TASK-P03-02
+  - TASK-P05-01
+  scenarios:
+  - SCN-RSP-01
+  - SCN-RSP-02
+  - SCN-RSP-03
+  - SCN-RSP-04
+  - SCN-RSP-05
+  - SCN-X-03
+  oracles:
+  - ORACLE-020
+  - ORACLE-025
+  gate: GATE-RESPONSIVE
+- id: TASK-P08-02
+  objective: Harden keyboard, focus, reduced motion and bidi handling
+  deps:
+  - TASK-P08-01
+  scenarios:
+  - SCN-A11Y-01
+  - SCN-A11Y-02
+  - SCN-A11Y-03
+  - SCN-BIDI-01
+  - SCN-X-04
+  oracles:
+  - ORACLE-021
+  - ORACLE-022
+  gate: GATE-A11Y
+- id: TASK-P08-03
+  objective: Close path/process/secret/preview/loopback security tests
+  deps:
+  - TASK-P06-01
+  - TASK-P02-04
+  scenarios:
+  - SCN-ERR-04
+  - SCN-ERR-05
+  - SCN-ERR-06
+  - SCN-OUT-03
+  - SCN-X-07
+  oracles:
+  - ORACLE-014
+  - ORACLE-018
+  - ORACLE-019
+  - ORACLE-027
+  gate: GATE-SECURITY
+- id: TASK-P09-01
+  objective: Create Windows launchers and recovery diagnostics
+  deps:
+  - TASK-P08-03
+  scenarios:
+  - SCN-ORI-01
+  - SCN-LOC-01
+  - SCN-LOC-02
+  oracles:
+  - ORACLE-001
+  - ORACLE-019
+  - ORACLE-023
+  gate: GATE-WINDOWS
+- id: TASK-P09-02
+  objective: Execute real Mozare project pilot and measure value criteria
+  deps:
+  - TASK-P05-06
+  - TASK-P09-01
+  scenarios:
+  - SCN-ORI-03
+  oracles:
+  - ORACLE-024
+  gate: GATE-PILOT
+- id: TASK-P09-03
+  objective: Freeze exact release candidate and produce release evidence/docs
+  deps:
+  - TASK-P09-01
+  - TASK-P09-02
+  scenarios: []
+  oracles: []
+  gate: GATE-FULL

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContextDelta",
+  "type": "object",
+  "required": [
+    "id",
+    "from_snapshot",
+    "to_snapshot",
+    "changed_refs"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "from_snapshot": {
+      "type": "string"
+    },
+    "to_snapshot": {
+      "type": "string"
+    },
+    "changed_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "removed_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

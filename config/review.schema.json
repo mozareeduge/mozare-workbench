@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/review.schema.json",
+  "title": "Mozare Review",
+  "type": "object",
+  "required": [
+    "id",
+    "project_id",
+    "proposal_id",
+    "status",
+    "risk",
+    "freshness"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "in_review",
+        "accepted",
+        "revision_requested",
+        "rejected",
+        "preserved"
+      ]
+    },
+    "risk": {
+      "enum": [
+        "critical",
+        "high",
+        "normal",
+        "low"
+      ]
+    },
+    "freshness": {
+      "enum": [
+        "fresh",
+        "stale",
+        "conflicted",
+        "unknown"
+      ]
+    },
+    "authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "oracle_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observed_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

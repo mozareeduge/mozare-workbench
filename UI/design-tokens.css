@@ -1,0 +1,76 @@
+:root {
+  color-scheme: light;
+  --font-ui: "Segoe UI Variable", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-reading: ui-serif, Georgia, "Times New Roman", serif;
+  --font-fa: Vazirmatn, "Noto Sans Arabic", Tahoma, "Segoe UI", sans-serif;
+  --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+
+  --c-canvas: #f4f2ed;
+  --c-surface: #fbfaf7;
+  --c-surface-raised: #ffffff;
+  --c-surface-inset: #ece9e2;
+  --c-ink: #1f2321;
+  --c-ink-2: #4d5450;
+  --c-ink-3: #777d79;
+  --c-line: #d7d4cc;
+  --c-line-strong: #aaa79f;
+  --c-accent: #315f58;
+  --c-accent-soft: #dce8e4;
+  --c-positive: #2d6650;
+  --c-positive-soft: #dfece5;
+  --c-warning: #8a5b16;
+  --c-warning-soft: #f3e8cf;
+  --c-danger: #8a3e38;
+  --c-danger-soft: #f3dfdd;
+  --c-info: #4d5f7c;
+  --c-info-soft: #e2e7ef;
+
+  --shadow-overlay: 0 18px 48px rgba(31,35,33,.16), 0 2px 10px rgba(31,35,33,.08);
+  --shadow-float: 0 8px 24px rgba(31,35,33,.10);
+
+  --r-control: 8px;
+  --r-card: 12px;
+  --r-overlay: 16px;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  --text-display: clamp(2rem, 3vw, 2.75rem);
+  --text-h1: 1.75rem;
+  --text-h2: 1.25rem;
+  --text-h3: .9375rem;
+  --text-body: .9375rem;
+  --text-small: .8125rem;
+  --text-label: .6875rem;
+
+  --rail-wide: 72px;
+  --rail-compact: 56px;
+  --topbar: 56px;
+  --mobile-topbar: 52px;
+  --mobile-nav: 62px;
+  --inspector: 392px;
+  --review-queue: 320px;
+  --content-max: 1180px;
+  --reading-max: 72ch;
+  --explanation-max: 64ch;
+
+  --motion-fast: 140ms;
+  --motion-normal: 200ms;
+  --ease-standard: cubic-bezier(.2,.7,.2,1);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--c-canvas); color: var(--c-ink); font-family: var(--font-ui); }
+body { margin: 0; }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+code, pre, kbd, samp, .technical-id { font-family: var(--font-mono); direction: ltr; unicode-bidi: isolate; }
+[lang="fa"], [dir="rtl"] { font-family: var(--font-fa); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

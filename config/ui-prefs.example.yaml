@@ -1,0 +1,12 @@
+default_project: null
+default_view: focus
+reduced_motion: system
+font_scale: 1.0
+raw_agent_logs_collapsed: true
+show_superseded_by_default: false
+field:
+  max_primary_nodes: 7
+  max_rendered_nodes: 30
+  show_relation_labels: selected
+technical_detail:
+  default_level: system_behavior

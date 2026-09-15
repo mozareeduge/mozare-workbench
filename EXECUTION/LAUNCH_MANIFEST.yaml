@@ -1,0 +1,98 @@
+release_topology: LOCAL_LOOPBACK_WEB_APP
+public_deployment: NOT_APPLICABLE
+source_control:
+  repository: CLAUDE_DISCOVERABLE
+  default_branch: CLAUDE_DISCOVERABLE
+  release_policy: exact candidate commit + local release report
+release_units:
+- id: UNIT-WEB
+  build: Vite production bundle
+  deploy_target: local server static assets
+  rollback: prior Git commit/build
+- id: UNIT-SERVER
+  build: TypeScript Node runtime
+  deploy_target: local Windows process bound to loopback
+  rollback: prior Git commit/build
+- id: UNIT-MCP
+  build: Node stdio entrypoint
+  deploy_target: local agent configuration
+  rollback: prior Git commit/config
+- id: UNIT-LAUNCHER
+  build: PowerShell + optional cmd wrapper
+  deploy_target: local project folder
+  rollback: prior launcher
+build:
+  node_version: 24_LTS_BASELINE__22_OR_24_LTS_EXISTING_ACCEPTED
+  package_manager: npm
+  lockfile_required: true
+  commands:
+  - npm ci
+  - npm run typecheck
+  - npm run test
+  - npm run test:integration
+  - npm run build
+  - npm run test:e2e
+  - npm run qa
+environments:
+  local: required
+  test: required
+  preview: local candidate path
+  staging: NOT_APPLICABLE
+  production_public: NOT_APPLICABLE
+hosting:
+  host: 127.0.0.1
+  port: configurable_local_safe_port
+  tls: NOT_APPLICABLE_FOR_LOOPBACK_V1
+backend:
+  runtime: Node_TypeScript
+  health_endpoint: required
+  external_network_listen_default: forbidden
+persistence:
+  database: NOT_APPLICABLE
+  canonical: Markdown_YAML_JSON_JSONL_Git
+  derived_cache: gitignored
+  backup: user_filesystem_and_Git
+  recovery: reconstruct_derived_from_canonical
+secrets:
+  canonical_records: forbidden
+  agent_provider_credentials: inherited_or_external_configuration_only
+  env_files: protected_from_default_context
+integrations:
+  git: required
+  claude: optional_capability
+  codex: optional_capability
+  hermes: optional_capability
+  mozare_wiki: configurable
+  qmd: optional_capability
+  tana: NOT_REQUIRED_OPTIONAL_FUTURE
+observability:
+  meaningful_events: canonical_or_project_event_log
+  diagnostics: rotating_local_logs
+  agent_raw_logs: per_run_local_collapsed
+ci_cd:
+  remote_ci: OPTIONAL_FOR_LOCAL_V1
+  exact_head_local_gate: required
+rollout:
+  strategy: local_candidate_then_owner_pilot
+  rollback_trigger: critical_oracle_failure_or_unusable_launcher
+  rollback_action: checkout/rebuild_prior_verified_commit
+owner_actions:
+- final_aesthetic_acceptance
+- pilot_project_selection_if_not_obvious
+- any_future_public_deployment_authorization
+context_economy:
+  required: true
+  policy: CONTEXT/context-policy.yaml
+  telemetry_local_only: true
+generative_ui:
+  openui_preferred: true
+  deterministic_fallback_required: true
+  ag_ui: future_optional_adapter
+  required_for_candidate_pilot: true
+  public_release_status: NOT_IN_SCOPE
+version: 0.3.2
+runtime:
+  node_baseline: 24 LTS
+  accepted_existing_lts:
+  - '22'
+  - '24'

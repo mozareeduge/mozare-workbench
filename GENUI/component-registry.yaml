@@ -1,0 +1,20 @@
+version: 1
+root: MozareView
+components:
+  MozareView: {group: layout, purpose: "Bounded adaptive region inside a stable Workbench surface"}
+  OrientationBrief: {group: orient, purpose: "Current question, state, next action"}
+  EvidencePath: {group: evidence, purpose: "Evidence/source to claim/decision path with authority state"}
+  CompareMatrix: {group: compare, purpose: "Small explicit comparison; unknown is a value, not blank prose"}
+  DecisionGate: {group: decide, purpose: "Owner/reviewer options with consequences and allowlisted actions"}
+  SystemLadder: {group: system, purpose: "Intent → behavior → architecture → implementation → verification"}
+  ProposalReview: {group: review, purpose: "Effect/evidence/protected/unresolved before technical detail"}
+  ArtifactSummary: {group: artifact, purpose: "Artifact identity, medium, canonicality, verification, lineage"}
+  UncertaintyBlock: {group: evidence, purpose: "Contested, incomplete or proof-gap state"}
+  NextMoves: {group: action, purpose: "1–3 viable structured actions"}
+  RelationSlice: {group: relation, purpose: "Bounded neighborhood, never whole graph"}
+micro_libraries:
+  orient: [MozareView, OrientationBrief, UncertaintyBlock, ArtifactSummary, NextMoves]
+  compare: [MozareView, CompareMatrix, EvidencePath, UncertaintyBlock, NextMoves]
+  decide: [MozareView, DecisionGate, EvidencePath, UncertaintyBlock, NextMoves]
+  system: [MozareView, SystemLadder, EvidencePath, UncertaintyBlock, NextMoves]
+  review: [MozareView, ProposalReview, EvidencePath, SystemLadder, DecisionGate]

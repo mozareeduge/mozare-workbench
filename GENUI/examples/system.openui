@@ -1,0 +1,4 @@
+root = MozareView("system", [ladder, evidence, moves])
+ladder = SystemLadder("Let the reader inspect line construction without leaving the poem.", "Selecting a line opens a bounded inspection and returns to the same run position.", "Selection/run-position stay UI state; recipe evidence is read-only.", "Browser path and archive-parity tests are observed.", "Implementation details are available only on expansion.")
+evidence = EvidencePath("Verification", [{ref:"TEST-82",label:"Return-position path",status:"verified"},{ref:"TEST-83",label:"Archive semantics",status:"verified"}])
+moves = NextMoves([{id:"inspect_evidence",label:"Inspect evidence",kind:"read"},{id:"request_revision",label:"Request revision",kind:"proposal"}])

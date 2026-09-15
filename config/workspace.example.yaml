@@ -1,0 +1,31 @@
+workspace_version: 1
+name: Mozare Workbench
+canonical_state: local-files
+projects:
+  - id: taroke-remixer
+    name: TAROKE RIMIXER
+    kind: born_digital_artwork
+    remote: https://github.com/mozareeduge/taroke-remixer.git
+    local_path: null
+    canonical_branch: main
+    project_state_path: workspace/projects/taroke-remixer
+    test_commands:
+      - ./tests/run_all_tests.sh
+  - id: mozare-wiki
+    name: Mozare Wiki
+    kind: knowledge_system
+    local_path: null
+    adapter: mozare-wiki
+ui:
+  default_view: focus
+  raw_agent_logs_collapsed: true
+  max_default_field_nodes: 30
+  preferred_language: auto
+security:
+  bind_host: 127.0.0.1
+  allow_remote: false
+  protected_globs:
+    - "**/.env"
+    - "**/.env.*"
+    - "**/*.pem"
+    - "**/*.key"

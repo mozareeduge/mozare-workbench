@@ -1,0 +1,98 @@
+version: 1
+lock_id: MWB-STACK-2026-09-15-r1
+scope: first_production_candidate
+purpose: reduce architecture choice for small-model execution
+
+runtime:
+  language: TypeScript
+  node:
+    baseline: "24 LTS"
+    accepted_existing: ["22 LTS", "24 LTS"]
+    reject_for_baseline: ["26 Current"]
+    note: "Fresh scaffold targets Node 24 LTS. Do not force a global Node change when an existing supported LTS is already configured and tests pass."
+  package_manager: npm
+  lockfile: package-lock.json
+  module_system: ESM
+
+repository_layout:
+  single_repository: true
+  source_roots:
+    core: src/core
+    server: src/server
+    web: src/web
+    mcp: src/mcp
+    shared: src/shared
+  test_roots:
+    unit: tests/unit
+    integration: tests/integration
+    e2e: tests/e2e
+  generated_runtime: .mozare/runtime
+  derived_cache: .mozare/cache
+
+web:
+  framework: React
+  build: Vite
+  routing: react-router-dom
+  styling: "plain CSS + CSS custom properties from UI/design-tokens.css"
+  state_rule: "server projection is truth for durable project state; React local state is for ephemeral UI state"
+  component_primitives:
+    default: native_semantic_html
+    dialog_sheet_focus: "@radix-ui/react-dialog"
+    tooltip: "@radix-ui/react-tooltip"
+    icons: lucide-react
+  graph: "@xyflow/react"
+  forbidden_initial_choices: [Tailwind, Redux, Zustand, Electron, Tauri, full_dashboard_design_system]
+
+server:
+  framework: Fastify
+  transport:
+    request_response: REST_JSON
+    run_events: SSE
+    websocket: "defer unless a verified requirement cannot be met with SSE"
+  static_assets: "@fastify/static"
+  validation:
+    json_schema: ajv
+    formats: ajv-formats
+    yaml: yaml
+  process_spawn: execa
+  bind_default: 127.0.0.1
+  database: none
+
+contracts:
+  json_schema_draft: "2020-12"
+  canonical_formats: [Markdown, YAML, JSON, JSONL]
+  ids: "stable explicit IDs; crypto.randomUUID allowed for new runtime records"
+
+mcp:
+  sdk: "@modelcontextprotocol/sdk"
+  transport: stdio
+  authority: read_and_proposal_only
+
+generative_ui:
+  package: "@openuidev/react-lang"
+  schema: "zod/v4"
+  mode: "optional semantic renderer inside fixed Workbench surfaces"
+  cloud_gateway_required: false
+  rule: "use library.prompt/spec + parser/renderer behind GenerativeRenderer; deterministic fallback is mandatory"
+
+quality:
+  unit: Vitest
+  component: "@testing-library/react"
+  e2e: Playwright
+  accessibility: "@axe-core/playwright plus keyboard assertions"
+  typecheck: tsc
+  lint: ESLint
+
+initial_scripts:
+  dev: "run server and Vite dev client together"
+  build: "vite build + tsc server/mcp build"
+  typecheck: "tsc --noEmit"
+  test: "vitest run"
+  test_integration: "vitest run tests/integration"
+  test_e2e: "playwright test"
+  qa: "typecheck + unit + integration + e2e + package-specific audits"
+
+choice_escape_hatch:
+  allowed_only_if: "the locked choice is demonstrably incompatible with an accepted requirement on the target environment"
+  required_record: FEASIBILITY_CONTRADICTION
+  owner_question: "only if the replacement changes product behavior, authority, safety, or user experience"

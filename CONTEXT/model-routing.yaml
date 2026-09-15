@@ -1,0 +1,103 @@
+version: 1
+routes:
+  deterministic_status:
+    tier: NONE
+    examples:
+    - status_aggregation
+    - cache_validation
+    - token_counting
+    - static_view
+    - deterministic_composition
+  compact_or_classify:
+    tier: LIGHT
+    max_context_policy: simple_mission
+    fallback: STRONG
+    quality_gate: schema_valid_and_no_authority_loss
+  generative_ui:
+    tier: LIGHT
+    max_context_policy: ui_composition
+    fallback: DETERMINISTIC_UI
+    output: OPENUI_LANG
+  research_synthesis:
+    tier: STRONG
+    max_context_policy: complex_mission
+    context_profile: research
+  artistic_or_product_judgment:
+    tier: STRONG
+    max_context_policy: complex_mission
+    context_profile: maker
+  architecture_decision:
+    tier: STRONG
+    max_context_policy: complex_mission
+    context_profile: technical
+  implementation:
+    tier: CODING_AGENT
+    max_context_policy: normal_mission
+    context_profile: technical
+  qa_adjudication:
+    tier: INDEPENDENT_STRONG
+    max_context_policy: complex_mission
+    context_profile: qa
+    independence_required: true
+profiles:
+  research:
+    include:
+    - objective
+    - authority
+    - source_capsules
+    - exact_excerpts
+    - claims
+    - relations
+    - open_questions
+    - acceptance
+    exclude_by_default:
+    - raw_git_diff
+    - build_logs
+    - unrelated_implementation
+  maker:
+    include:
+    - objective
+    - authority
+    - materials
+    - design_decisions
+    - experiments
+    - artifacts
+    - acceptance
+    exclude_by_default:
+    - raw_logs
+    - unrelated_source_corpus
+  technical:
+    include:
+    - objective
+    - authority
+    - system_contracts
+    - affected_files
+    - tests
+    - protected_neighbors
+    - acceptance
+    exclude_by_default:
+    - unrelated_theory_history
+    - full_source_corpus
+  qa:
+    include:
+    - authority_snapshot
+    - oracles
+    - candidate_identity
+    - critical_scenarios
+    - evidence_refs
+    - historical_defects
+    exclude_by_default:
+    - implementer_success_narrative
+    - unrelated_chat_history
+  ui:
+    include:
+    - intent
+    - structured_state
+    - authority_refs
+    - evidence_refs
+    - allowed_actions
+    exclude_by_default:
+    - raw_transcript
+    - raw_logs
+    - full_source_corpus
+    - secrets

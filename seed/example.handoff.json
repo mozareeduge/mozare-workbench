@@ -1,0 +1,30 @@
+{
+  "run_id": "run_20260914_example01",
+  "state": "completed",
+  "summary": "Built a bounded interaction reference and verified the package contracts.",
+  "system_view": {
+    "intent": "Give Mozare a project-centered surface for reviewing agent work.",
+    "behavior": "The interface opens on project state and keeps technical detail behind progressive disclosure.",
+    "architecture": ["Canonical file workspace", "Generated visual projection", "Proposal review boundary"],
+    "implementation": ["prototype/index.html"],
+    "verification": ["Package QA", "Prototype script syntax check"]
+  },
+  "changed": [
+    {"kind": "artifact", "target": "prototype/index.html", "summary": "Created zero-build interaction reference."}
+  ],
+  "decisions": [
+    {"decision": "Keep canonical state local and vendor-neutral.", "rationale": "Recovery must not depend on a cloud interface.", "reversible": true}
+  ],
+  "tests": [
+    {"name": "package QA", "status": "passed", "command": "python scripts/qa_package.py", "evidence": "QA_REPORT.md"}
+  ],
+  "artifacts": [
+    {"name": "Interaction reference", "kind": "html", "ref": "prototype/index.html", "canonicality": "generated"}
+  ],
+  "technical_terms": [
+    {"term": "canonical state", "plain_system_meaning": "The durable records that remain authoritative even if the interface is rebuilt.", "why_it_matters": "It prevents an AI app or visual view from becoming the only copy of project reality.", "exact_detail": "Markdown/YAML/JSON under version control."}
+  ],
+  "blockers": [],
+  "open_questions": [],
+  "next_action": "Implement Milestone 0 and Milestone 1."
+}

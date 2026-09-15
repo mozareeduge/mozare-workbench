@@ -1,0 +1,53 @@
+version: 1
+policy_id: MWB-CONTEXT-POLICY-2026-09-15
+budgets:
+  ui_composition: {target_tokens: 700, hard_tokens: 1200, visible_words: 150}
+  simple_mission: {target_tokens: 800, hard_tokens: 1400}
+  normal_mission: {target_tokens: 1800, hard_tokens: 3200}
+  complex_mission: {target_tokens: 3500, hard_tokens: 6000}
+  structured_handoff: {target_tokens: 450, hard_tokens: 800}
+resolution:
+  default: [L0, L1, L2]
+  L3_requires_reason: true
+priority_order:
+  - objective
+  - authority_and_horizon
+  - acceptance_oracles
+  - protected_neighbors
+  - affected_objects_relations
+  - direct_evidence
+  - changed_files_modules
+  - secondary_context
+compaction_order:
+  - deduplicate_by_canonical_ref
+  - replace_repeated_text_with_ref
+  - downgrade_secondary_L2_to_L1
+  - downgrade_noncritical_L1_to_L0
+  - use_valid_capsule_or_exact_excerpt_ref
+  - batch_evidence_with_receipt
+never_silently_drop:
+  - owner_locked_decision
+  - accepted_decision_directly_relevant
+  - release_blocking_oracle
+  - security_or_data_loss_constraint
+  - protected_neighbor
+  - authority_conflict
+capsule:
+  first_source_read_required: true
+  validity_fields: [source_sha256, parser_contract, authority_metadata_hash, schema_contract]
+  reopen_triggers:
+    - new_intake_mentions_or_contradicts
+    - relation_traversal
+    - authority_or_version_change
+    - parser_or_extraction_fidelity_change
+    - systemic_or_architectural_claim
+    - incomplete_low_confidence_or_stale
+    - explicit_full_or_source_level
+quality:
+  max_duplicate_context_ratio: 0.08
+  truncate_required_material: false
+  guess_when_insufficient: false
+telemetry:
+  store_prompt_bodies: false
+  store_hidden_reasoning: false
+  store_secret_values: false

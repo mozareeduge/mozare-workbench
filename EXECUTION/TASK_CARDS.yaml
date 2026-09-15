@@ -1,0 +1,1218 @@
+version: 1
+cards:
+- task_id: TASK-P00-01
+  objective: Validate handoff and local tool capabilities
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - .git/mozare-workbench-execution/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-020
+  done_when:
+  - 'Task objective is demonstrably satisfied: Validate handoff and local tool capabilities'
+  - Package manifest, package QA, execution contract, and tool capability evidence are observed
+  - Mapped gate GATE-PACKAGE passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P00-02
+  objective: Scaffold TypeScript server and React/Vite web application with lockfile
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - package.json
+  - src/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-021
+  done_when:
+  - 'Task objective is demonstrably satisfied: Scaffold TypeScript server and React/Vite web application with lockfile'
+  - Scaffold starts on loopback and its typecheck, unit smoke, and production build pass
+  - Mapped gate GATE-UNIT passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P00-03
+  objective: Port schemas, fixtures, validation and canonical/derived directory rules
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - package.json
+  - src/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-001
+  done_when:
+  - 'Task objective is demonstrably satisfied: Port schemas, fixtures, validation and canonical/derived directory
+    rules'
+  - All mapped scenarios (SCN-LOC-01, SCN-ERR-01) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P00-04
+  objective: Establish trustworthy unit/integration/E2E test harness with failing canary
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - package.json
+  - src/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-000
+  done_when:
+  - 'Task objective is demonstrably satisfied: Establish trustworthy unit/integration/E2E test harness with failing
+    canary'
+  - All mapped scenarios (none) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-UNIT passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P01-01
+  objective: Implement WorkspaceEngine and ProjectProjection
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/00_PRODUCT_HORIZON.md
+  - AUTHORITY/01_OBJECT_STATE_AND_FLOW_MODEL.md
+  - UI/layout-contracts.md
+  create_or_modify:
+  - src/core/
+  - src/web/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-001
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement WorkspaceEngine and ProjectProjection'
+  - All mapped scenarios (SCN-ORI-01, SCN-ORI-03, SCN-LOC-01) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P01-02
+  objective: Implement production shell and Focus surface to design authority
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/00_PRODUCT_HORIZON.md
+  - AUTHORITY/01_OBJECT_STATE_AND_FLOW_MODEL.md
+  - UI/layout-contracts.md
+  create_or_modify:
+  - src/core/
+  - src/web/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-002
+  - TEST-014
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement production shell and Focus surface to design authority'
+  - All mapped scenarios (SCN-FOC-01, SCN-FOC-02, SCN-UI-01, SCN-UI-03, SCN-ORI-02, SCN-ORI-04, SCN-ORI-05, SCN-UI-02)
+    have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P02-01
+  objective: Implement Field graph/list, relation inspection and derived layout state
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/02_SCENARIO_CASE_ATLAS.md
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/component-contracts.md
+  create_or_modify:
+  - src/web/
+  - src/core/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-003
+  - TEST-015
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement Field graph/list, relation inspection and derived layout
+    state'
+  - All mapped scenarios (SCN-FLD-01, SCN-FLD-02, SCN-FLD-03, SCN-FLD-04, SCN-FLD-06, SCN-FLD-07, SCN-FLD-08) have
+    observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P02-02
+  objective: Implement relation proposal connect mode
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/02_SCENARIO_CASE_ATLAS.md
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/component-contracts.md
+  create_or_modify:
+  - src/web/
+  - src/core/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-003
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement relation proposal connect mode'
+  - All mapped scenarios (SCN-FLD-05) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P02-03
+  objective: Implement outcome-level Flow
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/02_SCENARIO_CASE_ATLAS.md
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/component-contracts.md
+  create_or_modify:
+  - src/web/
+  - src/core/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-019
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement outcome-level Flow'
+  - All mapped scenarios (SCN-FLO-01, SCN-FLO-02, SCN-FLO-03, SCN-FLO-04) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P02-04
+  objective: Implement artifact registry, Output surface and safe previewers
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/02_SCENARIO_CASE_ATLAS.md
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/component-contracts.md
+  create_or_modify:
+  - src/web/
+  - src/core/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-009
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement artifact registry, Output surface and safe previewers'
+  - All mapped scenarios (SCN-OUT-01, SCN-OUT-02, SCN-OUT-03, SCN-OUT-04, SCN-OUT-05) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-SECURITY passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P03-01
+  objective: Implement proposal lifecycle, stale base and transactional canonical apply
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/01_OBJECT_STATE_AND_FLOW_MODEL.md
+  - QA/QA_ORACLE_REGISTER.md
+  - TECH/STATE_AND_API_CONTRACTS.md
+  create_or_modify:
+  - src/core/proposals/
+  - src/web/surfaces/
+  - tests/integration/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-007
+  - TEST-008
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement proposal lifecycle, stale base and transactional canonical
+    apply'
+  - All mapped scenarios (SCN-REV-06, SCN-REV-07, SCN-ERR-02, SCN-X-01) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P03-02
+  objective: Implement Review queue/detail/decision UI and evidence provenance
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/01_OBJECT_STATE_AND_FLOW_MODEL.md
+  - QA/QA_ORACLE_REGISTER.md
+  - TECH/STATE_AND_API_CONTRACTS.md
+  create_or_modify:
+  - src/core/proposals/
+  - src/web/surfaces/
+  - tests/integration/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-006
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement Review queue/detail/decision UI and evidence provenance'
+  - All mapped scenarios (SCN-REV-01, SCN-REV-02, SCN-REV-03, SCN-REV-04, SCN-REV-05, SCN-REV-08, SCN-REV-09, SCN-REV-10,
+    SCN-X-02, SCN-X-10) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P04-01
+  objective: Implement Git registry/status/diff/test evidence and worktree safety
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - TECH/ARCHITECTURE.md
+  - TECH/SECURITY.md
+  create_or_modify:
+  - src/server/git/
+  - src/server/process/
+  - src/shared/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-012
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement Git registry/status/diff/test evidence and worktree safety'
+  - All mapped scenarios (SCN-ERR-03, SCN-TEC-03, SCN-TEC-04, SCN-X-05) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P04-02
+  objective: Implement SystemLadder and TechnicalTerm translation
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - TECH/ARCHITECTURE.md
+  - TECH/SECURITY.md
+  create_or_modify:
+  - src/web/components/SystemLadder.tsx
+  - src/web/components/TechnicalTerm.tsx
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-011
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement SystemLadder and TechnicalTerm translation'
+  - All mapped scenarios (SCN-TEC-01, SCN-TEC-02, SCN-TEC-05) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P04-03
+  objective: Implement ContextCompiler, resolution handles, budgets, deduplication and profile-scoped packets
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - TECH/ARCHITECTURE.md
+  - TECH/SECURITY.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/context/
+  - src/shared/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-CTX-01
+  - TEST-CTX-02
+  - TEST-CTX-05
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement ContextCompiler, resolution handles, budgets, deduplication
+    and profile-scoped packets'
+  - All mapped scenarios (SCN-CTX-01, SCN-CTX-02, SCN-CTX-06, SCN-CTX-07, SCN-CTX-08) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-CONTEXT passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P04-04
+  objective: Implement checksum-bound CapsuleStore, source reopening triggers, snapshots and delta context
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - TECH/ARCHITECTURE.md
+  - TECH/SECURITY.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/context/
+  - src/shared/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-CTX-03
+  - TEST-CTX-04
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement checksum-bound CapsuleStore, source reopening triggers,
+    snapshots and delta context'
+  - All mapped scenarios (SCN-CTX-03, SCN-CTX-04, SCN-CTX-05, SCN-CTX-09) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-CONTEXT passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P04-05
+  objective: Implement capability-tier ModelRouter and privacy-bounded token telemetry
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - TECH/ARCHITECTURE.md
+  - TECH/SECURITY.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/context/
+  - src/shared/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-MET-01
+  - TEST-MET-02
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement capability-tier ModelRouter and privacy-bounded token telemetry'
+  - All mapped scenarios (SCN-TOK-02, SCN-TOK-03, SCN-MET-01, SCN-MET-02, SCN-TOK-01) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-TOKEN passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-01
+  objective: Implement MissionSheet and mission packet builder
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  create_or_modify:
+  - src/core/context/
+  - src/server/agents/
+  - src/web/components/MissionSheet.tsx
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-004
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement MissionSheet and mission packet builder'
+  - All mapped scenarios (SCN-MIS-01, SCN-MIS-02, SCN-MIS-03) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-E2E passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-02
+  objective: Implement common agent lifecycle using deterministic fake adapter
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  create_or_modify:
+  - src/server/agents/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-005
+  - TEST-TOK-02
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement common agent lifecycle using deterministic fake adapter'
+  - All mapped scenarios (SCN-MIS-04, SCN-MIS-05, SCN-LOC-03, SCN-X-09) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-ADAPTER passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-03
+  objective: Implement Claude, Codex and Hermes adapters with graceful unavailable state
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  create_or_modify:
+  - src/server/agents/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-017
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement Claude, Codex and Hermes adapters with graceful unavailable
+    state'
+  - All mapped scenarios (SCN-MIS-02, SCN-X-06) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-ADAPTER passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-04
+  objective: Implement RepresentationPlanner, action registry and deterministic semantic compositions
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/representation/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-GUI-01
+  - TEST-TOK-01
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement RepresentationPlanner, action registry and deterministic
+    semantic compositions'
+  - All mapped scenarios (SCN-GUI-01, SCN-TOK-02) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-GENUI passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-05
+  objective: Implement OpenUI semantic micro-libraries, bounded generation and deterministic fallback
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/representation/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-GUI-02
+  - TEST-GUI-04
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement OpenUI semantic micro-libraries, bounded generation and
+    deterministic fallback'
+  - All mapped scenarios (SCN-GUI-02, SCN-GUI-03, SCN-GUI-04, SCN-GUI-06, SCN-GUI-07) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-GENUI passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P05-06
+  objective: Integrate generated actions through read/proposal-only authority boundary
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - GENUI/REPRESENTATION_RUNTIME.md
+  - EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md
+  create_or_modify:
+  - src/core/representation/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-GUI-03
+  done_when:
+  - 'Task objective is demonstrably satisfied: Integrate generated actions through read/proposal-only authority
+    boundary'
+  - All mapped scenarios (SCN-GUI-05) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-SECURITY passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P06-01
+  objective: Implement safe stdio MCP read/proposal surface
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - TECH/INTEGRATIONS.md
+  - TECH/SECURITY.md
+  - AUTHORITY/01_OBJECT_STATE_AND_FLOW_MODEL.md
+  create_or_modify:
+  - src/mcp/
+  - src/core/proposals/
+  - tests/security/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-003
+  - TEST-012
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement safe stdio MCP read/proposal surface'
+  - All mapped scenarios (SCN-FLD-05, SCN-ERR-04, SCN-ERR-05, SCN-ERR-06) have observed or explicitly owner-deferred
+    evidence
+  - Mapped gate GATE-SECURITY passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P07-01
+  objective: Implement Mozare Wiki/QMD read adapter with authority route and candidate capture
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - TECH/INTEGRATIONS.md
+  - AUTHORITY/02_SCENARIO_CASE_ATLAS.md
+  create_or_modify:
+  - src/server/adapters/
+  - src/web/
+  - tests/integration/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-010
+  - TEST-017
+  done_when:
+  - 'Task objective is demonstrably satisfied: Implement Mozare Wiki/QMD read adapter with authority route and candidate
+    capture'
+  - All mapped scenarios (SCN-EVD-01, SCN-EVD-02, SCN-EVD-03, SCN-EVD-04, SCN-X-08) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-INTEGRATION passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P08-01
+  objective: Harden responsive navigation/layout across required matrix
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/layout-contracts.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - src/web/
+  - tests/e2e/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-014
+  done_when:
+  - 'Task objective is demonstrably satisfied: Harden responsive navigation/layout across required matrix'
+  - All mapped scenarios (SCN-RSP-01, SCN-RSP-02, SCN-RSP-03, SCN-RSP-04, SCN-RSP-05, SCN-X-03) have observed or
+    explicitly owner-deferred evidence
+  - Mapped gate GATE-RESPONSIVE passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P08-02
+  objective: Harden keyboard, focus, reduced motion and bidi handling
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/layout-contracts.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - src/web/
+  - tests/e2e/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-015
+  - TEST-016
+  done_when:
+  - 'Task objective is demonstrably satisfied: Harden keyboard, focus, reduced motion and bidi handling'
+  - All mapped scenarios (SCN-A11Y-01, SCN-A11Y-02, SCN-A11Y-03, SCN-BIDI-01, SCN-X-04) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-A11Y passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P08-03
+  objective: Close path/process/secret/preview/loopback security tests
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md
+  - UI/layout-contracts.md
+  - QA/CLAUDE_QA_CONTRACT.md
+  create_or_modify:
+  - src/web/
+  - tests/e2e/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-009
+  - TEST-012
+  done_when:
+  - 'Task objective is demonstrably satisfied: Close path/process/secret/preview/loopback security tests'
+  - All mapped scenarios (SCN-ERR-04, SCN-ERR-05, SCN-ERR-06, SCN-OUT-03, SCN-X-07) have observed or explicitly
+    owner-deferred evidence
+  - Mapped gate GATE-SECURITY passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P09-01
+  objective: Create Windows launchers and recovery diagnostics
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/LAUNCH_MANIFEST.yaml
+  - QA/CLAUDE_QA_CONTRACT.md
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  create_or_modify:
+  - scripts/
+  - START_MOZARE.cmd
+  - tests/e2e/
+  - evidence/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-013
+  - TEST-017
+  done_when:
+  - 'Task objective is demonstrably satisfied: Create Windows launchers and recovery diagnostics'
+  - All mapped scenarios (SCN-ORI-01, SCN-LOC-01, SCN-LOC-02) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-WINDOWS passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P09-02
+  objective: Execute real Mozare project pilot and measure value criteria
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/LAUNCH_MANIFEST.yaml
+  - QA/CLAUDE_QA_CONTRACT.md
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  create_or_modify:
+  - scripts/
+  - START_MOZARE.cmd
+  - tests/e2e/
+  - evidence/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-018
+  done_when:
+  - 'Task objective is demonstrably satisfied: Execute real Mozare project pilot and measure value criteria'
+  - All mapped scenarios (SCN-ORI-03) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-PILOT passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P09-03
+  objective: Freeze exact release candidate and produce release evidence/docs
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  - EXECUTION/LAUNCH_MANIFEST.yaml
+  - QA/CLAUDE_QA_CONTRACT.md
+  - EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md
+  create_or_modify:
+  - scripts/
+  - START_MOZARE.cmd
+  - tests/e2e/
+  - evidence/
+  must_preserve:
+  - Canonical project truth stays outside transcripts and derived caches
+  - Consequential mutations cross proposal/review authority
+  - Existing dirty user work and external authority are never overwritten silently
+  implementation_steps:
+  - Load only this card, its exact DAG scenarios/oracles, and listed required reads
+  - Characterize current behavior with the smallest failing or baseline test
+  - Implement the smallest change that satisfies the task objective and frozen authority
+  - Run this card tests plus adjacent critical gate checks
+  - Write structured handoff with changed paths, observed evidence, residual risks and candidate identity
+  tests:
+  - TEST-018
+  done_when:
+  - 'Task objective is demonstrably satisfied: Freeze exact release candidate and produce release evidence/docs'
+  - All mapped scenarios (none) have observed or explicitly owner-deferred evidence
+  - Mapped gate GATE-FULL passes for the frozen candidate
+  stop_if:
+  - Required authority files disagree on a consequential behavior
+  - A destructive or canonical mutation lacks an explicit reversible/transactional path
+  - The task would require changing protected product meaning rather than implementation
+  handoff:
+  - Exact git SHA/build identity
+  - Changed files and externally visible behavior
+  - Commands/tests actually run and observed outcomes
+  - Open blockers/quality risks without claiming them passed

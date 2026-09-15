@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/handoff.schema.json",
+  "title": "Mozare Agent Handoff",
+  "type": "object",
+  "required": [
+    "run_id",
+    "state",
+    "summary",
+    "system_view",
+    "changed",
+    "decisions",
+    "tests",
+    "artifacts",
+    "technical_terms",
+    "blockers",
+    "open_questions",
+    "next_action"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "state": {
+      "enum": [
+        "completed",
+        "partial",
+        "failed",
+        "stopped",
+        "needs_review"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800
+    },
+    "system_view": {
+      "type": "object",
+      "required": [
+        "intent",
+        "behavior",
+        "architecture",
+        "implementation",
+        "verification"
+      ],
+      "properties": {
+        "intent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "behavior": {
+          "type": "string",
+          "minLength": 1
+        },
+        "architecture": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "implementation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "changed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "target",
+          "summary"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "file",
+              "object",
+              "relation",
+              "config",
+              "artifact",
+              "other"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "decision",
+          "rationale"
+        ],
+        "properties": {
+          "decision": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "reversible": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "skipped",
+              "not_run"
+            ]
+          },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "ref"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "canonicality": {
+            "enum": [
+              "canonical",
+              "generated",
+              "temporary",
+              "external"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "technical_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "term",
+          "plain_system_meaning",
+          "why_it_matters"
+        ],
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "plain_system_meaning": {
+            "type": "string"
+          },
+          "why_it_matters": {
+            "type": "string"
+          },
+          "exact_detail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authority_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "scenario_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "oracle_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "observed_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/oracle.schema.json",
+  "title": "QA Oracle",
+  "type": "object",
+  "required": [
+    "id",
+    "revision",
+    "basis",
+    "statement",
+    "risk"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ORACLE-"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "basis": {
+      "enum": [
+        "AUTH",
+        "DERIVED",
+        "STANDARD",
+        "HEURISTIC"
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "statement": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "risk": {
+      "enum": [
+        "critical",
+        "high",
+        "normal",
+        "low"
+      ]
+    },
+    "divergence": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

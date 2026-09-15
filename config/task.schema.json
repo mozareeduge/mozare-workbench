@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mozare.local/schemas/task.schema.json",
+  "title": "Execution Task",
+  "type": "object",
+  "required": [
+    "id",
+    "objective",
+    "deps",
+    "scenarios",
+    "oracles",
+    "gate"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^TASK-"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "deps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "oracles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "affected_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "protected_neighbors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gate": {
+      "type": "string"
+    },
+    "done_condition": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

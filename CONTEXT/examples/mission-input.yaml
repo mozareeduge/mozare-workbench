@@ -1,0 +1,13 @@
+mission_id: MIS-DEMO-01
+profile: technical
+budget: normal_mission
+objective: Repair mobile Review interaction while preserving accepted desktop behavior.
+authority: [MWB-PD-2026-09-15-r3]
+items:
+  - {ref: DEC-014, level: L2, critical: true, text: "Responsive interaction transforms rather than hides capability; mobile is focused single-pane work."}
+  - {ref: SCN-RSP-04, level: L2, critical: true, text: "Primary review actions remain reachable at mobile width."}
+  - {ref: OBJ-REVIEW, level: L1, critical: true, text: "Human review queue/detail and decision boundary."}
+  - {ref: FILE-review, level: L1, critical: false, text: "src/review/*"}
+  - {ref: HISTORY-long, level: L2, critical: false, text: "Long unrelated historical research discussion that should be compacted away from a technical mission."}
+  - {ref: DEC-014, level: L1, critical: true, text: "Duplicate shorter responsive decision."}
+expansion_handles: [DEC-014, SCN-RSP-04, OBJ-REVIEW]

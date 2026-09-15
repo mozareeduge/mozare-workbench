@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContextSnapshot",
+  "type": "object",
+  "required": [
+    "id",
+    "project_id",
+    "created_at",
+    "authority_snapshot",
+    "fingerprints"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "authority_snapshot": {
+      "type": "string"
+    },
+    "fingerprints": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+id: rel_20260914_example01
+project_id: example-artistic-research
+participants:
+  - q_20260914_example01
+  - src_20260914_example01
+relation_type: null
+classification_state: unsettled
+descriptors:
+  - possible-grounding
+  - needs-interpretation
+evidence_state: candidate
+evidence_refs:
+  - src_20260914_example01
+counterevidence_refs: []
+uncertainty: The source is relevant, but the exact design implication remains unsettled.
+use_status: exploratory
+use_contexts:
+  - design-research
+claimability: blocked
+origin:
+  kind: human
+history_event_refs: []

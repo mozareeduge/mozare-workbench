@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceCapsule",
+  "type": "object",
+  "required": [
+    "id",
+    "source_id",
+    "source_sha256",
+    "parser_contract",
+    "authority_metadata_hash",
+    "schema_contract",
+    "last_full_read_run",
+    "compact",
+    "valid"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "parser_contract": {
+      "type": "string"
+    },
+    "authority_metadata_hash": {
+      "type": "string"
+    },
+    "schema_contract": {
+      "type": "string"
+    },
+    "last_full_read_run": {
+      "type": "string"
+    },
+    "compact": {
+      "type": "string"
+    },
+    "claim_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "excerpt_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "invalidation_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
