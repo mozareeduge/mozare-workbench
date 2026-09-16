@@ -16,3 +16,5 @@ workspace.local.yaml
 .env.*
 *.pem
 *.key
+.claude/sessions/
+.claude/state/
