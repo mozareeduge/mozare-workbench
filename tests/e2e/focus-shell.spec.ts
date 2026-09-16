@@ -5,3 +5,21 @@ test('Focus provides explicit empty and blocked orientation rather than fabricat
 test('TEST-014: navigation transforms and no page overflows across supported widths', async ({ page }) => { const nav = page.locator('.shell-nav'); for (const width of widths) { await page.setViewportSize({ width, height: width < 700 ? 700 : 900 }); await page.goto('/'); expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy(); for (const item of ['Focus', 'Field', 'Flow', 'Review', 'Output']) await expect(nav.getByRole('button', { name: item, exact: true })).toBeVisible(); } await page.setViewportSize({ width: 1024, height: 768 }); await page.goto('/'); await page.evaluate(() => { document.documentElement.style.zoom = '2'; }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy(); for (const item of ['Field', 'Flow', 'Review', 'Output']) { await nav.getByRole('button', { name: item, exact: true }).click(); await expect(page.getByRole('heading', { name: new RegExp(item, 'i') })).toBeVisible(); } await page.setViewportSize({ width: 320, height: 700 }); await page.goto('/'); await page.evaluate(() => { document.body.style.minWidth = '999px'; }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeFalsy(); });
 test('TEST-003: Field preserves unsettled relation semantics and exposes derived layout', async ({ page }) => { await page.goto('/'); await page.getByRole('button', { name: 'Field', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Field' })).toBeVisible(); await page.getByRole('button', { name: 'Inspect unsettled relation' }).click(); for (const item of ['Participants', 'Classification', 'Relation statement', 'Evidence for', 'Uncertainty', 'Use', 'History']) await expect(page.getByText(item, { exact: true })).toBeVisible(); await expect(page.getByText('Unsettled', { exact: true }).first()).toBeVisible(); await expect(page.getByText(/layout changes are derived display state only/i)).toBeVisible(); await page.screenshot({ path: 'test-results/TEST-003-field.png', fullPage: true }); });
 test('TEST-015: Field provides a keyboard-operable list alternative', async ({ page }) => { await page.goto('/'); await page.getByRole('button', { name: 'Field', exact: true }).click(); await page.getByRole('button', { name: 'List', exact: true }).press('Enter'); await expect(page.getByRole('list', { name: 'Field relation list' })).toBeVisible(); await page.getByRole('button', { name: 'Inspect relation' }).focus(); await page.keyboard.press('Enter'); await expect(page.getByText('Uncertainty', { exact: true })).toBeVisible(); await expect(page.locator('.field-inspector')).toBeFocused({ timeout: 1 }).catch(() => undefined); });
+test('SCN-FLD-05: connecting two nodes creates a relation proposal only, and cancel is easy', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Field', exact: true }).click();
+  await page.getByRole('button', { name: 'Connect', exact: true }).click();
+  await expect(page.getByText(/connect mode: choose two objects/i)).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText(/connect mode: choose two objects/i)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Connect', exact: true }).click();
+  await page.getByRole('button', { name: /How can this relation become an operational design experiment/ }).click();
+  await page.getByRole('button', { name: /Primary source fragment/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Propose a relation' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel('Relation descriptor (optional)').fill('supports');
+  await dialog.getByRole('button', { name: 'Create proposal' }).click();
+  await expect(page.getByText(/relation proposal created between/i)).toBeVisible();
+  await expect(page.getByText(/no canonical relation was written/i)).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Pending relation proposals' })).toContainText('Pending review');
+});
