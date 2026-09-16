@@ -1,5 +1,11 @@
 # CLAUDE.md — Mozare Workbench v0.3
 
+For a resumed implementation handoff, read
+`EXECUTION/ALTERNATE_HARNESS_HANDOFF.md` and
+`EXECUTION/CLAUDE_CODE_TRANSFER_PROMPT.md` before taking task action. The
+execution-loop state, not this file or prior chat, decides whether to resume an
+active task or start the next ready task.
+
 Primary mission: execute `EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md` through `CANDIDATE_READY_FOR_REVIEW`.
 
 Read `START_HERE_PROMPT.md` first. Do not use `HISTORICAL/` as current authority.
