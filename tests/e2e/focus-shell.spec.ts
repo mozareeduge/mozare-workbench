@@ -23,3 +23,39 @@ test('SCN-FLD-05: connecting two nodes creates a relation proposal only, and can
   await expect(page.getByText(/no canonical relation was written/i)).toBeVisible();
   await expect(page.getByRole('list', { name: 'Pending relation proposals' })).toContainText('Pending review');
 });
+test('TEST-019: Flow outcome hierarchy — lanes, nested subtasks, blocker route, Review distinct from Accepted', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Flow', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Flow' })).toBeVisible();
+  const board = page.locator('.flow-board');
+  for (const lane of ['Ready', 'Active', 'Blocked', 'Review', 'Accepted']) await expect(board.getByRole('heading', { name: new RegExp(`^${lane}`) })).toBeVisible();
+
+  const activeLane = board.locator('.flow-lane', { has: page.getByRole('heading', { name: /^Active/ }) });
+  await expect(activeLane.getByText('Rhythm comparison pass v2')).toBeVisible();
+  await expect(activeLane.getByText('2/3 subtasks complete')).toBeVisible();
+  await expect(activeLane.getByText('Cross-check rhythmic markers')).toBeHidden();
+  await activeLane.locator('summary').click();
+  await expect(activeLane.getByText('Cross-check rhythmic markers')).toBeVisible();
+
+  const blockedLane = board.locator('.flow-lane', { has: page.getByRole('heading', { name: /^Blocked/ }) });
+  await expect(blockedLane.getByText(/source reference for the verse 3 annotation/i)).toBeVisible();
+  await expect(blockedLane.getByRole('button', { name: 'Open repair route' })).toBeVisible();
+
+  const reviewLane = board.locator('.flow-lane', { has: page.getByRole('heading', { name: /^Review/ }) });
+  await expect(reviewLane.getByText('Verse 3 listening cut render')).toBeVisible();
+  await expect(reviewLane.getByText(/awaiting review, not yet accepted/i)).toBeVisible();
+  const acceptedLane = board.locator('.flow-lane', { has: page.getByRole('heading', { name: /^Accepted/ }) });
+  await expect(acceptedLane.getByText('Verse 3 listening cut render')).toHaveCount(0);
+  await expect(acceptedLane.getByText('Keep the vocal trace audible')).toBeVisible();
+  await page.screenshot({ path: 'test-results/TEST-019-flow-1440x900.png', fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(board).toBeHidden();
+  const mobile = page.locator('.flow-mobile');
+  await expect(mobile).toBeVisible();
+  await mobile.getByRole('tab', { name: /^Blocked/ }).click();
+  await expect(mobile.getByText(/source reference for the verse 3 annotation/i)).toBeVisible();
+  await expect(mobile.getByRole('button', { name: 'Open repair route' })).toBeVisible();
+  await page.screenshot({ path: 'test-results/TEST-019-flow-390x844.png', fullPage: true });
+});
