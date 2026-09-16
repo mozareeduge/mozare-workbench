@@ -19,3 +19,4 @@ workspace.local.yaml
 .claude/sessions/
 .claude/state/
 .claude/memory/
+.harness-mem/
