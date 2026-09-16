@@ -6,6 +6,7 @@ import './styles/app.css';
 import './styles/field.css';
 import './styles/flow.css';
 import './styles/output.css';
+import './styles/review.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
