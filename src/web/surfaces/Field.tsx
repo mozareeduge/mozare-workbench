@@ -1,5 +1,18 @@
 import { useRef, useState } from 'react';
-import { createRelationConnectProposal, type RelationConnectProposal } from '../../core/proposals/RelationProposal.js';
+import { createRelationConnectProposal, isProposalStale, type RelationConnectProposal } from '../../core/proposals/RelationProposal.js';
+
+/**
+ * Field stays fixture/demo data in Phase 1 (DEC-031a — real WorkspaceEngine
+ * wiring is TASK-P09-02's job). This constant stands in for "the canonical hash
+ * of the workspace Field's demo objects were proposed against" so the connect
+ * flow can exercise the same optimistic-concurrency shape (createRelationConnectProposal
+ * + isProposalStale) that the real transactional apply
+ * (src/core/proposals/applyRelationConnectProposal.ts) uses against a real
+ * canonical workspace. It never changes here, so the demo's Accept action is
+ * always fresh — the stale/disabled rendering path exists and is driven by the
+ * same shared predicate, it just isn't reachable from this static demo data.
+ */
+const DEMO_BASE_CANONICAL_HASH = 'demo-fixture-base-hash-v1';
 
 type Node = { id: string; type: string; title: string; state: string };
 const nodes: Node[] = [
@@ -21,6 +34,7 @@ export function Field() {
   const [descriptor, setDescriptor] = useState('');
   const [classification, setClassification] = useState('');
   const [proposals, setProposals] = useState<RelationConnectProposal[]>([]);
+  const [acceptedProposalIds, setAcceptedProposalIds] = useState<string[]>([]);
   const [receipt, setReceipt] = useState<string | null>(null);
 
   const openObject = (node: Node) => setSelected({ kind: 'object', value: node });
@@ -39,10 +53,15 @@ export function Field() {
   const confirmConnect = (event: React.FormEvent) => {
     event.preventDefault();
     if (!pending) return;
-    const proposal = createRelationConnectProposal({ projectId: 'workspace', participantIds: [pending.source.id, pending.target.id], descriptor, classification });
+    const proposal = createRelationConnectProposal({ projectId: 'workspace', participantIds: [pending.source.id, pending.target.id], descriptor, classification, baseCanonicalHash: DEMO_BASE_CANONICAL_HASH });
     setProposals((old) => [...old, proposal]);
     setReceipt(`Relation proposal created between "${pending.source.title}" and "${pending.target.title}". It is pending review; no canonical relation was written.`);
     setPending(null); setDescriptor(''); setClassification(''); setConnect({ active: false, source: null });
+  };
+  const acceptProposal = (proposal: RelationConnectProposal) => {
+    if (isProposalStale(proposal, DEMO_BASE_CANONICAL_HASH)) return; // Accept stays disabled while stale; nothing to apply
+    setAcceptedProposalIds((old) => (old.includes(proposal.id) ? old : [...old, proposal.id]));
+    setReceipt(`Relation proposal between "${nodes.find((node) => node.id === proposal.participantIds[0])?.title}" and "${nodes.find((node) => node.id === proposal.participantIds[1])?.title}" was accepted.`);
   };
   const onSurfaceKeyDown = (event: React.KeyboardEvent) => {
     if (event.key !== 'Escape') return;
@@ -57,7 +76,19 @@ export function Field() {
     {receipt && <p className="connect-receipt" role="status">{receipt}</p>}
     <div className="field-layout"><div className="field-workspace">
       {mode === 'map' ? <div className={connect.active ? 'field-map is-connecting' : 'field-map'} aria-label="Relation map"><p className="field-legend"><span className="dash" aria-hidden="true" /> Unsettled relation — classification has not been inferred</p><div className="relation-line" aria-hidden="true" /><button className="relation-hit" type="button" onClick={() => setSelected({ kind: 'relation', value: relation })} aria-label="Inspect unsettled relation">Unsettled</button>{nodes.map((node, index) => <button key={node.id} type="button" className={`object-node ${node.id === nodes[0].id ? 'is-current' : ''} ${connect.source?.id === node.id ? 'is-connect-source' : ''}`} style={{ transform: `translate(${(positions[node.id]?.x ?? 0) + index * 255}px, ${(positions[node.id]?.y ?? 0) + (index ? 150 : 25)}px)` }} onClick={() => clickNode(node)} onPointerDown={connect.active ? undefined : (event) => startDrag(event, node)} onPointerMove={connect.active ? undefined : dragNode} onPointerUp={connect.active ? undefined : stopDrag}><span>{node.type}</span><strong>{node.title}</strong><small>{node.state}</small></button>)}</div> : <ul className="relation-list" aria-label="Field relation list">{nodes.map((node) => <li key={node.id}><button type="button" className={connect.source?.id === node.id ? 'is-connect-source' : ''} onClick={() => clickNode(node)}><span>{node.type}</span><strong>{node.title}</strong><small>{node.state}</small><em>{connect.active ? 'Choose for connect' : 'Inspect object'}</em></button></li>)}<li><button type="button" onClick={() => setSelected({ kind: 'relation', value: relation })}><span>Relation</span><strong>Unsettled relation</strong><small>{relation.participants.join(' ↔ ')}</small><em>Inspect relation</em></button></li></ul>}
-      {proposals.length > 0 && <ul className="field-proposals" aria-label="Pending relation proposals">{proposals.map((proposal) => <li key={proposal.id}><span>Pending review</span><strong>{nodes.find((node) => node.id === proposal.participantIds[0])?.title} ↔ {nodes.find((node) => node.id === proposal.participantIds[1])?.title}</strong>{proposal.descriptor && <small>{proposal.descriptor}</small>}</li>)}</ul>}
+      {proposals.length > 0 && <ul className="field-proposals" aria-label="Pending relation proposals">{proposals.map((proposal) => {
+        const accepted = acceptedProposalIds.includes(proposal.id);
+        const stale = isProposalStale(proposal, DEMO_BASE_CANONICAL_HASH);
+        return <li key={proposal.id}>
+          <span>{accepted ? 'Accepted' : 'Pending review'}</span>
+          <strong>{nodes.find((node) => node.id === proposal.participantIds[0])?.title} ↔ {nodes.find((node) => node.id === proposal.participantIds[1])?.title}</strong>
+          {proposal.descriptor && <small>{proposal.descriptor}</small>}
+          {!accepted && <div className="proposal-actions">
+            <button type="button" className="button-primary" disabled={stale} onClick={() => acceptProposal(proposal)}>Accept</button>
+            {stale && <p className="proposal-stale-warning" role="status">This proposal's base canonical state changed since it was created (expected base {proposal.baseCanonicalHash}, current base {DEMO_BASE_CANONICAL_HASH}). Re-evaluate or rebase before accepting.</p>}
+          </div>}
+        </li>;
+      })}</ul>}
     </div><aside className="field-inspector" aria-live="polite" aria-label="Field inspector">{selected.kind === 'object' ? <><p className="eyebrow">Object</p><h2>{selected.value.title}</h2><dl><dt>Type</dt><dd>{selected.value.type}</dd><dt>State</dt><dd>{selected.value.state}</dd></dl></> : <><p className="eyebrow">Relation</p><h2><span className="unsettled-label">Unsettled</span> relation</h2><dl><dt>Participants</dt><dd>{relation.participants.join(' ↔ ')}</dd><dt>Classification</dt><dd>Unsettled</dd><dt>Relation statement</dt><dd>{relation.statement}</dd><dt>Evidence for</dt><dd>{relation.evidence}</dd><dt>Uncertainty</dt><dd>{relation.uncertainty}</dd><dt>Use</dt><dd>{relation.use}</dd><dt>History</dt><dd>{relation.history}</dd></dl></>}</aside></div>
     {pending && <div className="connect-dialog-overlay"><div className="connect-dialog" role="dialog" aria-modal="true" aria-labelledby="connect-dialog-heading" onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); setPending(null); } }}>
       <h2 id="connect-dialog-heading">Propose a relation</h2>
