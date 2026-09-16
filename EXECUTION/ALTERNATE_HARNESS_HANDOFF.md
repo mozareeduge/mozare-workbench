@@ -90,12 +90,13 @@ lifecycle), `TASK-P03-02` (Review UI), `TASK-P04-01` (Git evidence),
 deterministic fake adapter), `TASK-P05-03` (real Claude Code adapter only for
 Phase 1 — see `DEC-031b`; Codex/Hermes wiring deferred).
 
-Before/alongside `TASK-P02-03`, `DEC-031a` also calls for replacing the mock
-literals in `src/web/App.tsx` and `src/web/surfaces/Field.tsx` with a real
-canonical `TAROKE RIMIXER` fixture workspace read through the existing
-`WorkspaceEngine`/`ProjectProjection` and served over a new read-only route —
-this is completion of `TASK-P01-01`/`TASK-P01-02`/`TASK-P02-01`'s own already
-accepted scope, not a new task ID.
+`DEC-031a` (revised 2026-09-16) keeps live `WorkspaceEngine`-backed data
+wiring out of Phase 1: each surface task's own card/tests (e.g. `TASK-P02-03`'s
+`TEST-019` explicitly tests against loaded fixtures) already specify
+fixture/demo data, and none of their `done_when` blocks require a live server
+round-trip. Do not add that scope to any Phase-1 task. Real canonical project
+data is `TASK-P09-02`'s job (the real pilot), which is already in the DAG for
+exactly this purpose and remains owner-gated per `DEC-017`.
 
 **Phase 2 (deferred):** `TASK-P04-02` (SystemLadder/TechnicalTerm polish),
 `TASK-P05-04`..`TASK-P05-06` (RepresentationPlanner/OpenUI GenUI),
