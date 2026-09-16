@@ -1,0 +1,30 @@
+.output-surface{max-width:none}.output-heading{display:flex;justify-content:space-between;gap:var(--s-5);align-items:start;margin-bottom:var(--s-4)}.output-heading h1{margin:0;font-size:var(--text-display)}.output-heading p:not(.eyebrow){margin:var(--s-2) 0 0;color:var(--c-ink-2)}
+.output-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);margin:0;padding:0;list-style:none}
+.artifact-tile{display:grid;grid-template-rows:auto 1fr;min-width:0;height:100%;border:1px solid var(--c-line);border-radius:var(--r-card);overflow:hidden;background:var(--c-surface-raised)}
+.artifact-preview{position:relative;display:grid;place-items:center;min-height:150px;padding:var(--s-3);background:var(--c-canvas);overflow:hidden}
+.artifact-preview img{max-width:100%;max-height:160px;border-radius:var(--r-control)}
+.artifact-preview audio,.artifact-preview video{width:100%}
+.artifact-preview-empty{margin:0;color:var(--c-ink-3);font-size:var(--text-small)}
+.artifact-preview-text{align-items:start;justify-items:stretch}.artifact-preview-text pre{width:100%;max-height:160px;margin:0;padding:var(--s-3);overflow:auto;border-radius:var(--r-control);background:var(--c-surface);color:var(--c-ink-2);font-size:var(--text-small);white-space:pre-wrap;overflow-wrap:anywhere}
+.artifact-preview-binary{gap:var(--s-2)}.artifact-binary-glyph{margin:0;font-size:2rem;color:var(--c-ink-3)}.artifact-binary-note{margin:0;max-width:26ch;color:var(--c-ink-2);font-size:var(--text-small);text-align:center}
+.artifact-preview-html{display:grid;gap:var(--s-2);width:100%;padding:var(--s-2)}
+.artifact-html-frame{width:100%;height:160px;border:1px solid var(--c-line);border-radius:var(--r-control);background:#fff}
+.artifact-sandbox-note{margin:0;color:var(--c-ink-3);font-size:var(--text-label)}
+.artifact-open-external{justify-self:start;min-height:32px;padding:0 var(--s-3);border:1px solid var(--c-accent);border-radius:var(--r-control);background:var(--c-surface-raised);color:var(--c-accent);font-weight:600}
+.artifact-pdf-frame{width:100%;height:160px;border:1px solid var(--c-line);border-radius:var(--r-control);background:#fff}
+.artifact-meta{display:grid;gap:var(--s-2);align-content:start;padding:var(--s-4)}
+.artifact-meta h3{margin:0;font-size:var(--text-body);line-height:1.35;overflow-wrap:anywhere}
+.artifact-badges{display:flex;flex-wrap:wrap;gap:var(--s-2);margin:0}
+.artifact-badge{display:inline-block;padding:2px 8px;border:1px solid var(--c-line-strong);border-radius:99px;color:var(--c-ink-2);font-size:var(--text-label);font-weight:700;letter-spacing:.04em}
+.artifact-badge.is-canonical{border-color:var(--c-accent);background:var(--c-accent-soft);color:var(--c-accent)}
+.artifact-verification-verified{border-color:var(--c-positive);background:var(--c-positive-soft);color:var(--c-positive)}
+.artifact-verification-unverified{border-color:var(--c-line-strong);background:var(--c-surface-inset);color:var(--c-ink-2)}
+.artifact-verification-failed{border-color:var(--c-danger);background:var(--c-danger-soft);color:var(--c-danger)}
+.artifact-lineage{margin:0;color:var(--c-ink-3);font-size:var(--text-small)}
+.artifact-lineage-link{padding:0;border:0;background:transparent;color:var(--c-accent);font-size:var(--text-small);font-weight:600;text-align:left;text-decoration:underline;cursor:pointer}
+.artifact-technical{display:grid;grid-template-columns:auto 1fr;gap:2px var(--s-2);margin:0}
+.artifact-technical dt{color:var(--c-ink-3);font-size:var(--text-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.artifact-technical dd{margin:0;overflow-wrap:anywhere;color:var(--c-ink-2);font-size:var(--text-small);font-family:var(--font-mono, monospace)}
+.artifact-primary-action{margin:var(--s-1) 0 0;color:var(--c-ink-3);font-size:var(--text-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:1100px){.output-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.output-heading{display:grid}.output-gallery{grid-template-columns:minmax(0,1fr)}}
