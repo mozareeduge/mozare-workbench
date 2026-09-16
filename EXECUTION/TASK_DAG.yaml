@@ -8,6 +8,7 @@ tasks:
   oracles:
   - ORACLE-043
   gate: GATE-PACKAGE
+  phase: complete
 - id: TASK-P00-02
   objective: Scaffold TypeScript server and React/Vite web application with lockfile
   deps:
@@ -16,6 +17,7 @@ tasks:
   oracles:
   - ORACLE-044
   gate: GATE-UNIT
+  phase: complete
 - id: TASK-P00-03
   objective: Port schemas, fixtures, validation and canonical/derived directory rules
   deps:
@@ -26,15 +28,16 @@ tasks:
   oracles:
   - ORACLE-001
   gate: GATE-INTEGRATION
+  phase: complete
 - id: TASK-P00-04
-  objective: Establish trustworthy unit/integration/E2E test harness with failing
-    canary
+  objective: Establish trustworthy unit/integration/E2E test harness with failing canary
   deps:
   - TASK-P00-03
   scenarios: []
   oracles:
   - ORACLE-041
   gate: GATE-UNIT
+  phase: complete
 - id: TASK-P01-01
   objective: Implement WorkspaceEngine and ProjectProjection
   deps:
@@ -49,6 +52,7 @@ tasks:
   - ORACLE-002
   - ORACLE-003
   gate: GATE-INTEGRATION
+  phase: complete
 - id: TASK-P01-02
   objective: Implement production shell and Focus surface to design authority
   deps:
@@ -68,6 +72,7 @@ tasks:
   - ORACLE-020
   - ORACLE-025
   gate: GATE-E2E
+  phase: complete
 - id: TASK-P02-01
   objective: Implement Field graph/list, relation inspection and derived layout state
   deps:
@@ -85,6 +90,7 @@ tasks:
   - ORACLE-005
   - ORACLE-021
   gate: GATE-E2E
+  phase: complete
 - id: TASK-P02-02
   objective: Implement relation proposal connect mode
   deps:
@@ -94,6 +100,7 @@ tasks:
   oracles:
   - ORACLE-006
   gate: GATE-INTEGRATION
+  phase: complete
 - id: TASK-P02-03
   objective: Implement outcome-level Flow
   deps:
@@ -107,6 +114,7 @@ tasks:
   - ORACLE-025
   - ORACLE-042
   gate: GATE-E2E
+  phase: 1
 - id: TASK-P02-04
   objective: Implement artifact registry, Output surface and safe previewers
   deps:
@@ -122,9 +130,9 @@ tasks:
   - ORACLE-014
   - ORACLE-027
   gate: GATE-SECURITY
+  phase: 1
 - id: TASK-P03-01
-  objective: Implement proposal lifecycle, stale base and transactional canonical
-    apply
+  objective: Implement proposal lifecycle, stale base and transactional canonical apply
   deps:
   - TASK-P01-01
   scenarios:
@@ -137,6 +145,7 @@ tasks:
   - ORACLE-011
   - ORACLE-012
   gate: GATE-INTEGRATION
+  phase: 1
 - id: TASK-P03-02
   objective: Implement Review queue/detail/decision UI and evidence provenance
   deps:
@@ -157,6 +166,7 @@ tasks:
   - ORACLE-009
   - ORACLE-010
   gate: GATE-E2E
+  phase: 1
 - id: TASK-P04-01
   objective: Implement Git registry/status/diff/test evidence and worktree safety
   deps:
@@ -170,6 +180,7 @@ tasks:
   - ORACLE-010
   - ORACLE-017
   gate: GATE-INTEGRATION
+  phase: 1
 - id: TASK-P04-02
   objective: Implement SystemLadder and TechnicalTerm translation
   deps:
@@ -182,9 +193,9 @@ tasks:
   - ORACLE-016
   - ORACLE-026
   gate: GATE-E2E
+  phase: 2
 - id: TASK-P04-03
-  objective: Implement ContextCompiler, resolution handles, budgets, deduplication
-    and profile-scoped packets
+  objective: Implement ContextCompiler, resolution handles, budgets, deduplication and profile-scoped packets
   deps:
   - TASK-P01-01
   scenarios:
@@ -197,9 +208,9 @@ tasks:
   - ORACLE-029
   - ORACLE-030
   gate: GATE-CONTEXT
+  phase: 1
 - id: TASK-P04-04
-  objective: Implement checksum-bound CapsuleStore, source reopening triggers, snapshots
-    and delta context
+  objective: Implement checksum-bound CapsuleStore, source reopening triggers, snapshots and delta context
   deps:
   - TASK-P04-03
   scenarios:
@@ -211,6 +222,7 @@ tasks:
   - ORACLE-031
   - ORACLE-033
   gate: GATE-CONTEXT
+  phase: 1
 - id: TASK-P04-05
   objective: Implement capability-tier ModelRouter and privacy-bounded token telemetry
   deps:
@@ -227,6 +239,7 @@ tasks:
   - ORACLE-039
   - ORACLE-040
   gate: GATE-TOKEN
+  phase: 1
 - id: TASK-P05-01
   objective: Implement MissionSheet and mission packet builder
   deps:
@@ -240,6 +253,7 @@ tasks:
   oracles:
   - ORACLE-007
   gate: GATE-E2E
+  phase: 1
 - id: TASK-P05-02
   objective: Implement common agent lifecycle using deterministic fake adapter
   deps:
@@ -255,9 +269,9 @@ tasks:
   - ORACLE-008
   - ORACLE-028
   gate: GATE-ADAPTER
+  phase: 1
 - id: TASK-P05-03
-  objective: Implement Claude, Codex and Hermes adapters with graceful unavailable
-    state
+  objective: Implement Claude, Codex and Hermes adapters with graceful unavailable state
   deps:
   - TASK-P04-05
   - TASK-P05-02
@@ -267,9 +281,9 @@ tasks:
   oracles:
   - ORACLE-023
   gate: GATE-ADAPTER
+  phase: 1
 - id: TASK-P05-04
-  objective: Implement RepresentationPlanner, action registry and deterministic semantic
-    compositions
+  objective: Implement RepresentationPlanner, action registry and deterministic semantic compositions
   deps:
   - TASK-P01-02
   - TASK-P04-03
@@ -280,9 +294,9 @@ tasks:
   - ORACLE-032
   - ORACLE-035
   gate: GATE-GENUI
+  phase: 2
 - id: TASK-P05-05
-  objective: Implement OpenUI semantic micro-libraries, bounded generation and deterministic
-    fallback
+  objective: Implement OpenUI semantic micro-libraries, bounded generation and deterministic fallback
   deps:
   - TASK-P05-04
   - TASK-P04-05
@@ -297,6 +311,7 @@ tasks:
   - ORACLE-036
   - ORACLE-038
   gate: GATE-GENUI
+  phase: 2
 - id: TASK-P05-06
   objective: Integrate generated actions through read/proposal-only authority boundary
   deps:
@@ -307,6 +322,7 @@ tasks:
   oracles:
   - ORACLE-037
   gate: GATE-SECURITY
+  phase: 2
 - id: TASK-P06-01
   objective: Implement safe stdio MCP read/proposal surface
   deps:
@@ -321,9 +337,9 @@ tasks:
   - ORACLE-006
   - ORACLE-018
   gate: GATE-SECURITY
+  phase: 2
 - id: TASK-P07-01
-  objective: Implement Mozare Wiki/QMD read adapter with authority route and candidate
-    capture
+  objective: Implement Mozare Wiki/QMD read adapter with authority route and candidate capture
   deps:
   - TASK-P06-01
   scenarios:
@@ -336,6 +352,7 @@ tasks:
   - ORACLE-015
   - ORACLE-023
   gate: GATE-INTEGRATION
+  phase: 2
 - id: TASK-P08-01
   objective: Harden responsive navigation/layout across required matrix
   deps:
@@ -354,6 +371,7 @@ tasks:
   - ORACLE-020
   - ORACLE-025
   gate: GATE-RESPONSIVE
+  phase: 2
 - id: TASK-P08-02
   objective: Harden keyboard, focus, reduced motion and bidi handling
   deps:
@@ -368,6 +386,7 @@ tasks:
   - ORACLE-021
   - ORACLE-022
   gate: GATE-A11Y
+  phase: 2
 - id: TASK-P08-03
   objective: Close path/process/secret/preview/loopback security tests
   deps:
@@ -385,6 +404,7 @@ tasks:
   - ORACLE-019
   - ORACLE-027
   gate: GATE-SECURITY
+  phase: 2
 - id: TASK-P09-01
   objective: Create Windows launchers and recovery diagnostics
   deps:
@@ -398,6 +418,7 @@ tasks:
   - ORACLE-019
   - ORACLE-023
   gate: GATE-WINDOWS
+  phase: 2
 - id: TASK-P09-02
   objective: Execute real Mozare project pilot and measure value criteria
   deps:
@@ -408,6 +429,7 @@ tasks:
   oracles:
   - ORACLE-024
   gate: GATE-PILOT
+  phase: 2
 - id: TASK-P09-03
   objective: Freeze exact release candidate and produce release evidence/docs
   deps:
@@ -416,3 +438,4 @@ tasks:
   scenarios: []
   oracles: []
   gate: GATE-FULL
+  phase: 2

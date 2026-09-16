@@ -72,20 +72,46 @@ Full structured results remain in
 `.git/mozare-workbench-execution/handoffs/TASK-P00-01.json` through
 `TASK-P02-01.json`. The state history records every start and completion.
 
-## Remaining DAG
+## Remaining DAG and MVP phase split
 
-1. Project instrument: `TASK-P02-02`, `TASK-P02-03`, `TASK-P02-04`,
-   `TASK-P03-01`, `TASK-P03-02`.
-2. Agent economy: `TASK-P04-01` through `TASK-P04-05`, then
-   `TASK-P05-01` through `TASK-P05-06`, and `TASK-P06-01`.
-3. Integration/hardening: `TASK-P07-01`, `TASK-P08-01`, `TASK-P08-02`,
-   `TASK-P08-03`.
-4. Candidate closure: `TASK-P09-01`, real-project pilot `TASK-P09-02`, and
-   release-candidate freeze/evidence `TASK-P09-03`.
+Owner decision `DEC-031` (`AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md`,
+2026-09-16) splits the remaining 23 tasks into a functional-MVP Phase 1 and a
+deferred Phase 2, tagged `phase: 1` / `phase: 2` (`phase: complete` for the 8
+already done) on every task in `EXECUTION/TASK_DAG.yaml`. This reorders
+priority only; it does not reopen any closed `AUTHORITY/00_PRODUCT_HORIZON.md`
+decision or scenario, and `scripts/execution_loop.py` still resolves the next
+ready task exactly as before (dependency order is unchanged).
+
+**Phase 1 (functional MVP, run next, in this DAG-enforced order):**
+`TASK-P02-03` (Flow), `TASK-P02-04` (Output), `TASK-P03-01` (proposal
+lifecycle), `TASK-P03-02` (Review UI), `TASK-P04-01` (Git evidence),
+`TASK-P04-03` (ContextCompiler), `TASK-P04-04` (CapsuleStore), `TASK-P04-05`
+(ModelRouter), `TASK-P05-01` (MissionSheet), `TASK-P05-02` (agent lifecycle,
+deterministic fake adapter), `TASK-P05-03` (real Claude Code adapter only for
+Phase 1 — see `DEC-031b`; Codex/Hermes wiring deferred).
+
+Before/alongside `TASK-P02-03`, `DEC-031a` also calls for replacing the mock
+literals in `src/web/App.tsx` and `src/web/surfaces/Field.tsx` with a real
+canonical `TAROKE RIMIXER` fixture workspace read through the existing
+`WorkspaceEngine`/`ProjectProjection` and served over a new read-only route —
+this is completion of `TASK-P01-01`/`TASK-P01-02`/`TASK-P02-01`'s own already
+accepted scope, not a new task ID.
+
+**Phase 2 (deferred):** `TASK-P04-02` (SystemLadder/TechnicalTerm polish),
+`TASK-P05-04`..`TASK-P05-06` (RepresentationPlanner/OpenUI GenUI),
+`TASK-P06-01` (MCP surface), `TASK-P07-01` (Wiki/QMD adapter), `TASK-P08-01`
+through `TASK-P08-03` (responsive/a11y/security hardening matrix),
+`TASK-P09-01` (Windows launchers/recovery diagnostics), plus full Codex/Hermes
+adapter completion for `TASK-P05-03`.
+
+`TASK-P09-02` (real-project pilot) and `TASK-P09-03` (release-candidate
+freeze/evidence) remain owner-gated regardless of phase — never fabricate
+pilot or owner-acceptance evidence for either.
 
 Exact dependencies, objectives, scenarios, oracles and gates are authoritative
 in `EXECUTION/TASK_DAG.yaml`; exact per-task bounds are in
-`EXECUTION/TASK_CARDS.yaml`. Never infer them from the short list above.
+`EXECUTION/TASK_CARDS.yaml` (unchanged — its schema does not carry a `phase`
+field). Never infer them from the short list above.
 
 ## Known residuals, not blockers
 
