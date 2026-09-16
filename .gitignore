@@ -18,3 +18,4 @@ workspace.local.yaml
 *.key
 .claude/sessions/
 .claude/state/
+.claude/memory/
