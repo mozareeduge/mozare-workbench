@@ -1,5 +1,5 @@
 import { realpathSync, statSync } from 'node:fs';
-import { basename, isAbsolute, relative, resolve, sep } from 'node:path';
+import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { ProcessRunner } from '../process/ProcessRunner.js';
 
 export type GitRepository = { id: string; root: string };

@@ -181,19 +181,6 @@ tasks:
   - ORACLE-017
   gate: GATE-INTEGRATION
   phase: 1
-- id: TASK-P04-02
-  objective: Implement SystemLadder and TechnicalTerm translation
-  deps:
-  - TASK-P04-01
-  scenarios:
-  - SCN-TEC-01
-  - SCN-TEC-02
-  - SCN-TEC-05
-  oracles:
-  - ORACLE-016
-  - ORACLE-026
-  gate: GATE-E2E
-  phase: 2
 - id: TASK-P04-03
   objective: Implement ContextCompiler, resolution handles, budgets, deduplication and profile-scoped packets
   deps:
@@ -282,6 +269,19 @@ tasks:
   - ORACLE-023
   gate: GATE-ADAPTER
   phase: 1
+- id: TASK-P04-02
+  objective: Implement SystemLadder and TechnicalTerm translation
+  deps:
+  - TASK-P04-01
+  scenarios:
+  - SCN-TEC-01
+  - SCN-TEC-02
+  - SCN-TEC-05
+  oracles:
+  - ORACLE-016
+  - ORACLE-026
+  gate: GATE-E2E
+  phase: 2
 - id: TASK-P05-04
   objective: Implement RepresentationPlanner, action registry and deterministic semantic compositions
   deps:
