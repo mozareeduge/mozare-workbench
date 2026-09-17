@@ -87,3 +87,108 @@ export type ExpansionResult = {
   pack: ContextPack;
   expansion: ExpansionOutcome;
 };
+
+/**
+ * Evidence capsule contracts (TASK-P04-04). Binding shapes live in
+ * CONTEXT/evidence-capsule.schema.json (additionalProperties: false) and
+ * CONTEXT/context-policy.yaml (validity fields + reopen triggers).
+ */
+export const CAPSULE_VALIDITY_FIELDS = [
+  'source_sha256',
+  'parser_contract',
+  'authority_metadata_hash',
+  'schema_contract',
+] as const;
+export type CapsuleValidityField = (typeof CAPSULE_VALIDITY_FIELDS)[number];
+
+export const CAPSULE_REOPEN_TRIGGERS = [
+  'new_intake_mentions_or_contradicts',
+  'relation_traversal',
+  'authority_or_version_change',
+  'parser_or_extraction_fidelity_change',
+  'systemic_or_architectural_claim',
+  'incomplete_low_confidence_or_stale',
+  'explicit_full_or_source_level',
+] as const;
+export type CapsuleReopenTrigger = (typeof CAPSULE_REOPEN_TRIGGERS)[number];
+
+export type EvidenceCapsule = {
+  id: string;
+  source_id: string;
+  source_sha256: string;
+  parser_contract: string;
+  authority_metadata_hash: string;
+  schema_contract: string;
+  last_full_read_run: string;
+  compact: string;
+  claim_refs?: string[];
+  excerpt_refs?: string[];
+  valid: boolean;
+  confidence?: number;
+  invalidation_reason?: string | null;
+};
+
+/** Observed fingerprint set for a source, compared against a capsule. */
+export type CapsuleFingerprints = {
+  source_sha256: string;
+  parser_contract: string;
+  authority_metadata_hash: string;
+  schema_contract: string;
+};
+
+export type CapsuleRoute = 'cache_hit' | 'source_level';
+
+/** Route decision for a judgment that needs a source (ORACLE-031). */
+export type CapsuleRouteDecision = {
+  route: CapsuleRoute;
+  should_reopen: boolean;
+  reason: string | null;
+  changed_fields: CapsuleValidityField[];
+  first_read_required: boolean;
+};
+
+export type CapsuleLookupResult = CapsuleRouteDecision & { capsule: EvidenceCapsule | null };
+
+/** Binding shape of CONTEXT/context-snapshot.schema.json. */
+export type ContextSnapshot = {
+  id: string;
+  project_id: string;
+  created_at: string;
+  authority_snapshot: string;
+  fingerprints: Record<string, string>;
+};
+
+export type SnapshotInput = {
+  project_id: string;
+  authority_snapshot: string;
+  fingerprints: Record<string, string>;
+};
+
+/** Binding shape of CONTEXT/context-delta.schema.json. */
+export type ContextDelta = {
+  id: string;
+  from_snapshot: string;
+  to_snapshot: string;
+  changed_refs: string[];
+  removed_refs?: string[];
+  summary?: string;
+};
+
+/**
+ * Delta-first continuation packet (TEST-CTX-04, SCN-CTX-05): only changed
+ * refs and unresolved dependencies — unchanged L2 history is not replayed.
+ * This is deliberately NOT a ContextPack (that schema forbids extra fields).
+ */
+export type ContinuationPacket = {
+  mission_id: string;
+  snapshot_id: string;
+  delta_id: string;
+  delta_summary: string;
+  items: Array<{
+    ref: string;
+    level: ContextLevel;
+    critical: boolean;
+    text: string;
+  }>;
+  unresolved: string[];
+};
