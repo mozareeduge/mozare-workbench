@@ -15,7 +15,7 @@ beforeEach(() => {
 
 describe('RunManager deterministic lifecycle (TASK-P05-02, SCN-MIS-04/05, ORACLE-008)', () => {
   it('starts a valid mission: queued then running, never replacing canonical state', () => {
-    const runs = new RunManager({ dir, adapter: new FakeAdapter() });
+    const runs = new RunManager({ dir, adapter: new FakeAdapter({ steps: 2 }) });
     const run = runs.start({ mission_id: 'MIS-LC-1', objective: 'compare readings' });
     expect(run.status).toBe('queued');
     const running = runs.tick(run.run_id);
