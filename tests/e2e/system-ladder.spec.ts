@@ -11,7 +11,7 @@ test('TEST-011: technical output shows system behavior first, terms explained, l
   await expect(ladder).toBeVisible();
 
   // SCN-TEC-01: Intent/Behavior come first; implementation detail is disclosed later.
-  const headings = ladder.getByRole('heading').allTextContents();
+  const headings = await ladder.getByRole('heading').allTextContents();
   expect(headings[0]).toMatch(/intent/i);
   expect(headings[1]).toMatch(/behavior/i);
   for (const later of ['Implementation', 'Verification']) {
@@ -22,7 +22,7 @@ test('TEST-011: technical output shows system behavior first, terms explained, l
   for (const line of intentText.split('\n')) expect(line.length).toBeLessThanOrEqual(70);
 
   // SCN-TEC-02: a technical term renders as a glossary chip with plain meaning.
-  const term = ladder.getByRole('button', { name: /ModelRouter/i });
+  const term = ladder.getByRole('button', { name: /ModelRouter/i }).first();
   await expect(term).toBeVisible();
   await term.click();
   await expect(page.getByRole('dialog', { name: /ModelRouter/i })).toBeVisible();
@@ -33,10 +33,10 @@ test('TEST-011: technical output shows system behavior first, terms explained, l
   const logDisclosure = ladder.getByRole('button', { name: /verification log/i });
   await expect(logDisclosure).toBeVisible();
   const logRegion = ladder.getByTestId('ladder-log');
-  await expect(logRegion).toHaveCount(1);
-  // Collapsed: content not rendered until expanded.
-  await expect(logRegion.getByText(/step diagnostic line/)).toHaveCount(0);
+  // Collapsed = truly lazy: no log content exists in the DOM until expanded.
+  await expect(logRegion).toHaveCount(0);
   await logDisclosure.click();
+  await expect(logRegion).toHaveCount(1);
   await expect(logRegion.getByText(/step diagnostic line/).first()).toBeVisible();
   // Main workspace stayed responsive throughout (no giant pre-rendered wall).
   await page.screenshot({ path: 'test-results/TEST-011-system-ladder.png', fullPage: true });
