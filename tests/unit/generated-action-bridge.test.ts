@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  GeneratedActionBridge,
-  registerAction,
-} from '../../src/core/representation/GeneratedActionBridge.js';
+import { GeneratedActionBridge } from '../../src/core/representation/GeneratedActionBridge.js';
+import { registerAction } from '../../src/core/representation/RepresentationPlanner.js';
 
 /**
  * TEST-GUI-03 (ORACLE-037, SCN-GUI-05). RED: generated actions may create

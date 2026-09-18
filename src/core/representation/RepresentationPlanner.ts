@@ -116,6 +116,9 @@ seed({ id: 'compare.side_by_side', intent: 'compare' });
 seed({ id: 'decide.sheet', intent: 'decide' });
 seed({ id: 'system.ladder', intent: 'system' });
 seed({ id: 'review.queue', intent: 'review' });
+// The one sanctioned state route: stage a proposal for human review
+// (ORACLE-037 — generated UI never mutates canonical truth directly).
+seed({ id: 'create_proposal', intent: 'review' });
 
 export const ACTION_REGISTRY: Map<string, SemanticAction> = registry;
 
