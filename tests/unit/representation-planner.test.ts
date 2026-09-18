@@ -6,6 +6,7 @@ import {
   registerAction,
   resolveAction,
   KNOWN_INTENTS,
+  type Intent,
 } from '../../src/core/representation/RepresentationPlanner.js';
 
 /**
@@ -60,7 +61,8 @@ describe('Micro-library selection (TEST-GUI-01)', () => {
   });
 
   it('throws for an unknown intent instead of loading everything', () => {
-    expect(() => selectMicroLibrary('made_up_intent')).toThrow(/unknown intent/i);
+    const bogus = 'made_up_intent' as unknown as Intent;
+    expect(() => selectMicroLibrary(bogus)).toThrow(/unknown intent/i);
   });
 });
 
@@ -82,6 +84,7 @@ describe('Action registry (validated compositions, unknown = reject + fallback)'
   it('rejects registering duplicate action ids or invalid shapes', () => {
     expect(() => registerAction({ id: 'orient.next_action', intent: 'orient' })).toThrow(/duplicate/i);
     expect(() => registerAction({ id: '', intent: 'orient' })).toThrow(/invalid action/i);
-    expect(() => registerAction({ id: 'x.y', intent: 'made_up_intent' as never })).toThrow(/unknown intent/i);
+    const bogus = { id: 'x.y', intent: 'made_up_intent' } as unknown as { id: string; intent: Intent };
+    expect(() => registerAction(bogus)).toThrow(/unknown intent/i);
   });
 });
