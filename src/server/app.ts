@@ -7,6 +7,8 @@ import { BudgetExceededError } from '../core/context/Budgeter.js';
 import { CapsuleStore, createCapsule } from '../core/context/CapsuleStore.js';
 import { SnapshotService } from '../core/context/SnapshotService.js';
 import { DeltaService } from '../core/context/DeltaService.js';
+import { ModelRouter, type RouteDecision } from '../core/context/ModelRouter.js';
+import { TelemetryPrivacyError, TokenTelemetry, telemetryFromPack, type TokenMetricsRecord } from '../core/context/TokenTelemetry.js';
 import {
   CONTEXT_LEVELS,
   CONTEXT_PROFILES,
@@ -39,6 +41,7 @@ const compileInputSchema = {
       },
     },
     expansion_handles: { type: 'array', items: { type: 'string' } },
+    route_role: { type: 'string', minLength: 1 },
   },
 } as const;
 
@@ -120,7 +123,7 @@ const continuationInputSchema = {
   additionalProperties: false,
 } as const;
 
-export function buildApp(options: { contextCacheDir?: string } = {}) {
+export function buildApp(options: { contextCacheDir?: string; telemetryDir?: string } = {}) {
   const app = Fastify({ logger: false });
   const compiler = new ContextCompiler();
 
@@ -128,6 +131,12 @@ export function buildApp(options: { contextCacheDir?: string } = {}) {
   const capsules = new CapsuleStore(join(cacheRoot, 'capsules'));
   const snapshots = new SnapshotService(join(cacheRoot, 'snapshots'));
   const deltas = new DeltaService(join(cacheRoot, 'deltas'));
+  const telemetry = new TokenTelemetry(
+    options.telemetryDir ? { dir: options.telemetryDir } : {},
+  );
+  // Workbench ships with no configured providers: routing decisions report
+  // graceful unavailability instead of failing (SCN-TOK-03).
+  const router = new ModelRouter({ providers: {} });
 
   const ajv = new Ajv2020({ allErrors: true, strict: false });
   const validateCompileInput = ajv.compile(compileInputSchema);
@@ -143,6 +152,62 @@ export function buildApp(options: { contextCacheDir?: string } = {}) {
 
   app.get('/api/health', async () => ({ status: 'ok' }));
 
+  /** Resolve a route role to a capability-tier decision (SCN-TOK-02/03). */
+  app.post('/api/model/route', async (request, reply) => {
+    const body = request.body as { role?: unknown; task?: unknown } | null;
+    const role = typeof body?.role === 'string' ? body.role : '';
+    const task = typeof body?.task === 'string' ? body.task : '';
+    let decision: RouteDecision;
+    try {
+      decision = router.resolve(role, task);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (/unknown route role/i.test(message)) {
+        return reply.code(400).send({ error: message });
+      }
+      throw error;
+    }
+    return reply.code(200).send({ decision, model_tokens: decision.model_tokens });
+  });
+
+  /** Record privacy-bounded token metrics for one run (TEST-MET-01). */
+  app.post('/api/telemetry/metrics', async (request, reply) => {
+    const body = request.body as Record<string, unknown> | null;
+    let record: TokenMetricsRecord;
+    try {
+      record = telemetry.record(body as never);
+    } catch (error) {
+      if (error instanceof TelemetryPrivacyError) {
+        return reply.code(422).send({ error: error.message });
+      }
+      const message = error instanceof Error ? error.message : String(error);
+      if (/schema-invalid/i.test(message)) {
+        return reply.code(422).send({ error: message });
+      }
+      throw error;
+    }
+    return reply.code(200).send({ record });
+  });
+
+  /** Serve one recorded metric by run id. */
+  app.get('/api/telemetry/metrics/:run_id', async (request, reply) => {
+    const { run_id } = request.params as { run_id: string };
+    const record = telemetry.get(run_id);
+    if (!record) {
+      return reply.code(404).send({ error: `unknown run: ${run_id}` });
+    }
+    return reply.code(200).send({ record });
+  });
+
+  /** List all recorded metrics. */
+  app.get('/api/telemetry/metrics', async () => {
+    const records = telemetry
+      .list()
+      .map((file) => telemetry.get(file.replace(/\.json$/, '')))
+      .filter((r): r is TokenMetricsRecord => r !== null);
+    return { records };
+  });
+
   /** Compile a mission context packet (no raw prompt concatenation path exists). */
   app.post('/api/context/compile', async (request, reply) => {
     const body = request.body ?? {};
@@ -151,6 +216,23 @@ export function buildApp(options: { contextCacheDir?: string } = {}) {
     }
     try {
       const pack = compiler.compile(body as unknown as ContextPackInput);
+      const routeRole = (body as { route_role?: string }).route_role;
+      if (routeRole) {
+        let decision: RouteDecision;
+        try {
+          decision = router.resolve(routeRole, (body as { objective?: string }).objective ?? '');
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (/unknown route role/i.test(message)) {
+            return reply.code(400).send({ error: message });
+          }
+          throw error;
+        }
+        const route = decision.tier === 'NONE' ? 'NONE' : decision.tier;
+        const metrics = telemetryFromPack(`RUN-${pack.mission_id}`, route, pack, { cache_hits: 0, expansions: 0 });
+        telemetry.record(metrics);
+        return reply.code(200).send({ pack, route: decision, metrics });
+      }
       return reply.code(200).send({ pack });
     } catch (error) {
       if (error instanceof BudgetExceededError) {
