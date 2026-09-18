@@ -11,17 +11,21 @@ source, fixtures, project content, or historical documents.
 Run `python scripts/execution_loop.py status` first.
 
 - If a task is active, resume its existing packet and handoff template; do not
-  call `start` again. The transferred state currently has `TASK-P02-02` active.
+  call `start` again. The transferred state currently has `TASK-P04-05` active
+  (ModelRouter + token telemetry), with its TDD RED phase already committed as
+  `088a3dd` — four failing characterization test files that are the
+  specification to satisfy. Implement GREEN against them.
 - If no task is active, run `python scripts/execution_loop.py start` and execute
   exactly the first ready task.
 - Load only the emitted packet, its required reads, and directly affected source
   neighbors. Do not preload the full package.
 
-For the one current task: characterize the baseline, implement the smallest
-sufficient change, run every named test and adjacent critical regression gate,
-commit the exact candidate, replace every placeholder in the required handoff
-with observed evidence, and run `python scripts/execution_loop.py complete`.
-Never treat your own report as evidence. Never modify the state JSON manually.
+For the one current task: satisfy the committed characterization tests without
+weakening them, implement the smallest sufficient change, run every named test
+and adjacent critical regression gate, commit the exact candidate, replace
+every placeholder in the required handoff with observed evidence, and run
+`python scripts/execution_loop.py complete`. Never treat your own report as
+evidence. Never modify the state JSON manually.
 
 After a successful gate, record a compact private `harness-mem` checkpoint with
 task ID, SHA, changed paths, tests, residual risk, and next ready task. End the
