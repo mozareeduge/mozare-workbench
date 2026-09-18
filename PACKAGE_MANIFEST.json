@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 262,
+  "file_count": 279,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -58,11 +58,6 @@
       "path": ".claude/memory/session-log.md",
       "bytes": 720,
       "sha256": "1968fe05c532f468cb52ec9f421f6fbe9db548dd10f62baf3814eb100d70627b"
-    },
-    {
-      "path": ".claude/scheduled_tasks.lock",
-      "bytes": 123,
-      "sha256": "a37a995851719532a91d37a550d3cf9bedcca78c33a99a21f4b67c1eedddad52"
     },
     {
       "path": ".claude/sessions/.last_inbox_check",
@@ -1000,6 +995,46 @@
       "sha256": "7cca1d685744e8d1deb16bd43ec15fc2bdcf25b53d15794456d14466b215a969"
     },
     {
+      "path": "src/core/context/Budgeter.ts",
+      "bytes": 932,
+      "sha256": "de260eaecb7ae515a96cc34cde4cf709dbc53002992960974f90da9d89d4bf87"
+    },
+    {
+      "path": "src/core/context/CapsuleStore.ts",
+      "bytes": 6749,
+      "sha256": "794833756dd7d8d2d6ac1fe950fcca760184801d2022146b3367bbfaf5904059"
+    },
+    {
+      "path": "src/core/context/ContextCompiler.ts",
+      "bytes": 6671,
+      "sha256": "a4dd1428a7e0aa884e5c6a0954e3322795cce9e644de75e446b357d1f1ad953f"
+    },
+    {
+      "path": "src/core/context/DeltaService.ts",
+      "bytes": 4073,
+      "sha256": "e4e49b5538fbab2907870369249866c8988d10850227ed4f8b8a10a0ab3739f0"
+    },
+    {
+      "path": "src/core/context/hash.ts",
+      "bytes": 795,
+      "sha256": "8ee2b4fbef5d0e2ee46bf6061232826d819b5e3406d46bf5014c52737ba58025"
+    },
+    {
+      "path": "src/core/context/ReferenceResolver.ts",
+      "bytes": 1529,
+      "sha256": "ba134464bd69cc81d2652ca135e73d56eae22f69040515642c45d0e89e169923"
+    },
+    {
+      "path": "src/core/context/SnapshotService.ts",
+      "bytes": 2527,
+      "sha256": "80e5c8cbda899079c118d594adcb2ccf449a721f3f6c735de1a98482e1178a12"
+    },
+    {
+      "path": "src/core/context/tokenEstimate.ts",
+      "bytes": 937,
+      "sha256": "cbf7cccecd5832c8bc4a10efe0be744ddd614458224ae3f140caf4225256e8e7"
+    },
+    {
       "path": "src/core/projection/FieldProjection.ts",
       "bytes": 1820,
       "sha256": "0fd192c6f9f0863e2c7dc6302f6da6083b57e87b687779fc6b99e8569210ef88"
@@ -1051,8 +1086,8 @@
     },
     {
       "path": "src/server/app.ts",
-      "bytes": 179,
-      "sha256": "5b7dd018f5c21864c895222853a6e30dbb97e90996d4723624edfc07d7a85266"
+      "bytes": 9691,
+      "sha256": "c06bb1795080951e8e79bca2c52575edf56329c9803d466f96ecb9279c3abde0"
     },
     {
       "path": "src/server/git/GitAdapter.ts",
@@ -1073,6 +1108,11 @@
       "path": "src/server/process/ProcessRunner.ts",
       "bytes": 638,
       "sha256": "be931f4381c79fce9e010856802e770c7a241255ec4ae3ef8e6005fac789c6e9"
+    },
+    {
+      "path": "src/shared/contextTypes.ts",
+      "bytes": 5336,
+      "sha256": "402d96faf1788ddcd7238e1d8658f82053771352de79f91476bd226a803c8aa0"
     },
     {
       "path": "src/web/App.tsx",
@@ -1225,9 +1265,24 @@
       "sha256": "92e05400cd49c59ec1effef0fdad068f059913fb031af0ecf1f3405893b4d7df"
     },
     {
+      "path": "tests/integration/context-api.test.ts",
+      "bytes": 5075,
+      "sha256": "147caa82a63644a6ae8a2400c45f15e0327fb5bb330f7b16f68c6c26f77a2d9c"
+    },
+    {
+      "path": "tests/integration/context-capsules-api.test.ts",
+      "bytes": 8154,
+      "sha256": "6bf6263e11bcbf2c83c1abe5c9e97f1a61624711284e7c39276d5b2c9f23f229"
+    },
+    {
       "path": "tests/integration/health-api.test.ts",
       "bytes": 783,
       "sha256": "8753d238cf4868d7dbf5a367424017f56462381f1d5c5f52cabcc95f6fa1a47b"
+    },
+    {
+      "path": "tests/integration/model-routing-api.test.ts",
+      "bytes": 7717,
+      "sha256": "ffde316a9eb7991ecb6adbe2432bcac4e6bf100b20a80ed9d9e4dc26cfd5548a"
     },
     {
       "path": "tests/integration/proposal-apply.test.ts",
@@ -1238,6 +1293,21 @@
       "path": "tests/integration/review-provenance.test.ts",
       "bytes": 7565,
       "sha256": "78fe24cb0ddd62fff292969917baeb1296531c29fd7a20013c1eae91b4a07ae7"
+    },
+    {
+      "path": "tests/unit/capsule-store.test.ts",
+      "bytes": 7075,
+      "sha256": "f7e5d579029672240cb14a2b8f7a4531a50253a6604fbc85b640648dc90e224c"
+    },
+    {
+      "path": "tests/unit/context-compiler.test.ts",
+      "bytes": 9259,
+      "sha256": "3342c61b0deab818a79f3f81d620675215edc1031bd12ff40b19142a390f0195"
+    },
+    {
+      "path": "tests/unit/context-snapshot-delta.test.ts",
+      "bytes": 5817,
+      "sha256": "a9dc3df72c7cc2331637f56519f3759952e4e22776cf8945766a9657dd07db54"
     },
     {
       "path": "tests/unit/field-projection.test.ts",
@@ -1260,6 +1330,16 @@
       "sha256": "b1e5a152db909672afb953567c16923d7990dc382e7d80fd493bc2165bbb30b4"
     },
     {
+      "path": "tests/unit/model-router.test.ts",
+      "bytes": 3996,
+      "sha256": "5d05ec978fe3dad7f7b4dbb2977038d20337f177589fb16db2d210e5942c5094"
+    },
+    {
+      "path": "tests/unit/model-routing-policy.test.ts",
+      "bytes": 1765,
+      "sha256": "51a1579908b814b2727aabc9df4337421ff42bf446dd94966d1bc33a8e39713b"
+    },
+    {
       "path": "tests/unit/output-projection.test.ts",
       "bytes": 4773,
       "sha256": "fa0a2ea314af86e6ffad9a9d1e798178bdd74115adcf8e09a563970738d42342"
@@ -1278,6 +1358,11 @@
       "path": "tests/unit/server-smoke.test.ts",
       "bytes": 458,
       "sha256": "6270eb83b4a93a62c55070af39a37d8208df2915353db6cea69fe185e6aa3777"
+    },
+    {
+      "path": "tests/unit/token-telemetry.test.ts",
+      "bytes": 7843,
+      "sha256": "646dc45736e59ac6790bf143a828f8e51c7a2f644da333a63aae0499be93180c"
     },
     {
       "path": "tests/unit/workspace.test.ts",
