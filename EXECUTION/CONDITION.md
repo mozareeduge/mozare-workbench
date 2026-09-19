@@ -1,24 +1,24 @@
 # Workbench condition (live snapshot)
 
-Generated: 2026-09-18T22:23:39+03:30 — by `python scripts/condition_snapshot.py`. Regenerate after every completed task and commit.
+Generated: 2026-09-19T14:13:26+03:30 — by `python scripts/condition_snapshot.py`. Regenerate after every completed task and commit.
 
 ## Execution loop state
 
 ```
-Progress: 23/31 tasks complete
+Progress: 24/31 tasks complete
 Active: none
-Next ready: TASK-P06-01
-HEAD: 1135bfab2189d1e05dac38b23f4454836fbfd03b
+Next ready: TASK-P07-01
+HEAD: 7f360c0f217d37c09a140004f7881aa40bb7a3f1
 Worktree: clean
 ```
 
 ## Next ready task
 
 ```
-TASK-P06-01
+TASK-P07-01
 ```
 
-HEAD at snapshot: `1135bfab2189d1e05dac38b23f4454836fbfd03b`
+HEAD at snapshot: `7f360c0f217d37c09a140004f7881aa40bb7a3f1`
 
 ## How to verify this condition yourself
 
