@@ -70,7 +70,10 @@ export function MissionSheet({ target, objective, onStart, onDraft }: MissionShe
         <p className="card-label">Guided mission</p>
         <h2 id="mission-sheet-heading">Compose mission</h2>
 
-        <section aria-labelledby="mission-section-target">
+        {/* SCN-RSP-05: the sheet body scrolls while the decision actions stay
+            pinned as a fixed footer (compact/mobile shell, UI/layout-contracts.md). */}
+        <div className="mission-body">
+          <section aria-labelledby="mission-section-target">
           <h3>Target</h3>
           <input
             aria-label="Target"
@@ -116,17 +119,11 @@ export function MissionSheet({ target, objective, onStart, onDraft }: MissionShe
               Start needs at least one observable acceptance criterion — add one above; your edits are kept.
             </p>
           )}
-          <button type="button" className="button button-primary" disabled={!canStart} onClick={tryStart}>
-            Start mission
-          </button>
-          <button type="button" className="text-action" onClick={saveDraft}>
-            Save as draft
-          </button>
         </section>
 
-        <button type="button" className="text-action" onClick={() => setAdvancedOpen(true)}>
-          Advanced
-        </button>
+          <button type="button" className="text-action" onClick={() => setAdvancedOpen(true)}>
+            Advanced
+          </button>
 
         {advancedOpen && (
           <section aria-labelledby="mission-section-agent">
@@ -154,6 +151,16 @@ export function MissionSheet({ target, objective, onStart, onDraft }: MissionShe
         )}
 
         {packetPreview && <p className="quiet">{DETERMINISTIC_CONTEXT} Packet {packetPreview.id} compiled ({packetPreview.budget.estimated_tokens} tokens).</p>}
+        </div>
+
+        <div className="mission-sheet-actions">
+          <button type="button" className="button button-primary" disabled={!canStart} onClick={tryStart}>
+            Start mission
+          </button>
+          <button type="button" className="text-action" onClick={saveDraft}>
+            Save as draft
+          </button>
+        </div>
       </div>
     </div>
   );

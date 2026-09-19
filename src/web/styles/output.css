@@ -26,5 +26,5 @@
 .artifact-technical dt{color:var(--c-ink-3);font-size:var(--text-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .artifact-technical dd{margin:0;overflow-wrap:anywhere;color:var(--c-ink-2);font-size:var(--text-small);font-family:var(--font-mono, monospace)}
 .artifact-primary-action{margin:var(--s-1) 0 0;color:var(--c-ink-3);font-size:var(--text-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-@media(max-width:1100px){.output-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.output-heading{display:grid}.output-gallery{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1179px){.output-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:759px){.output-heading{display:grid}.output-gallery{grid-template-columns:minmax(0,1fr)}}

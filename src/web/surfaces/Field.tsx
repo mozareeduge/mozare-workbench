@@ -25,7 +25,11 @@ type ConnectState = { active: boolean; source: Node | null };
 type PendingConnection = { source: Node; target: Node };
 
 export function Field() {
-  const [mode, setMode] = useState<'map' | 'list'>('map');
+  // SCN-X-03: on mobile (width < 760) Field opens list-first; the graph stays
+  // reachable as a deliberate Map toggle (TEST-014 / TASK-P08-01).
+  const [mode, setMode] = useState<'map' | 'list'>(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 759px)').matches ? 'list' : 'map',
+  );
   const [selected, setSelected] = useState<{ kind: 'object'; value: Node } | { kind: 'relation'; value: typeof relation }>({ kind: 'object', value: nodes[0] });
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
   const drag = useRef<{ id: string; x: number; y: number } | null>(null);
