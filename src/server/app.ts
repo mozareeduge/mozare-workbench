@@ -1,13 +1,14 @@
 import Fastify from 'fastify';
 import Ajv2020 from 'ajv/dist/2020.js';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { ContextCompiler, ContextExpansionError } from '../core/context/ContextCompiler.js';
 import { BudgetExceededError } from '../core/context/Budgeter.js';
 import { CapsuleStore, createCapsule } from '../core/context/CapsuleStore.js';
 import { SnapshotService } from '../core/context/SnapshotService.js';
 import { DeltaService } from '../core/context/DeltaService.js';
 import { ModelRouter, type RouteDecision } from '../core/context/ModelRouter.js';
+import { loadWorkspace } from '../core/workspace.js';
 import { TelemetryPrivacyError, TokenTelemetry, telemetryFromPack, type TokenMetricsRecord } from '../core/context/TokenTelemetry.js';
 import {
   CONTEXT_LEVELS,
@@ -17,6 +18,13 @@ import {
   type ContextPackInput,
   type EvidenceCapsule,
 } from '../shared/contextTypes.js';
+import {
+  EvidenceCaptureStore,
+  QmdAdapter,
+  WikiReadAdapter,
+  searchLocalProject,
+  type EvidenceHit,
+} from './adapters/EvidenceService.js';
 
 const compileInputSchema = {
   type: 'object',
@@ -123,9 +131,24 @@ const continuationInputSchema = {
   additionalProperties: false,
 } as const;
 
-export function buildApp(options: { contextCacheDir?: string; telemetryDir?: string } = {}) {
+export type EvidenceAdapterOptions = {
+  wikiRoot: string | null;
+  qmdCommand: readonly string[] | null;
+};
+
+function defaultEvidenceOptions(): EvidenceAdapterOptions {
+  // No external evidence source ships configured: the surface degrades
+  // truthfully and the local project remains fully usable (SCN-EVD-04).
+  return { wikiRoot: null, qmdCommand: null };
+}
+
+export function buildApp(
+  options: { contextCacheDir?: string; telemetryDir?: string; evidence?: Partial<EvidenceAdapterOptions> } = {},
+) {
   const app = Fastify({ logger: false });
   const compiler = new ContextCompiler();
+
+  const evidenceOptions: EvidenceAdapterOptions = { ...defaultEvidenceOptions(), ...options.evidence };
 
   const cacheRoot = options.contextCacheDir ?? join(process.cwd(), '.mozare', 'cache', 'context');
   const capsules = new CapsuleStore(join(cacheRoot, 'capsules'));
@@ -137,6 +160,27 @@ export function buildApp(options: { contextCacheDir?: string; telemetryDir?: str
   // Workbench ships with no configured providers: routing decisions report
   // graceful unavailability instead of failing (SCN-TOK-03).
   const router = new ModelRouter({ providers: {} });
+
+  // External evidence adapters (TASK-P07-01): read-only wiki/QMD with the
+  // local project as the always-present baseline; capture stages candidates
+  // only (ORACLE-015).
+  const wikiAdapter = new WikiReadAdapter(evidenceOptions.wikiRoot);
+  const qmdAdapter = new QmdAdapter(evidenceOptions.qmdCommand);
+  const captureStore = new EvidenceCaptureStore();
+
+  const resolveWorkspaceRoot = (raw: unknown): string | null => {
+    if (typeof raw !== 'string' || raw.trim() === '') return null;
+    const candidate = resolve(raw);
+    if (!existsSync(candidate) || !statSync(candidate).isDirectory()) return null;
+    return candidate;
+  };
+
+  const degradedSources = (wikiCaps: { available: boolean }, qmdCaps: { available: boolean }): string[] => {
+    const degraded: string[] = [];
+    if (!wikiCaps.available) degraded.push('mozare-wiki');
+    if (!qmdCaps.available) degraded.push('qmd');
+    return degraded;
+  };
 
   const ajv = new Ajv2020({ allErrors: true, strict: false });
   const validateCompileInput = ajv.compile(compileInputSchema);
@@ -151,6 +195,87 @@ export function buildApp(options: { contextCacheDir?: string; telemetryDir?: str
   );
 
   app.get('/api/health', async () => ({ status: 'ok' }));
+
+  /** Unified evidence search: local project + optional wiki/QMD candidates (TASK-P07-01). */
+  app.get('/api/evidence/search', async (request, reply) => {
+    const query = typeof (request.query as Record<string, unknown>).query === 'string'
+      ? ((request.query as Record<string, string>).query as string)
+      : '';
+    const workspaceRoot = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
+    if (!workspaceRoot) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    }
+    const wikiCaps = wikiAdapter.capabilities();
+    const qmdCaps = qmdAdapter.capabilities();
+    let wiki: Record<string, unknown>;
+    if (wikiCaps.available) {
+      wiki = { ...wikiAdapter.search(query) };
+    } else {
+      wiki = wikiCaps;
+    }
+    let qmd: Record<string, unknown>;
+    if (qmdCaps.available) {
+      qmd = { ...(await qmdAdapter.search(query)) };
+    } else {
+      qmd = qmdCaps;
+    }
+    const local: EvidenceHit[] = searchLocalProject(workspaceRoot, query);
+    return {
+      workspaceId: workspaceRoot,
+      degraded: degradedSources(wikiCaps, qmdCaps),
+      local,
+      wiki,
+      qmd,
+    };
+  });
+
+  /** Which external evidence adapters exist on this machine. */
+  app.get('/api/evidence/capabilities', async () => {
+    const wikiCaps = wikiAdapter.capabilities();
+    const qmdCaps = qmdAdapter.capabilities();
+    return {
+      wiki: wikiCaps,
+      qmd: qmdCaps,
+      degraded: degradedSources(wikiCaps, qmdCaps),
+      local_project: { available: true },
+    };
+  });
+
+  /**
+   * Capture stages a candidate evidence reference — pending review, never
+   * acceptance; the external source and canonical workspace stay untouched
+   * (SCN-EVD-03, SCN-X-08, ORACLE-015).
+   */
+  app.post('/api/evidence/capture', async (request, reply) => {
+    const body = request.body as { workspaceId?: unknown; hit?: unknown; note?: unknown } | null;
+    const workspaceRoot = resolveWorkspaceRoot(body?.workspaceId);
+    if (!workspaceRoot) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    }
+    const hit = body?.hit as EvidenceHit | undefined;
+    if (!hit || typeof hit !== 'object' || typeof hit.rel !== 'string' || !hit.route || typeof hit.source !== 'string') {
+      return reply.code(400).send({ error: 'invalid_hit', message: 'capture requires a search hit with rel, source and route' });
+    }
+    try {
+      const captured = captureStore.stage(workspaceRoot, hit, typeof body?.note === 'string' ? body.note : '');
+      return { captured };
+    } catch (error) {
+      return reply.code(400).send({
+        error: 'capture_rejected',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
+  /** Staged captures for a workspace — all pending_review by construction. */
+  app.get('/api/evidence/captures', async (request, reply) => {
+    const workspaceRoot = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
+    if (!workspaceRoot) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    }
+    const snapshot = loadWorkspace(workspaceRoot);
+    return { captures: captureStore.list(snapshot.project.id) };
+  });
 
   /** Resolve a route role to a capability-tier decision (SCN-TOK-02/03). */
   app.post('/api/model/route', async (request, reply) => {
