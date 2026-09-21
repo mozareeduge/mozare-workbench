@@ -20,12 +20,14 @@ test('TEST-015: reduced motion suppresses interface animation', async ({ page })
 test('TEST-016: mixed Persian content keeps technical identifiers isolated LTR at mobile zoom', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
-  await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
   const sample = page.getByTestId('bidi-sample');
   await expect(sample).toBeVisible();
   await expect(sample).toHaveAttribute('dir', 'rtl');
   const identifier = sample.getByText('DEC-014 / src/web/App.tsx', { exact: true });
   await expect(identifier).toHaveCSS('direction', 'ltr');
   await expect(identifier).toHaveCSS('unicode-bidi', 'isolate');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 });

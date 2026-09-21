@@ -78,3 +78,15 @@
 
 * { box-sizing: border-box; }
 html { background: var(--c-canvas); color: var(--c-ink); font-family: var(--font-ui); }
+[dir="auto"] { unicode-bidi: plaintext; }
+.bidi-sample { font-family: var(--font-fa); overflow-wrap: anywhere; text-align: start; }
+.bidi-isolate { direction: ltr; unicode-bidi: isolate; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001s !important;
+  }
+}
