@@ -20,3 +20,4 @@ workspace.local.yaml
 .claude/state/
 .claude/memory/
 .harness-mem/
+.maws/
