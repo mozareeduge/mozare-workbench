@@ -23,6 +23,7 @@ export type { MissionDraft };
 export type MissionSheetProps = {
   target: string;
   objective: string;
+  onClose: () => void;
   /** Receives the deterministic packet preview built from the sheet state. */
   onStart: (mission: MissionDraft, packet: MissionPacketPreview) => void;
   onDraft: (mission: MissionDraft) => void;
@@ -30,7 +31,7 @@ export type MissionSheetProps = {
 
 const DETERMINISTIC_CONTEXT = 'Deterministic compile: routed to NONE, zero model tokens.';
 
-export function MissionSheet({ target, objective, onStart, onDraft }: MissionSheetProps) {
+export function MissionSheet({ target, objective, onClose, onStart, onDraft }: MissionSheetProps) {
   const [prefill] = useState(() => buildMissionSheetPrefill({ target, objective }));
   const [targetValue, setTargetValue] = useState(prefill.target);
   const [outcome, setOutcome] = useState(prefill.outcome);
@@ -64,7 +65,10 @@ export function MissionSheet({ target, objective, onStart, onDraft }: MissionShe
         aria-modal="true"
         aria-labelledby="mission-sheet-heading"
         onKeyDown={(event) => {
-          if (event.key === 'Escape') event.stopPropagation();
+          if (event.key === 'Escape') {
+            event.stopPropagation();
+            onClose();
+          }
         }}
       >
         <p className="card-label">Guided mission</p>
@@ -77,6 +81,7 @@ export function MissionSheet({ target, objective, onStart, onDraft }: MissionShe
           <h3>Target</h3>
           <input
             aria-label="Target"
+            autoFocus
             value={targetValue}
             onChange={(e) => setTargetValue(e.target.value)}
           />
