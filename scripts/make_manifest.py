@@ -9,6 +9,9 @@ MANIFEST = ROOT / "PACKAGE_MANIFEST.json"
 EXCLUDE_FILES = {"PACKAGE_MANIFEST.json", "QA_REPORT.local.md"}
 EXCLUDE_DIRS = {
     ".git",
+    ".claude",
+    ".harness-mem",
+    ".maws",
     ".mozare",
     ".mozare-runtime",
     ".pytest_cache",
@@ -17,6 +20,7 @@ EXCLUDE_DIRS = {
     "dist",
     "node_modules",
     "playwright-report",
+    "test-results",
 }
 
 

@@ -1,5 +1,11 @@
 # Alternate Harness Handoff — 2026-09-17
 
+> **Superseded 2026-09-20:** this snapshot describes state as of 2026-09-17
+> (15/31, TASK-P04-05 active). Live state is now 26/31 complete with
+> TASK-P08-02 next ready — read `EXECUTION/CLAUDE_CODE_HANDOFF_2026-09-20.md`
+> first. The conventions, completed-ledger, and authority-order sections below
+> remain valid; per-task counts above the ledger do not.
+
 This is the durable transfer snapshot for continuing Mozare Workbench in a
 fresh agentic harness. It records execution state; it does not change product
 authority.
