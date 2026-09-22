@@ -1,41 +1,41 @@
-/* Shipped design tokens (TASK-P08-01).
+/* Shipped design tokens (TASK-P08-01; dark-default theme DARK-01, 2026-09-22).
  * Source of truth: UI/design-tokens.css (AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md).
- * Layout tokens here back the responsive contract in UI/layout-contracts.md:
- * wide rail 72px (>=1180), compact rail 56px (760–1179), mobile bottom bar 62px
- * (<760), surface paddings, workspace max width, spacing/type scale. The
- * prefers-reduced-motion block and bidi/code base isolation land with
- * TASK-P08-02; this file ships the token inventory itself. */
+ * DARK-01 (owner order 2026-09-22): dark is the default theme; light remains
+ * available via html[data-theme="light"] and the context-bar toggle. The light
+ * palette below is the original v0.3 inventory, moved verbatim under the
+ * opt-in selector. Layout tokens back the responsive contract in
+ * UI/layout-contracts.md; prefers-reduced-motion and bidi isolation unchanged. */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   --font-ui: "Segoe UI Variable", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-reading: ui-serif, Georgia, "Times New Roman", serif;
   --font-fa: Vazirmatn, "Noto Sans Arabic", Tahoma, "Segoe UI", sans-serif;
   --font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
 
-  --c-canvas: #f4f2ed;
-  --c-surface: #fbfaf7;
-  --c-surface-raised: #ffffff;
-  --c-surface-inset: #ece9e2;
-  --c-ink: #1f2321;
-  --c-ink-2: #4d5450;
-  --c-ink-3: #777d79;
-  --c-line: #d7d4cc;
-  --c-line-strong: #aaa79f;
-  --c-accent: #315f58;
-  --c-accent-soft: #dce8e4;
-  --c-on-accent: #ffffff;
-  --c-positive: #2d6650;
-  --c-positive-soft: #dfece5;
-  --c-warning: #8a5b16;
-  --c-warning-soft: #f3e8cf;
-  --c-danger: #8a3e38;
-  --c-danger-soft: #f3dfdd;
-  --c-info: #4d5f7c;
-  --c-info-soft: #e2e7ef;
+  --c-canvas: #141614;
+  --c-surface: #1b1e1c;
+  --c-surface-raised: #222623;
+  --c-surface-inset: #2b302c;
+  --c-ink: #eceae4;
+  --c-ink-2: #b8bdb7;
+  --c-ink-3: #8b918c;
+  --c-line: #343934;
+  --c-line-strong: #4a504a;
+  --c-accent: #6fa79b;
+  --c-accent-soft: #243530;
+  --c-on-accent: #0e1512;
+  --c-positive: #7fbfa3;
+  --c-positive-soft: #1f2f27;
+  --c-warning: #d9b36a;
+  --c-warning-soft: #332b18;
+  --c-danger: #d98c85;
+  --c-danger-soft: #37211f;
+  --c-info: #9db1d0;
+  --c-info-soft: #232c3a;
 
-  --shadow-overlay: 0 18px 48px rgba(31, 35, 33, .16), 0 2px 10px rgba(31, 35, 33, .08);
-  --shadow-float: 0 8px 24px rgba(31, 35, 33, .10);
+  --shadow-overlay: 0 18px 48px rgba(0, 0, 0, .5), 0 2px 10px rgba(0, 0, 0, .35);
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, .4);
 
   --r-control: 8px;
   --r-card: 12px;
@@ -74,6 +74,35 @@
   --motion-fast: 140ms;
   --motion-normal: 200ms;
   --ease-standard: cubic-bezier(.2, .7, .2, 1);
+}
+
+/* Light theme: explicit opt-in (toggle or data-theme="light"). */
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --c-canvas: #f4f2ed;
+  --c-surface: #fbfaf7;
+  --c-surface-raised: #ffffff;
+  --c-surface-inset: #ece9e2;
+  --c-ink: #1f2321;
+  --c-ink-2: #4d5450;
+  --c-ink-3: #777d79;
+  --c-line: #d7d4cc;
+  --c-line-strong: #aaa79f;
+  --c-accent: #315f58;
+  --c-accent-soft: #dce8e4;
+  --c-on-accent: #ffffff;
+  --c-positive: #2d6650;
+  --c-positive-soft: #dfece5;
+  --c-warning: #8a5b16;
+  --c-warning-soft: #f3e8cf;
+  --c-danger: #8a3e38;
+  --c-danger-soft: #f3dfdd;
+  --c-info: #4d5f7c;
+  --c-info-soft: #e2e7ef;
+
+  --shadow-overlay: 0 18px 48px rgba(31, 35, 33, .16), 0 2px 10px rgba(31, 35, 33, .08);
+  --shadow-float: 0 8px 24px rgba(31, 35, 33, .10);
 }
 
 * { box-sizing: border-box; }
