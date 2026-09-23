@@ -1226,13 +1226,107 @@ cards:
   - TEST-023 network and visible-state evidence
   - Fixture paths removed or isolated to tests
   - Residual risks and next mapped MAWS/execution task
+- task_id: TASK-P10-04
+  objective: Build the durable cross-harness work ledger, task-version resolver and continuity projection
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md
+  - TECH/P10_CROSS_HARNESS_CONTINUITY.md
+  - QA/P10_CROSS_HARNESS_ADDENDUM.md
+  - EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml
+  - AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md
+  create_or_modify:
+  - config/handoff.schema.json
+  - config/mission.schema.json
+  - src/core/
+  - src/server/agents/
+  - src/web/
+  - tests/
+  must_preserve:
+  - Canonical truth changes only through proposal and human acceptance
+  - Ledger records are append-only durable provenance without raw transcript or hidden reasoning
+  - Stable project mission and task identity remain independent of harness vendor
+  - Stale task versions cannot overwrite current accepted state
+  - Human surfaces remain calm and progressive rather than becoming an agent dashboard
+  implementation_steps:
+  - Characterize current fake-only RunManager record and missing task-version/harness provenance
+  - Implement atomic WorkLedger records and deterministic task-version supersession/parking resolution
+  - Build ContinuationService from canonical refs latest valid handoff candidate evidence and unresolved work
+  - Add bounded continuity summary to live projections and detailed provenance to Review/Flow routes
+  - Run TEST-026 and TEST-027 with restart stale conflict privacy and visible-state controls
+  tests:
+  - TEST-026
+  - TEST-027
+  done_when:
+  - Durable records truthfully answer who worked when where what changed what remains and which version is current
+  - Cross-harness continuation packet requires no transcript replay or owner reconstruction
+  - Parked and stale work remain recoverable and cannot masquerade as current or completed
+  - Mapped gate GATE-HARNESS-LEDGER passes on the committed candidate
+  stop_if:
+  - Continuity requires storing hidden reasoning secrets or full transcripts
+  - Task-version resolution would silently rewrite historical records
+  - Required authority files disagree on canonical versus runtime state
+  handoff:
+  - Exact git SHA and ledger/schema versions
+  - TEST-026/027 evidence and privacy scan
+  - User-visible continuity behavior and stale/parked examples
+  - Residual risks and next mapped MAWS/execution task
+- task_id: TASK-P10-05
+  objective: Enable and prove real Claude Code, Codex and Hermes continuation parity
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md
+  - TECH/P10_CROSS_HARNESS_CONTINUITY.md
+  - QA/P10_CROSS_HARNESS_ADDENDUM.md
+  - EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml
+  - EXECUTION/AGENT_ADAPTER_BASELINES.md
+  - CONTEXT/model-routing.yaml
+  create_or_modify:
+  - src/server/agents/
+  - src/core/context/
+  - scripts/
+  - tests/unit/
+  - tests/integration/
+  - tests/e2e/
+  must_preserve:
+  - All adapters share one mission handoff evidence and ledger contract
+  - Agent processes use explicit argv cwd containment and stop/restart controls
+  - Missing or unsafe capability parks work truthfully and never blocks core project access
+  - Context packets are bounded and vendor-neutral while actual route metadata is recorded
+  - Independent QA remains fresh and cannot reuse implementer success narrative as evidence
+  implementation_steps:
+  - Implement real Claude Codex and Hermes adapters behind one interface with injected process/probe seams
+  - Map common model/effort tiers to available provider routes and record actual or unknown values
+  - Connect ContextCompiler continuation packets and durable boundary checkpoints to every adapter run
+  - Prove harmless real CLI capability stop handoff containment restart and cross-harness continuation
+  - Run TEST-028 and TEST-029 plus focused path process secret context and adapter regressions
+  tests:
+  - TEST-028
+  - TEST-029
+  done_when:
+  - Each installed harness executes the common safe mission and produces a valid normalized handoff/record
+  - Codex Claude Hermes succession preserves the same project mission task version and accepted state
+  - Model effort context and compaction provenance is truthful and privacy-safe
+  - Mapped gate GATE-HARNESS-CONTINUITY passes on the committed candidate
+  stop_if:
+  - Any adapter requires shell interpolation public network authority or weakened path containment
+  - A harness cannot produce or be wrapped into the common handoff without fabricating evidence
+  - Provider access credentials or owner authorization are required and unavailable
+  handoff:
+  - Exact git SHA and observed CLI/model capability matrix
+  - TEST-028/029 evidence with safe mission and switch sequence
+  - Actual model effort context and privacy records
+  - Explicit parity verdict and residual provider limits
 - task_id: TASK-P10-03
   objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
   required_reads:
   - MIDDLE_LAYER_INDEX.md
   - AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md
+  - AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md
   - TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md
+  - TECH/P10_CROSS_HARNESS_CONTINUITY.md
   - QA/P10_LIVENESS_ADDENDUM.md
+  - QA/P10_CROSS_HARNESS_ADDENDUM.md
   - EXECUTION/P10_HANDOFF_REVIEW.md
   - EXECUTION/P10_PREFABS/gate-live-static.mjs
   - EXECUTION/P10_PREFABS/live-workspace.e2e.spec.ts
@@ -1258,11 +1352,13 @@ cards:
   tests:
   - TEST-024
   - TEST-025
+  - TEST-028
+  - TEST-029
   done_when:
-  - TEST-024 and TEST-025 pass on the exact committed candidate
+  - TEST-024 TEST-025 TEST-028 and TEST-029 pass on the exact committed candidate
   - Full typecheck lint unit integration Playwright and launcher suites pass after MAWS verification permit
   - Evidence states exactly what the owner sees and records no demo fallback or target-folder mutation
-  - Status is OWNER_TEST_READY and execution stops before TASK-P09-02
+  - Status is OWNER_TEST_READY only after both GATE-LIVE and GATE-HARNESS-CONTINUITY pass, then execution stops before TASK-P09-02
   stop_if:
   - Current target reality contradicts the frozen classification or requires destructive onboarding
   - The launcher cannot start both required loopback services

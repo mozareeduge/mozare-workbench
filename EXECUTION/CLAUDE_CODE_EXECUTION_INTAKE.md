@@ -466,6 +466,8 @@ Exit: one seed project opens to Focus, ORACLE-001..003 partially proven.
 - persistent opaque-ID registry with non-destructive existing-folder registration;
 - first-class new-project creation and project switching;
 - API-backed Focus/Field/Flow/Review/Output with truthful empty/setup/error states;
+- one durable mission/task-version/run ledger across Claude Code, Codex and Hermes;
+- real three-adapter continuation with recorded model/effort/context/candidate/evidence provenance;
 - `GATE-LIVE` browser/API/launcher observation against the current `mozare-wiki` target without onboarding mutation.
 
 ---
@@ -501,6 +503,7 @@ Do not weaken oracle/test thresholds to get green.
 - `GATE-WINDOWS` — launcher/process-stop/manual smoke on user's Windows environment.
 - `GATE-PILOT` — owner/user pilot metrics, not automated fake acceptance.
 - `GATE-LIVE` — no production fixture fallback plus observed real browser-to-API project liveness on one candidate.
+- `GATE-HARNESS-CONTINUITY` — observed Claude Code/Codex/Hermes continuation through the same task identity, handoff, evidence and safe lifecycle contract.
 
 Release candidate requires all except aesthetic/pilot owner acceptance to have clear dispositions; unresolved pilot metrics produce `CANDIDATE_READY_FOR_REVIEW`, not “released”.
 

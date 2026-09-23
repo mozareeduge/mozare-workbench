@@ -18,6 +18,7 @@ Navigation/identity metadata only; it cannot override the authorities below.
 `AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md` → supersession  
 `AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md` → context/token/GenUI contract
 `AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md` → live multi-project correction and owner-test boundary
+`AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md` → seamless Claude/Codex/Hermes work continuity
 
 Status: `PRODUCT_DESIGN_AUTHORITY_CLOSED`.
 
@@ -35,9 +36,10 @@ Status: `PRODUCT_DESIGN_AUTHORITY_CLOSED`.
 ## QA authority
 
 `QA/QA_STATE.yaml`  
-`QA/QA_ORACLE_REGISTER.md` (`ORACLE-001..049`)
+`QA/QA_ORACLE_REGISTER.md` (`ORACLE-001..055`)
 `QA/CLAUDE_QA_CONTRACT.md` including `TEST-CTX/TOK/GUI/MET`  
 `QA/P10_LIVENESS_ADDENDUM.md` → `GATE-LIVE` proof boundary
+`QA/P10_CROSS_HARNESS_ADDENDUM.md` → cross-harness continuity and adapter-parity proof
 `QA/EVIDENCE_INDEX.md`
 
 Status: `QA_CONTRACT_READY_FOR_EXECUTION`.
@@ -77,5 +79,7 @@ v0.3 supersedes v0.2 wherever v0.2 would permit whole-project prompt loading, re
 ## P10 live-product correction
 
 - `TASK-P10-01..03` are the deterministic-loop counterparts of MAWS `WIRE-01`, `WIRE-02`, and `REOPEN-GATE`.
+- `TASK-P10-04..05` are the deterministic-loop counterparts of MAWS `HARNESS-01` and `HARNESS-02`.
 - They must complete before `TASK-P09-02`; fixture-backed surfaces cannot satisfy owner-test readiness.
 - `TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md` and `EXECUTION/P10_PREFABS/` are bounded implementation inputs, not observed completion evidence.
+- `EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml` fixes common model/effort/context-boundary policy while adapters record their actual vendor route.

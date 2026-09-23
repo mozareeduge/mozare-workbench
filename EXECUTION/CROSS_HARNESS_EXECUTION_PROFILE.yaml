@@ -1,0 +1,77 @@
+version: 1
+profile_id: MWB-CROSS-HARNESS-2026-09-23
+authority: AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md
+
+continuity:
+  source_of_truth:
+    - canonical_project_records
+    - git_candidate_identity
+    - work_ledger
+    - schema_valid_handoff
+    - observed_evidence
+  never_source_of_truth:
+    - raw_chat_history
+    - hidden_reasoning
+    - vendor_success_message
+    - task_count_without_product_observation
+  boundary_checkpoint:
+    required_at:
+      - task_completion
+      - harness_switch
+      - context_restart
+      - blocked_or_parked_work
+    fields:
+      - ids_and_task_version
+      - candidate_before_after
+      - changed_refs
+      - observed_evidence
+      - blockers_and_remaining
+      - next_action
+
+routes:
+  deterministic:
+    tier: NONE
+    effort: none
+  bounded_classification:
+    tier: LIGHT
+    effort: low
+  implementation:
+    tier: CODING_AGENT
+    effort: medium
+  architecture_security_escalation:
+    tier: STRONG
+    effort: high
+    trigger:
+      - two_characterized_failures
+      - unresolved_security_or_transaction_boundary
+      - authority_contradiction
+  independent_qa:
+    tier: INDEPENDENT_STRONG
+    effort: high
+    fresh_context: true
+
+context:
+  compile_before_agent_run: true
+  normal_packet_target_tokens: 1800
+  normal_packet_hard_tokens: 3200
+  expansion: exact_handle_only
+  native_compaction: allowed
+  compaction_is_cross_harness_state: false
+  after_compaction_or_model_switch:
+    - preserve_or_recompile_ids_refs_and_open_work
+    - record_actual_route_when_observable
+  raw_transcript_transfer: forbidden
+
+adapters:
+  required:
+    - claude
+    - codex
+    - hermes
+  common_contract:
+    - capability_probe
+    - argv_safe_spawn
+    - explicit_registered_cwd
+    - structured_handoff_validation
+    - observed_candidate_evidence
+    - stop_and_restart_reconciliation
+    - normalized_work_ledger_record

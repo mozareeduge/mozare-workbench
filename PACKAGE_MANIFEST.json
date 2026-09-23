@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 248,
+  "file_count": 252,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -81,8 +81,8 @@
     },
     {
       "path": "AUTHORITY/02_SCENARIO_CASE_ATLAS.md",
-      "bytes": 22404,
-      "sha256": "1cb181b7b4e65dfef7305f1521fc3c8e29c079522b74998c5198d490c33685c8"
+      "bytes": 24173,
+      "sha256": "8af00ff900539445c646216936a99a67e6e9fabe1fae364f147b48a4e82eda9b"
     },
     {
       "path": "AUTHORITY/03_DESIGN_UIUX_BLUEPRINTS.md",
@@ -96,8 +96,8 @@
     },
     {
       "path": "AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md",
-      "bytes": 9698,
-      "sha256": "69644cdbd76ed8843f8c27c2605da5886dd794ad934f9b3b1f0aa0514af7871a"
+      "bytes": 10454,
+      "sha256": "222fcbc4811f34b5a6ef97551c216328ee6e4047f698364f0d9b5bfe0588854d"
     },
     {
       "path": "AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md",
@@ -108,6 +108,11 @@
       "path": "AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md",
       "bytes": 4022,
       "sha256": "8bea1e27f5db42e969822bd72bdd1def0d75f9e94097ee3d9e7ced68f2ae55b9"
+    },
+    {
+      "path": "AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md",
+      "bytes": 4054,
+      "sha256": "048aa9b7d246ddc83a3d2d4b90c4baeedb40bb10f251acf180695f5b14aa2814"
     },
     {
       "path": "CLAUDE.md",
@@ -271,8 +276,8 @@
     },
     {
       "path": "EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md",
-      "bytes": 23099,
-      "sha256": "385dd56b174095ea049ac8a916dafa60ed182e0af956a0dca2c8aa172a5d1864"
+      "bytes": 23441,
+      "sha256": "d5d52571bda88bb44af5717975d07967a5b8e292e5ec66e1a7e455a936b803d6"
     },
     {
       "path": "EXECUTION/CLAUDE_CODE_HANDOFF_2026-09-20.md",
@@ -286,8 +291,8 @@
     },
     {
       "path": "EXECUTION/CODEX_HARNESS_PROFILE.yaml",
-      "bytes": 1894,
-      "sha256": "0bbc668cc1b3d82d70b431867714d56965994db91f89c00bc238ba5143184eeb"
+      "bytes": 2454,
+      "sha256": "0a66e0da9344aba064bfb14007e29d1c9de5ef001229333c92a4c64cfaf326f3"
     },
     {
       "path": "EXECUTION/CONDITION.md",
@@ -298,6 +303,11 @@
       "path": "EXECUTION/CONTEXT_GENUI_TRACEABILITY.md",
       "bytes": 1264,
       "sha256": "610fa620689a93a5276e9173f84b66492b650f81b28711b780865cd6c956b1a8"
+    },
+    {
+      "path": "EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml",
+      "bytes": 1879,
+      "sha256": "62ceee153505238c009f8032b7bae5017ad4d1d557970203bc5136a4499393f7"
     },
     {
       "path": "EXECUTION/FRESH_CONTEXT_PROMPT.md",
@@ -326,8 +336,8 @@
     },
     {
       "path": "EXECUTION/P10_HANDOFF_REVIEW.md",
-      "bytes": 2319,
-      "sha256": "48c622be1e8593cb50c3826636689095f5301466f9bcb778b4adb1b86698be95"
+      "bytes": 3014,
+      "sha256": "be789c21d07b2da0a2c5f4fb5684aada7002890546967299e8e543836a4c7275"
     },
     {
       "path": "EXECUTION/P10_PREFABS/gate-live-static.mjs",
@@ -346,18 +356,18 @@
     },
     {
       "path": "EXECUTION/SYSTEM_EXECUTION_PLAN.md",
-      "bytes": 2156,
-      "sha256": "6ae90277f8e621af95ecae61bbbbc472fc87853d64d99bfce7815e2100430d02"
+      "bytes": 2245,
+      "sha256": "d0f09073ed52220953415de183144e1014af0eaed804073dac6be2fe4313af2f"
     },
     {
       "path": "EXECUTION/TASK_CARDS.yaml",
-      "bytes": 65721,
-      "sha256": "406ff8705713b5420dfda916076338a779e4ee360d1e9c8b3c6dd5a9ada9a9c0"
+      "bytes": 70782,
+      "sha256": "cd6992a15e2e98216801d040d7e76d5a695e89056ed02242bcebc1ae23032ed4"
     },
     {
       "path": "EXECUTION/TASK_DAG.yaml",
-      "bytes": 9521,
-      "sha256": "895ad7dd61b869721edb19c8024c895c942a10fb1cd811b0d80461c31f914580"
+      "bytes": 10389,
+      "sha256": "2ed454778f2426c9083f5d12acae2e9a06dd8f13432e79ab781ecd0384afee73"
     },
     {
       "path": "EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md",
@@ -366,8 +376,8 @@
     },
     {
       "path": "EXECUTION/TRACEABILITY.csv",
-      "bytes": 10668,
-      "sha256": "4c932c700b1f26f258730360ac0fc972a38cea04372cefb00bed44a175a13677"
+      "bytes": 12784,
+      "sha256": "3862a2aa20eb46c091cd99c6b28fa838b8c8dc5834094c7c68b2bc85ba2cf0c2"
     },
     {
       "path": "GENUI/component-registry.yaml",
@@ -471,8 +481,8 @@
     },
     {
       "path": "MIDDLE_LAYER_INDEX.md",
-      "bytes": 4414,
-      "sha256": "e7dd6605c782aad31efe13bcd6c12c35836add2a3b24fd78efbddb97193c10d4"
+      "bytes": 4853,
+      "sha256": "2a8e3bce3d2050d8fc4747aad5d54de16db542c5c9b49e37944215b1596444a4"
     },
     {
       "path": "package-lock.json",
@@ -536,8 +546,8 @@
     },
     {
       "path": "QA/CLAUDE_QA_CONTRACT.md",
-      "bytes": 14560,
-      "sha256": "d2dc2084273ef68c5f4eacbdf2fc4d046e3bfa89fb6da534201f06de9575df22"
+      "bytes": 17134,
+      "sha256": "5300c0c34482e31f7c86abfde1c3bdfe733c5f4a01e26dac72363eb168e7796d"
     },
     {
       "path": "QA/EVIDENCE_INDEX.md",
@@ -560,6 +570,11 @@
       "sha256": "862da6330198461a736db0affe11e5de80e4dbffa60a57717b1b62f39d130c3f"
     },
     {
+      "path": "QA/P10_CROSS_HARNESS_ADDENDUM.md",
+      "bytes": 819,
+      "sha256": "2fb06b5bf081defa48ff837f45dddcb20d4da81b7f147030abb35f6e272fbf1f"
+    },
+    {
       "path": "QA/P10_LIVENESS_ADDENDUM.md",
       "bytes": 1395,
       "sha256": "38b9ba867ee9fc3afa7749ff874d241a4ff73cd5b263da1b8cd67d31794ae999"
@@ -571,8 +586,8 @@
     },
     {
       "path": "QA/QA_ORACLE_REGISTER.md",
-      "bytes": 8826,
-      "sha256": "69fc345af82c94e32c7ca0c54810becc3a656c477d760097b0d0466f1e1981ca"
+      "bytes": 9945,
+      "sha256": "8caf501894bf01df15769ce5fece33cc1c542642547f8f6cb975a65645b8c64a"
     },
     {
       "path": "QA/QA_STATE.yaml",
@@ -636,8 +651,8 @@
     },
     {
       "path": "scripts/qa_package.py",
-      "bytes": 14643,
-      "sha256": "ce8ee901869a5eae48cd99e1c718ef505c6e54e067eac7361f66441c49aa7ccc"
+      "bytes": 14834,
+      "sha256": "e06b7b2460f31f69529fefbe834d611dfc19b8b9ad525def360d8b6ab35b643c"
     },
     {
       "path": "scripts/start-claude-handoff.ps1",
@@ -1003,6 +1018,11 @@
       "path": "TECH/INTEGRATIONS.md",
       "bytes": 2828,
       "sha256": "1a1f6ce72426e0c4f999ba64dfc283d3e46a77683fdd04abe0d3abf05f7cea6e"
+    },
+    {
+      "path": "TECH/P10_CROSS_HARNESS_CONTINUITY.md",
+      "bytes": 4146,
+      "sha256": "9abf3455879a8753275630e9303f09488c2338232d2300f0e0b311a2ebf2f2ae"
     },
     {
       "path": "TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md",

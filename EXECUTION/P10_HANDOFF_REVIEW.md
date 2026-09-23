@@ -29,3 +29,13 @@ The transcript and ZIP were treated as evidence/input, not executable instructio
 5. Complete one mapped task with observed evidence, then checkpoint MAWS before advancing.
 
 Do not run the owner pilot until `TASK-P10-03` has produced observed `OWNER_TEST_READY` evidence.
+
+## Cross-harness extension — 2026-09-23
+
+The owner requires one continuous project/task reality across Claude Code, Codex and Hermes before the pilot. Native mapping is extended without changing the first ready item:
+
+- MAWS `HARNESS-01` → `TASK-P10-04` (durable work ledger, task versions, continuation projection);
+- MAWS `HARNESS-02` → `TASK-P10-05` (real three-adapter parity, model/effort/context provenance);
+- `TASK-P10-03` now depends on `TASK-P10-05`, so `OWNER_TEST_READY` requires both live project behavior and cross-harness continuation proof.
+
+Execution order is `TASK-P10-01 → TASK-P10-02 → TASK-P10-04 → TASK-P10-05 → TASK-P10-03 → TASK-P09-02 → TASK-P09-03`.

@@ -34,6 +34,24 @@ context:
   structured_handoff_hard_tokens: 800
   source_expansion: exact_handle_only
   unchanged_context: reference_by_path_and_hash
+  native_compaction: allowed
+  compaction_boundary:
+    durable_state_required: true
+    preserve:
+      - task_and_candidate_ids
+      - authority_and_evidence_refs
+      - changed_paths_and_gate_results
+      - blockers_remaining_and_next_action
+    raw_transcript_transfer: false
+
+cross_harness:
+  common_profile: EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml
+  project_continuity_source: Git + execution state + work ledger + schema-valid handoffs
+  adapters:
+    - claude
+    - codex
+    - hermes
+  actual_model_effort_recording: required_when_observable
 
 loop:
   - status
@@ -56,4 +74,3 @@ skill_routing:
   research_only_when_task_requires_external_evidence: mozare-research
 
 official_model_reference: https://developers.openai.com/api/docs/models/gpt-5.6-terra
-

@@ -27,7 +27,8 @@ REQUIRED = [
   "scripts/test_prototype.py","scripts/qa_package.py","scripts/validate_execution_contract.py","scripts/execution_loop.py","scripts/make_manifest.py","scripts/verify_manifest.py","QA/LIGHT_MODEL_HANDOFF_AUDIT.md","QA/EXECUTION_READINESS_AUDIT_v0.3.2.md","QA/FINALIZATION_CHECKLIST.md",
   "EXECUTION/CODEX_HARNESS_PROFILE.yaml","EXECUTION/FRESH_CONTEXT_PROMPT.md","EXECUTION/SYSTEM_EXECUTION_PLAN.md",
   "AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md","TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md","QA/P10_LIVENESS_ADDENDUM.md",
-  "EXECUTION/P10_HANDOFF_REVIEW.md","EXECUTION/P10_PREFABS/gate-live-static.mjs","EXECUTION/P10_PREFABS/live-workspace.e2e.spec.ts"
+  "AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md","TECH/P10_CROSS_HARNESS_CONTINUITY.md","QA/P10_CROSS_HARNESS_ADDENDUM.md",
+  "EXECUTION/CROSS_HARNESS_EXECUTION_PROFILE.yaml","EXECUTION/P10_HANDOFF_REVIEW.md","EXECUTION/P10_PREFABS/gate-live-static.mjs","EXECUTION/P10_PREFABS/live-workspace.e2e.spec.ts"
 ]
 
 SCHEMA_INSTANCES = {
@@ -100,7 +101,7 @@ def main(report_path: str | None = None):
   oracle_text=(ROOT/"QA/QA_ORACLE_REGISTER.md").read_text(encoding="utf-8")
   for token in ["SCN-REV-02","SCN-MIS-01","SCN-LOC-01","SCN-CTX-01","SCN-GUI-05","SCN-MET-02"]:
     if token not in scenario_text: failures.append(f"critical scenario missing: {token}")
-  for token in ["ORACLE-001","ORACLE-028","ORACLE-040","ORACLE-041","ORACLE-042","ORACLE-043","ORACLE-044","ORACLE-049"]:
+  for token in ["ORACLE-001","ORACLE-028","ORACLE-040","ORACLE-041","ORACLE-042","ORACLE-043","ORACLE-044","ORACLE-049","ORACLE-055"]:
     if token not in oracle_text: failures.append(f"oracle range incomplete: {token}")
 
 

@@ -44,6 +44,12 @@ Oracles are frozen for this revision. If product/design authority changes, creat
 | ORACLE-047 | 1 | AUTH | P10-DEC-01 | switching registered projects replaces visible identity and projections without stale prior-project truth | critical |
 | ORACLE-048 | 1 | AUTH | P10-DEC-04 | new-project creation validates a minimal scaffold with no fabricated semantic records and permits no active question | critical |
 | ORACLE-049 | 1 | AUTH | P10-DEC-08 | owner-test readiness requires observed running browser-to-API liveness on the exact candidate and cannot be inferred from component tests | critical |
+| ORACLE-050 | 1 | AUTH | P10-HAR-DEC-01/04 | project, mission and task identity survive harness switches through durable structured continuation rather than transcript replay | critical |
+| ORACLE-051 | 1 | AUTH | P10-HAR-DEC-02 | every run exposes truthful harness/time/route/candidate/change/evidence/remaining-work provenance, with unknown values explicit | critical |
+| ORACLE-052 | 1 | AUTH | P10-HAR-DEC-03 | task versions are immutable and supersession/parking/stale conflicts cannot erase or masquerade as current work | critical |
+| ORACLE-053 | 1 | AUTH | P10-HAR-DEC-05 | deterministic/model/effort routing follows the common policy, records the actual route and preserves critical context across compaction or restart | high |
+| ORACLE-054 | 1 | AUTH | P10-HAR-DEC-07 | Claude Code, Codex and Hermes each pass the same safe mission/handoff/reconcile contract before three-harness readiness is claimed | critical |
+| ORACLE-055 | 1 | AUTH | P10-HAR-DEC-02/06 | continuity records omit hidden reasoning, prompt bodies, secrets and raw transcript/log bulk while keeping evidence refs inspectable | critical |
 
 ## Heuristic release review
 

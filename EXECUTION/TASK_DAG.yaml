@@ -459,10 +459,55 @@ tasks:
   - ORACLE-047
   gate: GATE-LIVE-UI
   phase: 2
+- id: TASK-P10-04
+  objective: Build the durable cross-harness work ledger, task-version resolver and continuity projection
+  deps:
+  - TASK-P10-02
+  scenarios:
+  - SCN-HAR-01
+  - SCN-HAR-02
+  - SCN-HAR-03
+  - SCN-HAR-04
+  - SCN-HAR-06
+  - SCN-LOC-03
+  oracles:
+  - ORACLE-028
+  - ORACLE-050
+  - ORACLE-051
+  - ORACLE-052
+  - ORACLE-055
+  gate: GATE-HARNESS-LEDGER
+  phase: 2
+- id: TASK-P10-05
+  objective: Enable and prove real Claude Code, Codex and Hermes continuation parity
+  deps:
+  - TASK-P10-04
+  scenarios:
+  - SCN-HAR-01
+  - SCN-HAR-03
+  - SCN-HAR-04
+  - SCN-HAR-05
+  - SCN-HAR-06
+  - SCN-MIS-02
+  - SCN-X-06
+  oracles:
+  - ORACLE-018
+  - ORACLE-023
+  - ORACLE-029
+  - ORACLE-030
+  - ORACLE-034
+  - ORACLE-039
+  - ORACLE-050
+  - ORACLE-051
+  - ORACLE-053
+  - ORACLE-054
+  - ORACLE-055
+  gate: GATE-HARNESS-CONTINUITY
+  phase: 2
 - id: TASK-P10-03
   objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
   deps:
-  - TASK-P10-02
+  - TASK-P10-05
   scenarios:
   - SCN-ORI-01
   - SCN-LOC-01
@@ -474,6 +519,8 @@ tasks:
   - ORACLE-046
   - ORACLE-047
   - ORACLE-049
+  - ORACLE-050
+  - ORACLE-054
   gate: GATE-LIVE
   phase: 2
 - id: TASK-P09-02

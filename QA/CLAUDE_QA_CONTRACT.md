@@ -160,6 +160,30 @@ The production application does not exist yet. All runtime oracles below are `UN
 - **Pass:** known fixture regressions are rejected and the unchanged clean candidate passes; this supplements rather than replaces TEST-023/024.
 - **Evidence:** commands/results and candidate identity before/after canary removal.
 
+### TEST-026 — Durable work ledger and task-version resolution
+- **Oracle:** ORACLE-051/052/055.
+- **Path:** append queued/running/parked/completed/superseded records for one mission across multiple harness IDs; restart the service; introduce a stale predecessor and protected-value canaries.
+- **Pass:** records remain append-only and restart-safe; latest version resolves deterministically; stale overwrite is rejected; parked work remains resumable; required provenance exists; prompt/secret/log canaries are absent.
+- **Evidence:** exact candidate, ledger records, focused unit/integration results, before/after hashes.
+
+### TEST-027 — Cross-harness continuation
+- **Oracle:** ORACLE-050/052.
+- **Path:** simulate Codex completing/parking version N, Claude Code continuing version N or creating N+1, Hermes continuing, then Codex returning from a stale base.
+- **Pass:** stable project/mission/task identity and accepted state survive; each handoff names prior/current version; stale return cannot overwrite; UI projection shows who worked, result, remaining work and next action without transcript replay.
+- **Evidence:** exact candidate, continuation packets, handoffs, conflict receipt and visible projection assertions.
+
+### TEST-028 — Real three-adapter capability and lifecycle matrix
+- **Oracle:** ORACLE-054 plus ORACLE-018/023/028.
+- **Path:** for installed Claude Code, Codex and Hermes CLIs, observe executable/help probe, harmless read mission, disposable registered-worktree write containment, stop, structured handoff validation and restart reconciliation.
+- **Pass:** all three satisfy the same contract on the exact candidate; unavailable/unsafe capability is truthful and blocks three-harness-ready status without losing work.
+- **Evidence:** exact CLI/model versions when observable, argv/cwd records, handoffs, candidate diffs, stop/restart results and no-outside-root proof.
+
+### TEST-029 — Model/effort routing and context-boundary privacy
+- **Oracle:** ORACLE-053/055 plus ORACLE-029..034/039.
+- **Path:** exercise deterministic, light, implementation, escalation and independent-QA routes; cross native compaction/restart boundaries where observable; inspect durable records.
+- **Pass:** route and actual observable model/effort are recorded; defined escalation triggers work; bounded context retains critical refs/open work; no transcript replay, hidden reasoning, prompt body or secret enters durable continuity state.
+- **Evidence:** route decisions, context snapshot/packet refs, compact/restart continuation result and privacy scan.
+
 ## Blind/informed repair loop
 
 For every implementation candidate:

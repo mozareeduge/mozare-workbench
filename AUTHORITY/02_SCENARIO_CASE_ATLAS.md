@@ -191,6 +191,17 @@ Unit of coverage: materially distinct product/user/system consequence, not every
 **Expected:** project list, Focus facts, objects, relations, review queue and artifact registry reconstitute; only manually arranged node coordinates/view preferences may reset.  
 **QA handoff:** critical; strongest proof is candidate execution with deletion fixture + restart.
 
+## Cross-harness continuity consequence class
+
+| ID | Trigger | Required system behavior | Human-visible result | Priority |
+|---|---|---|---|---|
+| SCN-HAR-01 | work moves from one harness to another | preserve project/mission/task identity; compile a bounded continuation from latest valid durable state; receiving harness re-checks mutable facts | one continuous project history with previous worker, result, remaining work and next action | critical |
+| SCN-HAR-02 | a stale harness returns after a newer task version exists | reject silent overwrite; show current version, stale base and safe successor/rebase route | conflict is understandable without reading diffs or transcripts | critical |
+| SCN-HAR-03 | selected harness/model is missing or loses capability | park the mission with exact reason/setup route and preserve all prior work; allow another harness to continue | no lost work and no false Running/completed state | critical |
+| SCN-HAR-04 | context compacts, restarts or crosses harnesses | carry IDs, authority/evidence refs, candidate, open dependencies, remaining work and next action through structured state, not transcript replay | continuation remains coherent without owner reconstruction | critical |
+| SCN-HAR-05 | task risk requires a different model or reasoning effort | route by common capability/effort policy, record actual route, and escalate only on defined triggers | stronger models are used where value/risk justifies them without vendor-specific project behavior | high |
+| SCN-HAR-06 | run records are inspected or exported | omit hidden reasoning, prompt bodies, secrets and unbounded logs while retaining inspectable provenance/evidence refs | history is useful and safe rather than another transcript archive | critical |
+
 ## 3. Cross-factor directed cases
 
 - `SCN-X-01`: stale proposal × accept → Accept disabled, no partial apply.

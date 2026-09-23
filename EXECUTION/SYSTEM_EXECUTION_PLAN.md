@@ -10,7 +10,7 @@ Move the validated handoff to one exact local candidate that Mozare can open, us
 2. **Project instrument — P01–P03:** implement recoverable project state plus Focus, Field, Flow, Output, proposal transactions, and bounded Review.
 3. **Agent economy — P04–P06:** implement Git safety, technical translation, context compilation, capsules/deltas, routing/telemetry, mission lifecycle, adapters, controlled representation, and read/proposal-only MCP.
 4. **Integration and hardening — P07–P08:** add Mozare Wiki/QMD reading, then close responsive, keyboard, bidi, process, path, secret, preview, and loopback gates.
-5. **Live-product correction — P10:** add persistent multi-project selection, wire all five surfaces to live API projections, and establish `GATE-LIVE` on the real owner launch path.
+5. **Live-product correction — P10:** add persistent multi-project selection, wire all five surfaces to live projections, preserve one durable task/run lineage across Claude Code, Codex and Hermes, and establish combined live/cross-harness gates on the owner launch path.
 6. **Candidate freeze — P09:** run the owner pilot only on the live product, freeze the unchanged candidate, and execute independent final QA.
 
 ## Control loop
