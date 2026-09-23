@@ -9,10 +9,11 @@ function initialTheme(): Theme {
 }
 
 export function ThemeToggle() {
-  const theme = initialTheme();
+  const [theme, setTheme] = useState<Theme>(initialTheme);
   const apply = (next: Theme) => {
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem(STORAGE_KEY, next);
+    setTheme(next);
   };
   return (
     <button
@@ -28,3 +29,4 @@ export function ThemeToggle() {
 
 // Applied on module load so the first paint already matches the stored/default theme.
 document.documentElement.setAttribute('data-theme', initialTheme());
+import { useState } from 'react';

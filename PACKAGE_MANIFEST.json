@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 255,
+  "file_count": 258,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -496,8 +496,8 @@
     },
     {
       "path": "playwright.config.ts",
-      "bytes": 440,
-      "sha256": "1e309954125c121c9b9ab3d4ada81e602d4f38c712aa67226be0837489bbb938"
+      "bytes": 597,
+      "sha256": "ec632041e8f5f67b1716dae49c7b9ad71647941473dbb5eafdb8c48ce553edbe"
     },
     {
       "path": "prompts/IMPLEMENTATION_MISSION.md",
@@ -926,8 +926,8 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 8248,
-      "sha256": "3760078111e3b6f2214d198ad7d6fe47c60073ccecf3963815eae999ef5fb6ca"
+      "bytes": 16072,
+      "sha256": "ed1d71ba5c46fd04353d8eaad5a5ce3ae21f91a98878cca2d87b0759e2d98e96"
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
@@ -946,8 +946,13 @@
     },
     {
       "path": "src/web/components/ThemeToggle.tsx",
-      "bytes": 970,
-      "sha256": "ae2f409e39f077524fe913b5d53ab77a57fb41ac099a38cafed2108123fd2a3b"
+      "bytes": 1051,
+      "sha256": "e68b5244e4d834620e1bc4b5511a5183d0ea52be9cf7ba3f8fc08c83fb587e75"
+    },
+    {
+      "path": "src/web/liveTypes.ts",
+      "bytes": 1883,
+      "sha256": "c5c8161882600986e2b7cc04f2f4d4d1fe82f4955878a64d08b175888d83059c"
     },
     {
       "path": "src/web/main.tsx",
@@ -956,8 +961,8 @@
     },
     {
       "path": "src/web/styles/app.css",
-      "bytes": 6426,
-      "sha256": "bc4c6c4d474d1032f22f1f0386846db3dab67234d158baf3d84c574e82635bef"
+      "bytes": 8665,
+      "sha256": "21c8f0aa4ea4a191fff6b575bea07768546681b6bd19657f9d62c1769e19d6c8"
     },
     {
       "path": "src/web/styles/field.css",
@@ -986,23 +991,23 @@
     },
     {
       "path": "src/web/surfaces/Field.tsx",
-      "bytes": 11886,
-      "sha256": "1fad318688f8031c96951d35cb606636d8f43a6f594d3ec5c30d67b451f60cdd"
+      "bytes": 9404,
+      "sha256": "91fcb05491575094192088723e89896458436ece17400c7e0c0083fb58971661"
     },
     {
       "path": "src/web/surfaces/Flow.tsx",
-      "bytes": 4405,
-      "sha256": "442cac469058ea384662108d5c9b34e08618b93110d60a03db1c4496e3fc8e82"
+      "bytes": 1610,
+      "sha256": "f1487a1179228df67ae013a744c65e8040e220895a17690283ef2d3522db34fb"
     },
     {
       "path": "src/web/surfaces/Output.tsx",
-      "bytes": 9611,
-      "sha256": "077506a58bcd1f07d6f7c8ff543a2564808be6b92973c461c8a278d7d3931d1b"
+      "bytes": 1839,
+      "sha256": "e492a28da4d56fc0d26cde3fca2e5f8e68a85d50271ebcc489a4d07aeeb89a8f"
     },
     {
       "path": "src/web/surfaces/Review.tsx",
-      "bytes": 25665,
-      "sha256": "5b6c4912bb8c69408e479ae265cdad95e69dc484a07a5a343662bc5ebdaf636a"
+      "bytes": 935,
+      "sha256": "409f90442d3c164057ea90cc79f3192c923cd8e64a767dd04a5ce30c4e96ef38"
     },
     {
       "path": "START_HERE_PROMPT.md",
@@ -1051,13 +1056,23 @@
     },
     {
       "path": "tests/e2e/accessibility-bidi.spec.ts",
-      "bytes": 1787,
-      "sha256": "40213180a2e58b437da98acc3c0016f9cb10ea0740137d5314f99d541f22589e"
+      "bytes": 2279,
+      "sha256": "b918b15377824998a4c92dc1b0fadc319bce6cad2c9235ad6391513ec7496197"
     },
     {
       "path": "tests/e2e/focus-shell.spec.ts",
       "bytes": 12512,
       "sha256": "50392a86e06242397eccb09d23a148522d65fe4027d2881ac867a73fa84c4baa"
+    },
+    {
+      "path": "tests/e2e/live-setup.ts",
+      "bytes": 1613,
+      "sha256": "625778718c99ed4e2292f2ae81f51877772d59000db4f4cb4b3e3b109b2654ea"
+    },
+    {
+      "path": "tests/e2e/live-workspace.spec.ts",
+      "bytes": 4639,
+      "sha256": "e8c05206ccad2b7ddf249362766554eeacb1a504a249280ee6b8cac51ad57695"
     },
     {
       "path": "tests/e2e/mission-sheet.spec.ts",
@@ -1256,8 +1271,8 @@
     },
     {
       "path": "tsconfig.server.json",
-      "bytes": 259,
-      "sha256": "37fb83c55623404e1d836af9c5ef5127372c93f18b7261b58162a4797e13d2ea"
+      "bytes": 197,
+      "sha256": "f9151ed621a6792e7df1b9f67bc906cf6256089d88ed5c5d6c46b2a196f98a64"
     },
     {
       "path": "UI/component-contracts.md",
@@ -1276,8 +1291,8 @@
     },
     {
       "path": "vite.config.ts",
-      "bytes": 267,
-      "sha256": "e0b226962f70b4dee958cc23add6f4401ccbfed066be79450f29c2d52842c32c"
+      "bytes": 315,
+      "sha256": "a2b959649c673bcbeb1bf9de60ff9b882808ce190ea1fd46268466a63e0637c7"
     }
   ]
 }
