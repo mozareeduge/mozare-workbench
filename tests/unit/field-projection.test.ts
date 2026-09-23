@@ -19,6 +19,6 @@ describe('TEST-003: Field derived relation projection', () => {
     const moved = moveFieldNode(layout, 'current', { x: 18, y: 27 });
     expect(moved).toEqual({ current: { x: 18, y: 27 } });
     expect(layout).toEqual({ current: { x: 0, y: 0 } });
-    expect(projectField(snapshot(1)).currentObject.id).toBe('current');
+    expect(projectField(snapshot(1)).currentObject?.id).toBe('current');
   });
 });

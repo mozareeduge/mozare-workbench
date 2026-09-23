@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 252,
+  "file_count": 255,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -796,8 +796,8 @@
     },
     {
       "path": "src/core/projection/FieldProjection.ts",
-      "bytes": 1820,
-      "sha256": "0fd192c6f9f0863e2c7dc6302f6da6083b57e87b687779fc6b99e8569210ef88"
+      "bytes": 1995,
+      "sha256": "a5efbd8a7fa69429b953e8b3c0c02bb64ef7727aba87f6b128b57b8fb1d66e58"
     },
     {
       "path": "src/core/projection/FlowProjection.ts",
@@ -811,13 +811,13 @@
     },
     {
       "path": "src/core/projection/ProjectionEngine.ts",
-      "bytes": 3082,
-      "sha256": "64080b652ae2aee6a8e492fbe98c6924546b307d7440b32f88d68f8e428cbe5f"
+      "bytes": 3409,
+      "sha256": "cc299ccb45606543cac7a3b411456b0e6742cb8582bbe6814225ddc892e74ca8"
     },
     {
       "path": "src/core/projection/projectionTypes.ts",
-      "bytes": 1006,
-      "sha256": "1ef826931676be6f2891605b840c166f1cc3710a43be4f0e3618cd5c9ad9674f"
+      "bytes": 1013,
+      "sha256": "99f8d9e52e50adaa1a7759a60153105c119a55fe1fdd68d94b0c0d803f1f660a"
     },
     {
       "path": "src/core/projection/ReviewProjection.ts",
@@ -856,13 +856,13 @@
     },
     {
       "path": "src/core/workspace.ts",
-      "bytes": 9363,
-      "sha256": "08939e1e1de61344fe07676e6d91dc731f45e40451e8f9db354a035fe3b586ff"
+      "bytes": 9407,
+      "sha256": "ad8b2ef6be6c78f0ab236189aa71dab18feeb5a48689f465506d3755810c7b62"
     },
     {
       "path": "src/mcp/McpWorkspaceServer.ts",
-      "bytes": 14166,
-      "sha256": "52250b1caea74776dca29eace46ab73cf595b6415e1e5a6073fa00603ede6115"
+      "bytes": 14240,
+      "sha256": "85bc12c52c863932f742235558836938b19c0bd87ffb7dad5385eea8fe4fca73"
     },
     {
       "path": "src/mcp/pathSafety.ts",
@@ -891,8 +891,8 @@
     },
     {
       "path": "src/server/app.ts",
-      "bytes": 18299,
-      "sha256": "b88dc6134423c804b4478beec0b1a09d19db5242ef4415237f3a17317d23ce41"
+      "bytes": 22356,
+      "sha256": "8546ea865d3f68f2e93b229ad068ab657adf3dd03be15b7270c8fc0cff17cd97"
     },
     {
       "path": "src/server/git/GitAdapter.ts",
@@ -913,6 +913,11 @@
       "path": "src/server/process/ProcessRunner.ts",
       "bytes": 638,
       "sha256": "be931f4381c79fce9e010856802e770c7a241255ec4ae3ef8e6005fac789c6e9"
+    },
+    {
+      "path": "src/server/workspaces/WorkspaceRegistry.ts",
+      "bytes": 11486,
+      "sha256": "a8953c534a901532a8d6541d23167293d058665bed09c9f812a39c19c91c72da"
     },
     {
       "path": "src/shared/contextTypes.ts",
@@ -1121,8 +1126,13 @@
     },
     {
       "path": "tests/integration/wiki-evidence-adapter.test.ts",
-      "bytes": 12218,
-      "sha256": "7edf69e04a450967f6841af05b903fdcf7a25b3ddf1950c293afc5e3b948de64"
+      "bytes": 12461,
+      "sha256": "563bb07c5279c5cf5ef383342f07f8aff2532afd46a5db9166acc93947874665"
+    },
+    {
+      "path": "tests/integration/workspaces-api.test.ts",
+      "bytes": 4372,
+      "sha256": "91d12bdf9a871b78d47cda824197688d9e08d84ab635445b2954541635300476"
     },
     {
       "path": "tests/security/mcp-surface.test.ts",
@@ -1151,8 +1161,8 @@
     },
     {
       "path": "tests/unit/field-projection.test.ts",
-      "bytes": 1867,
-      "sha256": "d8e48c733cd7ff6fdfb62cd451feff3f4457077b18a232d2273c05fef6a30510"
+      "bytes": 1868,
+      "sha256": "3e72e56a4e96015844a682779395e3a4e4396837fd81c4edf9e124aa27504fbd"
     },
     {
       "path": "tests/unit/flow-projection.test.ts",
@@ -1230,9 +1240,14 @@
       "sha256": "646dc45736e59ac6790bf143a828f8e51c7a2f644da333a63aae0499be93180c"
     },
     {
+      "path": "tests/unit/workspace-registry.test.ts",
+      "bytes": 4906,
+      "sha256": "77304ecee400626bb8a5fd9afe79cb98e5dc64c27f3dc5bee27de398b7078ed5"
+    },
+    {
       "path": "tests/unit/workspace.test.ts",
-      "bytes": 3880,
-      "sha256": "ef0408e31fad73b5bbf7fae53cf9d8fe192989224e1c79aa2056af873a856844"
+      "bytes": 4577,
+      "sha256": "dbd3ec5533dad55eda533af2c2d35ad48698e049b16dcee4047c47ebda93a09d"
     },
     {
       "path": "tsconfig.json",

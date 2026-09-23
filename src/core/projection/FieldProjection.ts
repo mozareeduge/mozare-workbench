@@ -4,7 +4,7 @@ export const FIELD_NODE_LIMIT = 100;
 
 export type DerivedNodePosition = { x: number; y: number };
 export type FieldProjection = {
-  currentObject: CanonicalObject;
+  currentObject: CanonicalObject | null;
   nodes: CanonicalObject[];
   relations: CanonicalRelation[];
   hiddenByProjection: number;
@@ -14,7 +14,10 @@ export type FieldProjection = {
 /** A read-only, bounded relation slice. Layout is display state, never canonical truth. */
 export function projectField(snapshot: WorkspaceSnapshot, layout: Record<string, DerivedNodePosition> = {}): FieldProjection {
   const currentObject = snapshot.objects.find((object) => object.id === snapshot.project.current_question_id);
-  if (!currentObject) throw new Error(`Current question ${snapshot.project.current_question_id} is missing from the workspace snapshot`);
+  if (!currentObject) {
+    if (snapshot.project.current_question_id != null) throw new Error(`Current question ${snapshot.project.current_question_id} is missing from the workspace snapshot`);
+    return { currentObject: null, nodes: [], relations: [], hiddenByProjection: 0, layout: { ...layout } };
+  }
   const relatedIds = new Set(snapshot.relations.filter((relation) => relation.participants.includes(currentObject.id)).flatMap((relation) => relation.participants));
   const candidates = snapshot.objects.filter((object) => relatedIds.has(object.id));
   const nodes = candidates.slice(0, FIELD_NODE_LIMIT);

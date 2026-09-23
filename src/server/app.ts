@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { existsSync, readFileSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { ContextCompiler, ContextExpansionError } from '../core/context/ContextCompiler.js';
 import { BudgetExceededError } from '../core/context/Budgeter.js';
 import { CapsuleStore, createCapsule } from '../core/context/CapsuleStore.js';
@@ -25,6 +25,8 @@ import {
   searchLocalProject,
   type EvidenceHit,
 } from './adapters/EvidenceService.js';
+import { ProcessRunner } from './process/ProcessRunner.js';
+import { FolderSelectionTokens, WorkspaceRegistry } from './workspaces/WorkspaceRegistry.js';
 
 const compileInputSchema = {
   type: 'object',
@@ -136,6 +138,32 @@ export type EvidenceAdapterOptions = {
   qmdCommand: readonly string[] | null;
 };
 
+export type AppOptions = {
+  contextCacheDir?: string;
+  telemetryDir?: string;
+  evidence?: Partial<EvidenceAdapterOptions>;
+  workspaceRegistry?: WorkspaceRegistry;
+  workspaceRegistryFile?: string;
+  folderPicker?: () => Promise<string | null>;
+};
+
+async function defaultFolderPicker(): Promise<string | null> {
+  if (process.platform !== 'win32') throw new Error('Native folder selection is not available on this platform');
+  const script = [
+    'Add-Type -AssemblyName System.Windows.Forms',
+    '$dialog = New-Object System.Windows.Forms.FolderBrowserDialog',
+    "$dialog.Description = 'Select a Mozare workspace folder'",
+    'if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { [Console]::Out.Write($dialog.SelectedPath) }',
+  ].join('; ');
+  const result = await new ProcessRunner().run(
+    'powershell.exe',
+    ['-NoProfile', '-NonInteractive', '-STA', '-Command', script],
+    process.cwd(),
+  );
+  if (result.exitCode !== 0) throw new Error('Native folder selection failed');
+  return result.stdout.trim() || null;
+}
+
 function defaultEvidenceOptions(): EvidenceAdapterOptions {
   // No external evidence source ships configured: the surface degrades
   // truthfully and the local project remains fully usable (SCN-EVD-04).
@@ -143,7 +171,7 @@ function defaultEvidenceOptions(): EvidenceAdapterOptions {
 }
 
 export function buildApp(
-  options: { contextCacheDir?: string; telemetryDir?: string; evidence?: Partial<EvidenceAdapterOptions> } = {},
+  options: AppOptions = {},
 ) {
   const app = Fastify({ logger: false });
   const compiler = new ContextCompiler();
@@ -167,12 +195,19 @@ export function buildApp(
   const wikiAdapter = new WikiReadAdapter(evidenceOptions.wikiRoot);
   const qmdAdapter = new QmdAdapter(evidenceOptions.qmdCommand);
   const captureStore = new EvidenceCaptureStore();
+  const workspaceRegistry = options.workspaceRegistry ?? new WorkspaceRegistry(
+    options.workspaceRegistryFile ?? join(process.cwd(), '.mozare', 'runtime', 'workspaces.json'),
+  );
+  const folderTokens = new FolderSelectionTokens();
+  const pickFolder = options.folderPicker ?? defaultFolderPicker;
 
-  const resolveWorkspaceRoot = (raw: unknown): string | null => {
+  const resolveWorkspaceRoot = (raw: unknown): { id: string; root: string } | null => {
     if (typeof raw !== 'string' || raw.trim() === '') return null;
-    const candidate = resolve(raw);
-    if (!existsSync(candidate) || !statSync(candidate).isDirectory()) return null;
-    return candidate;
+    const registeredRoot = workspaceRegistry.rootFor(raw);
+    if (registeredRoot && existsSync(registeredRoot) && statSync(registeredRoot).isDirectory()) {
+      return { id: raw, root: registeredRoot };
+    }
+    return null;
   };
 
   const degradedSources = (wikiCaps: { available: boolean }, qmdCaps: { available: boolean }): string[] => {
@@ -196,14 +231,66 @@ export function buildApp(
 
   app.get('/api/health', async () => ({ status: 'ok' }));
 
+  app.get('/api/workspaces', async () => ({ workspaces: workspaceRegistry.list() }));
+
+  app.post('/api/system/pick-folder', async (_request, reply) => {
+    try {
+      const selected = await pickFolder();
+      if (!selected) return reply.code(409).send({ error: 'selection_cancelled' });
+      return folderTokens.issue(selected);
+    } catch (error) {
+      return reply.code(503).send({ error: 'folder_picker_unavailable', message: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
+  app.post('/api/workspaces/register', async (request, reply) => {
+    const body = request.body as { selectionToken?: unknown } | null;
+    if (typeof body?.selectionToken !== 'string') return reply.code(400).send({ error: 'selection_token_required' });
+    try {
+      return { workspace: workspaceRegistry.register(folderTokens.consume(body.selectionToken)) };
+    } catch {
+      return reply.code(400).send({ error: 'registration_rejected', message: 'The selected folder could not be registered' });
+    }
+  });
+
+  app.post('/api/workspaces/create', async (request, reply) => {
+    const body = request.body as { parentSelectionToken?: unknown; name?: unknown; kind?: unknown; currentObjective?: unknown } | null;
+    if (typeof body?.parentSelectionToken !== 'string' || typeof body?.name !== 'string' || typeof body?.kind !== 'string' || typeof body?.currentObjective !== 'string') {
+      return reply.code(400).send({ error: 'parent_selection_name_kind_and_objective_required' });
+    }
+    try {
+      return { workspace: workspaceRegistry.create(folderTokens.consume(body.parentSelectionToken), body.name, body.kind, body.currentObjective) };
+    } catch {
+      return reply.code(400).send({ error: 'creation_rejected', message: 'The project could not be created at the selected location' });
+    }
+  });
+
+  app.post('/api/workspaces/:workspaceId/activate', async (request, reply) => {
+    try {
+      const { workspaceId } = request.params as { workspaceId: string };
+      return { workspace: workspaceRegistry.activate(workspaceId) };
+    } catch {
+      return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    }
+  });
+
+  app.get('/api/workspaces/:workspaceId/projection', async (request, reply) => {
+    try {
+      const { workspaceId } = request.params as { workspaceId: string };
+      return workspaceRegistry.projection(workspaceId);
+    } catch {
+      return reply.code(404).send({ error: 'projection_unavailable', message: 'The workspace projection is unavailable' });
+    }
+  });
+
   /** Unified evidence search: local project + optional wiki/QMD candidates (TASK-P07-01). */
   app.get('/api/evidence/search', async (request, reply) => {
     const query = typeof (request.query as Record<string, unknown>).query === 'string'
       ? ((request.query as Record<string, string>).query as string)
       : '';
-    const workspaceRoot = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
-    if (!workspaceRoot) {
-      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    const workspace = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
+    if (!workspace) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must be a registered opaque workspace ID' });
     }
     const wikiCaps = wikiAdapter.capabilities();
     const qmdCaps = qmdAdapter.capabilities();
@@ -219,9 +306,9 @@ export function buildApp(
     } else {
       qmd = qmdCaps;
     }
-    const local: EvidenceHit[] = searchLocalProject(workspaceRoot, query);
+    const local: EvidenceHit[] = searchLocalProject(workspace.root, query);
     return {
-      workspaceId: workspaceRoot,
+      workspaceId: workspace.id,
       degraded: degradedSources(wikiCaps, qmdCaps),
       local,
       wiki,
@@ -248,16 +335,16 @@ export function buildApp(
    */
   app.post('/api/evidence/capture', async (request, reply) => {
     const body = request.body as { workspaceId?: unknown; hit?: unknown; note?: unknown } | null;
-    const workspaceRoot = resolveWorkspaceRoot(body?.workspaceId);
-    if (!workspaceRoot) {
-      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    const workspace = resolveWorkspaceRoot(body?.workspaceId);
+    if (!workspace) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must be a registered opaque workspace ID' });
     }
     const hit = body?.hit as EvidenceHit | undefined;
     if (!hit || typeof hit !== 'object' || typeof hit.rel !== 'string' || !hit.route || typeof hit.source !== 'string') {
       return reply.code(400).send({ error: 'invalid_hit', message: 'capture requires a search hit with rel, source and route' });
     }
     try {
-      const captured = captureStore.stage(workspaceRoot, hit, typeof body?.note === 'string' ? body.note : '');
+      const captured = captureStore.stage(workspace.root, hit, typeof body?.note === 'string' ? body.note : '');
       return { captured };
     } catch (error) {
       return reply.code(400).send({
@@ -269,11 +356,11 @@ export function buildApp(
 
   /** Staged captures for a workspace — all pending_review by construction. */
   app.get('/api/evidence/captures', async (request, reply) => {
-    const workspaceRoot = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
-    if (!workspaceRoot) {
-      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must resolve to an existing project directory' });
+    const workspace = resolveWorkspaceRoot((request.query as Record<string, unknown>).workspaceId);
+    if (!workspace) {
+      return reply.code(400).send({ error: 'unknown_workspace', message: 'workspaceId must be a registered opaque workspace ID' });
     }
-    const snapshot = loadWorkspace(workspaceRoot);
+    const snapshot = loadWorkspace(workspace.root);
     return { captures: captureStore.list(snapshot.project.id) };
   });
 

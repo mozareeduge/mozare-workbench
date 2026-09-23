@@ -28,6 +28,10 @@ export type RegisteredWorkspace = {
   root: string;
 };
 
+export type WorkspaceLookup = {
+  get(id: string): RegisteredWorkspace;
+};
+
 export type McpToolResult = {
   content: { type: 'text'; text: string }[];
   isError?: boolean;
@@ -148,7 +152,7 @@ export class WorkspaceRegistry {
 export class McpWorkspaceServer {
   readonly pendingProposals: RelationConnectProposal[] = [];
 
-  constructor(private readonly registry: WorkspaceRegistry) {}
+  constructor(private readonly registry: WorkspaceLookup) {}
 
   handleToolCall(call: ToolCall): McpToolResult {
     const name = call?.name;

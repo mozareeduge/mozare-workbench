@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { AddressInfo } from 'node:net';
 import { buildApp } from '../../src/server/app.js';
+import { WorkspaceRegistry } from '../../src/server/workspaces/WorkspaceRegistry.js';
 
 const roots: string[] = [];
 
@@ -35,13 +36,12 @@ function makeWikiRoot(): string {
   return root;
 }
 
-function makeWorkspace(): { root: string; workspaceId: string } {
+function makeWorkspace(): { root: string; workspaceId: string; registry: WorkspaceRegistry } {
   const root = tracked(mkdtempSync(join(tmpdir(), 'mozare-wb-')));
   cpSync(join(process.cwd(), 'seed', 'example-project'), root, { recursive: true });
-  // WorkspaceRegistry id convention from the MCP surface: registration order.
-  // The evidence routes accept the canonical workspace root path as the id for
-  // now (the registry is server-owned); tests pass the root path directly.
-  return { root, workspaceId: root };
+  const runtime = tracked(mkdtempSync(join(tmpdir(), 'mozare-wb-registry-')));
+  const registry = new WorkspaceRegistry(join(runtime, 'workspaces.json'));
+  return { root, workspaceId: registry.register(root).id, registry };
 }
 
 function qmdHelper(dir: string): string {
@@ -80,8 +80,8 @@ afterEach(async () => {
 describe('TEST-010 (evidence authority): external search stays candidate evidence with a source route', () => {
   it('wiki hits expose source/authority/candidate state and a derivative routes to its original (SCN-EVD-01/02)', async () => {
     const wikiRoot = makeWikiRoot();
-    const { workspaceId } = makeWorkspace();
-    const app = buildApp({ evidence: { wikiRoot, qmdCommand: null } });
+    const { workspaceId, registry } = makeWorkspace();
+    const app = buildApp({ workspaceRegistry: registry, evidence: { wikiRoot, qmdCommand: null } });
     apps.push(app);
     await app.listen({ host: '127.0.0.1', port: 0 });
     const port = (app.server.address() as AddressInfo).port;
@@ -140,8 +140,8 @@ describe('TEST-010 (evidence authority): external search stays candidate evidenc
   });
 
   it('without wiki/qmd configured the surface degrades truthfully and the local project stays usable (SCN-EVD-04)', async () => {
-    const { workspaceId } = makeWorkspace();
-    const app = buildApp({ evidence: { wikiRoot: null, qmdCommand: null } });
+    const { workspaceId, registry } = makeWorkspace();
+    const app = buildApp({ workspaceRegistry: registry, evidence: { wikiRoot: null, qmdCommand: null } });
     apps.push(app);
     await app.listen({ host: '127.0.0.1', port: 0 });
     const port = (app.server.address() as AddressInfo).port;
@@ -173,13 +173,13 @@ describe('TEST-017 (degraded adapters): a failed QMD command never breaks the su
   it('qmd command runs argv-only as data and its failure is a compact diagnostic, not a crash (SCN-ERR-05, SCN-EVD-04)', async () => {
     const { root: helperDir } = makeWorkspace();
     const helper = qmdHelper(helperDir);
-    const { workspaceId } = makeWorkspace();
-    const app = buildApp({ evidence: { wikiRoot: null, qmdCommand: ['node', helper] } });
+    const { root, workspaceId, registry } = makeWorkspace();
+    const app = buildApp({ workspaceRegistry: registry, evidence: { wikiRoot: null, qmdCommand: ['node', helper] } });
     apps.push(app);
     await app.listen({ host: '127.0.0.1', port: 0 });
     const port = (app.server.address() as AddressInfo).port;
 
-    const marker = join(workspaceId, 'must-not-exist-qmd');
+    const marker = join(root, 'must-not-exist-qmd');
     const hostile = `'; touch ${marker} & | $(rm -rf x)`;
     const search = await fetch(`http://127.0.0.1:${port}/api/evidence/search?workspaceId=${encodeURIComponent(workspaceId)}&query=${encodeURIComponent(hostile)}`);
     expect(search.status).toBe(200);
@@ -196,7 +196,7 @@ describe('TEST-017 (degraded adapters): a failed QMD command never breaks the su
     expect(body.degraded).toEqual(['mozare-wiki']);
     expect(existsSync(marker)).toBe(false);
 
-    const failing = buildApp({ evidence: { wikiRoot: null, qmdCommand: ['node', '-e', 'process.exit(1)'] } });
+    const failing = buildApp({ workspaceRegistry: registry, evidence: { wikiRoot: null, qmdCommand: ['node', '-e', 'process.exit(1)'] } });
     apps.push(failing);
     await failing.listen({ host: '127.0.0.1', port: 0 });
     const fport = (failing.server.address() as AddressInfo).port;
@@ -213,14 +213,14 @@ describe('TEST-017 (degraded adapters): a failed QMD command never breaks the su
 describe('TEST-010 (capture): Capture stages a candidate reference and never claims truth (SCN-EVD-03, SCN-X-08)', () => {
   it('capture is staged pending review, wiki and canonical workspace stay byte-identical, disputed source stays qualified', async () => {
     const wikiRoot = makeWikiRoot();
-    const { workspaceId } = makeWorkspace();
-    const app = buildApp({ evidence: { wikiRoot, qmdCommand: null } });
+    const { root, workspaceId, registry } = makeWorkspace();
+    const app = buildApp({ workspaceRegistry: registry, evidence: { wikiRoot, qmdCommand: null } });
     apps.push(app);
     await app.listen({ host: '127.0.0.1', port: 0 });
     const port = (app.server.address() as AddressInfo).port;
 
     const wikiBefore = recursiveFiles(wikiRoot);
-    const workspaceBefore = recursiveFiles(workspaceId);
+    const workspaceBefore = recursiveFiles(root);
 
     const search = await fetch(`http://127.0.0.1:${port}/api/evidence/search?workspaceId=${encodeURIComponent(workspaceId)}&query=nightingale`);
     const searchBody = (await search.json()) as { wiki: { hits: { rel: string; route: { kind: string; rel: string; originalRel?: string }; sourceStatus: string }[] } };
@@ -254,7 +254,7 @@ describe('TEST-010 (capture): Capture stages a candidate reference and never cla
 
     // External source untouched, canonical workspace untouched.
     expect(recursiveFiles(wikiRoot)).toEqual(wikiBefore);
-    expect(recursiveFiles(workspaceId)).toEqual(workspaceBefore);
+    expect(recursiveFiles(root)).toEqual(workspaceBefore);
 
     const list = await fetch(`http://127.0.0.1:${port}/api/evidence/captures?workspaceId=${encodeURIComponent(workspaceId)}`);
     expect(list.status).toBe(200);

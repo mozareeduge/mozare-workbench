@@ -56,7 +56,7 @@ describe('canonical workspace reconstruction (TEST-001)', () => {
     const engine = new WorkspaceEngine(root);
     const before = engine.project();
     expect(before.surface).toBe(FOCUS_SURFACE);
-    expect(before.currentQuestion.id).toBe('q_20260914_example01');
+    expect(before.currentQuestion?.id).toBe('q_20260914_example01');
     expect(before.nextAction.command).toBe('CMD-WORK');
     expect(before.latestAcceptedDecision).toBeNull();
     expect(before.humanReviewNeed).toEqual({ count: 0, status: 'none' });
@@ -67,5 +67,21 @@ describe('canonical workspace reconstruction (TEST-001)', () => {
     clearDerivedWorkspace(root);
     const after = engine.project();
     expect(after).toEqual(before);
+  });
+
+  it('accepts an omitted active question and projects no invented semantic work', () => {
+    const root = fixture();
+    const projectFile = join(root, 'PROJECT.md');
+    writeFileSync(projectFile, readFileSync(projectFile, 'utf8').replace(/^current_question_id:.*\r?\n/m, ''), 'utf8');
+
+    const projection = new WorkspaceEngine(root).project();
+
+    expect(projection.currentQuestion).toBeNull();
+    expect(projection.nextAction).toEqual({
+      command: 'CMD-WORK',
+      targetId: 'example-artistic-research',
+      label: 'Create or select the first question',
+    });
+    expect(projection.facts.find(({ id }) => id === 'current-question')?.value).toBe('No active question yet');
   });
 });

@@ -46,7 +46,7 @@ export type CanonicalProject = {
   kind: string;
   lifecycle: string;
   current_objective: string;
-  current_question_id: string;
+  current_question_id?: string | null;
 };
 
 export type CanonicalArtifact = {
@@ -74,11 +74,11 @@ export class WorkspaceValidationError extends Error {
 
 const projectSchema = {
   type: 'object', additionalProperties: true,
-  required: ['id', 'name', 'kind', 'lifecycle', 'current_objective', 'current_question_id'],
+  required: ['id', 'name', 'kind', 'lifecycle', 'current_objective'],
   properties: {
     id: { type: 'string', minLength: 1 }, name: { type: 'string', minLength: 1 },
     kind: { type: 'string', minLength: 1 }, lifecycle: { type: 'string', minLength: 1 },
-    current_objective: { type: 'string', minLength: 1 }, current_question_id: { type: 'string', minLength: 1 },
+    current_objective: { type: 'string', minLength: 1 }, current_question_id: { type: ['string', 'null'], minLength: 1 },
   },
 };
 
@@ -155,7 +155,9 @@ export function loadWorkspace(workspaceRoot: string): WorkspaceSnapshot {
     if (ids.has(item.id)) throw new WorkspaceValidationError(`duplicate canonical ID ${item.id}`, root);
     ids.add(item.id);
   }
-  if (!objects.some((object) => object.id === project.current_question_id)) throw new WorkspaceValidationError(`current_question_id ${project.current_question_id} is missing`, projectFile);
+  if (project.current_question_id != null && !objects.some((object) => object.id === project.current_question_id)) {
+    throw new WorkspaceValidationError(`current_question_id ${project.current_question_id} is missing`, projectFile);
+  }
   for (const object of objects) {
     if (object.project_id !== project.id) throw new WorkspaceValidationError(`project_id ${object.project_id} does not match ${project.id}`, join(root, 'objects'));
     for (const relationId of object.relations) if (!relations.some((relation) => relation.id === relationId)) throw new WorkspaceValidationError(`unknown relation ${relationId}`, join(root, 'objects'));

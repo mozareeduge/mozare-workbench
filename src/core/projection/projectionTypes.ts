@@ -19,7 +19,7 @@ export type ProjectProjection = {
   canonicalHash: string;
   projectName: string;
   currentObjective: string;
-  currentQuestion: { id: string; name: string; lifecycle: string; evidenceState: string };
+  currentQuestion: { id: string; name: string; lifecycle: string; evidenceState: string } | null;
   state: string;
   latestAcceptedDecision: { id: string; name: string } | null;
   humanReviewNeed: { count: number; status: 'none' | 'needs_review' };
