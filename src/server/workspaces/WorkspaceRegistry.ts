@@ -14,6 +14,7 @@ import YAML from 'yaml';
 import { ProjectionEngine } from '../../core/projection/ProjectionEngine.js';
 import { projectField } from '../../core/projection/FieldProjection.js';
 import { loadWorkspace } from '../../core/workspace.js';
+import type { ContinuitySummary } from '../../core/continuity/WorkLedger.js';
 import { canonicalPathKey, isProtectedRelativePath } from '../../mcp/pathSafety.js';
 
 export type WorkspaceClassification = 'ready' | 'needs_onboarding' | 'invalid';
@@ -39,6 +40,8 @@ export type PublicWorkspace = Omit<StoredWorkspace, 'root' | 'validationError'> 
   errorReceipt: { code: string; message: string; safeState: 'read_only' } | null;
 };
 
+export type ContinuityProvider = { summary(projectId: string): ContinuitySummary | null };
+
 const emptyRegistry = (): RegistryFile => ({ version: 1, activeWorkspaceId: null, workspaces: [] });
 
 function isDirectory(path: string): boolean {
@@ -59,7 +62,7 @@ function projectSlug(name: string): string {
 
 /** Persistent server-side map from opaque browser IDs to private local paths. */
 export class WorkspaceRegistry {
-  constructor(private readonly file: string) {}
+  constructor(private readonly file: string, private readonly continuity: ContinuityProvider | null = null) {}
 
   list(): PublicWorkspace[] {
     const state = this.read();
@@ -181,6 +184,7 @@ export class WorkspaceRegistry {
         field: null,
         artifacts: [],
         orientation: this.orientation(record.root),
+        continuity: null,
       };
     }
     const snapshot = loadWorkspace(record.root);
@@ -190,6 +194,7 @@ export class WorkspaceRegistry {
       field: projectField(snapshot),
       artifacts: snapshot.artifacts,
       orientation: null,
+      continuity: this.continuity?.summary(snapshot.project.id) ?? null,
     };
   }
 

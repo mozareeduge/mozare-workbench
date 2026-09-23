@@ -5,7 +5,7 @@ import { Output } from './surfaces/Output';
 import { Review } from './surfaces/Review';
 import { MissionSheet } from './components/MissionSheet';
 import { ThemeToggle } from './components/ThemeToggle';
-import type { FocusProjection, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
+import type { ContinuitySummary, FocusProjection, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
 
 const views: Array<{ id: View; label: string }> = [
   { id: 'FOCUS', label: 'Focus' },
@@ -45,7 +45,7 @@ function FirstUse({ busy, onAdd, onCreate }: { busy: boolean; onAdd: () => void;
   </section>;
 }
 
-function Focus({ projection, onWork, onReview }: { projection: FocusProjection; onWork: () => void; onReview: () => void }) {
+function Focus({ projection, continuity, onWork, onReview }: { projection: FocusProjection; continuity: ContinuitySummary | null; onWork: () => void; onReview: () => void }) {
   const question = projection.currentQuestion;
   return <>
     <section className="focus-hero" aria-labelledby="focus-heading">
@@ -58,6 +58,7 @@ function Focus({ projection, onWork, onReview }: { projection: FocusProjection; 
       <section className="focus-primary" aria-label="Current work">
         <article className="card next-action"><p className="card-label">Next action</p><h2 dir="auto">{projection.nextAction.label}</h2><p>{question ? 'Open a bounded mission for the current canonical question.' : 'Define the first question when you are ready; Workbench has not invented one.'}</p>{question && <button id="work-on-this" className="button button-primary" type="button" onClick={onWork}>Work on this</button>}</article>
         <article className="card evidence-card"><p className="card-label">Evidence summary</p><p>{question ? `${question.evidenceState} evidence for the current question` : 'No focused evidence yet'}</p></article>
+        {continuity && <article className="card"><p className="card-label">Latest meaningful work</p><h2 dir="auto">{continuity.resultSummary}</h2><p>{continuity.harness} · task v{continuity.currentTaskVersion} · {continuity.status} · {continuity.evidenceState}</p><p><strong>Next:</strong> {continuity.nextAction}</p></article>}
       </section>
       <aside className="focus-secondary" aria-label="Project orientation">
         <article className="card needs-you"><div><p className="card-label">Needs you</p><h2>{projection.humanReviewNeed.count === 0 ? 'No review items' : `${projection.humanReviewNeed.count} item${projection.humanReviewNeed.count === 1 ? '' : 's'} await review`}</h2></div>{projection.humanReviewNeed.count > 0 && <button className="text-action" type="button" onClick={onReview}>Open review</button>}</article>
@@ -197,10 +198,10 @@ export function App() {
               : activeView === 'FOCUS' && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} />
                 : activeView === 'FOCUS' && missionSheetOpen && focus?.currentQuestion ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet target={focus.currentQuestion.name} objective={focus.currentObjective} onClose={closeMission} onStart={(mission, packet) => { setMissionSheetOpen(false); setMissionNotice(`Mission started from packet ${packet.id} (${packet.budget.estimated_tokens} tokens) — deterministic compile, no model called. Target: ${mission.target}`); }} onDraft={() => { setMissionSheetOpen(false); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
                   : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet">{missionNotice}</p><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button></section>
-                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} onWork={() => setMissionSheetOpen(true)} onReview={() => setActiveView('REVIEW')} />
+                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} onWork={() => setMissionSheetOpen(true)} onReview={() => setActiveView('REVIEW')} />
                       : activeView === 'FIELD' ? <Field field={projection.field} canonicalHash={focus?.canonicalHash ?? ''} projectId={focus?.projectId ?? projection.workspace.id} />
-                        : activeView === 'FLOW' ? <Flow />
-                          : activeView === 'REVIEW' ? <Review />
+                        : activeView === 'FLOW' ? <Flow continuity={projection.continuity} />
+                          : activeView === 'REVIEW' ? <Review continuity={projection.continuity} />
                             : activeView === 'OUTPUT' ? <Output artifacts={projection.artifacts} />
                               : <SetupNeeded projection={projection} />}
       </main>

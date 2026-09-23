@@ -10,16 +10,21 @@ test('TEST-023: five surfaces use the running active-workspace API and switching
   await expect(page.getByText('Alpha Live Project', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'How can this relation become an operational design experiment?', exact: true })).toBeVisible();
   await expect(page.getByText('Turn a theoretical relation into a testable design operation without flattening its uncertainty.')).toBeVisible();
+  await expect(page.getByText('Codex completed the live workspace foundation.', { exact: true })).toBeVisible();
+  await expect(page.getByText(/codex · task v1 · parked · observed/i)).toBeVisible();
 
   await page.getByRole('button', { name: 'Field', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Field' })).toBeVisible();
   await expect(page.getByText('Primary source fragment', { exact: true }).first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Flow', exact: true }).click();
-  await expect(page.getByText(/No outcome\/run records are available/i)).toBeVisible();
+  await expect(page.getByText(/task-e2e v1 is parked via codex/i)).toBeVisible();
+  await expect(page.getByText(/Continue the same mission in another harness\./)).toBeVisible();
 
   await page.getByRole('button', { name: 'Review', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'No items need review' })).toBeVisible();
+  await page.getByText('Latest work provenance').click();
+  await expect(page.getByText('observed-test-model / medium', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Output', exact: true }).click();
   await expect(page.getByText('Interaction reference prototype', { exact: true })).toBeVisible();

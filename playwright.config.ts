@@ -9,7 +9,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: [
-    { command: 'npx tsx src/server/index.ts', url: 'http://127.0.0.1:5174/api/health', reuseExistingServer: false },
+    { command: 'npx cross-env MWB_WORKSPACE_REGISTRY_FILE=.mozare-runtime/e2e/workspaces.json MWB_WORK_LEDGER_DIR=.mozare-runtime/e2e/work-ledger tsx src/server/index.ts', url: 'http://127.0.0.1:5174/api/health', reuseExistingServer: false },
     { command: 'npm run dev:web -- --port 4173', url: 'http://127.0.0.1:4173', reuseExistingServer: false },
   ],
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

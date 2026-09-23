@@ -276,6 +276,24 @@
       "type": "integer",
       "minimum": 1,
       "default": 1
+    },
+    "continuity": {
+      "type": "object",
+      "required": ["project_id", "mission_id", "task_id", "task_version", "run_id", "harness", "remaining", "next_action"],
+      "properties": {
+        "project_id": { "type": "string", "minLength": 1 },
+        "mission_id": { "type": "string", "minLength": 1 },
+        "task_id": { "type": "string", "minLength": 1 },
+        "task_version": { "type": "integer", "minimum": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "supersedes_run_id": { "type": ["string", "null"] },
+        "harness": { "enum": ["claude", "codex", "hermes", "manual", "fake"] },
+        "model": { "type": ["string", "null"] },
+        "effort": { "type": ["string", "null"] },
+        "remaining": { "type": "array", "items": { "type": "string" } },
+        "next_action": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": true

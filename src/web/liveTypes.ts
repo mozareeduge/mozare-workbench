@@ -68,4 +68,21 @@ export type WorkspaceProjection = {
   field: FieldProjection | null;
   artifacts: LiveArtifact[];
   orientation: { label: string; entryCount: number; entries: string[] } | null;
+  continuity: ContinuitySummary | null;
+};
+
+export type ContinuitySummary = {
+  currentTaskId: string;
+  currentTaskVersion: number;
+  latestRunId: string;
+  harness: 'claude' | 'codex' | 'hermes' | 'manual' | 'fake';
+  model: string;
+  effort: string;
+  status: string;
+  resultSummary: string;
+  evidenceState: 'observed' | 'unverified';
+  changedRefs: string[];
+  remaining: string[];
+  nextAction: string;
+  recordedAt: string;
 };

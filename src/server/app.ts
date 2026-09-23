@@ -27,6 +27,7 @@ import {
 } from './adapters/EvidenceService.js';
 import { ProcessRunner } from './process/ProcessRunner.js';
 import { FolderSelectionTokens, WorkspaceRegistry } from './workspaces/WorkspaceRegistry.js';
+import { WorkLedger } from '../core/continuity/WorkLedger.js';
 
 const compileInputSchema = {
   type: 'object',
@@ -145,6 +146,7 @@ export type AppOptions = {
   workspaceRegistry?: WorkspaceRegistry;
   workspaceRegistryFile?: string;
   folderPicker?: () => Promise<string | null>;
+  workLedger?: WorkLedger;
 };
 
 async function defaultFolderPicker(): Promise<string | null> {
@@ -195,8 +197,10 @@ export function buildApp(
   const wikiAdapter = new WikiReadAdapter(evidenceOptions.wikiRoot);
   const qmdAdapter = new QmdAdapter(evidenceOptions.qmdCommand);
   const captureStore = new EvidenceCaptureStore();
+  const workLedger = options.workLedger ?? new WorkLedger(process.env.MWB_WORK_LEDGER_DIR ?? join(process.cwd(), '.mozare', 'runtime', 'work-ledger'));
   const workspaceRegistry = options.workspaceRegistry ?? new WorkspaceRegistry(
-    options.workspaceRegistryFile ?? join(process.cwd(), '.mozare', 'runtime', 'workspaces.json'),
+    options.workspaceRegistryFile ?? process.env.MWB_WORKSPACE_REGISTRY_FILE ?? join(process.cwd(), '.mozare', 'runtime', 'workspaces.json'),
+    workLedger,
   );
   const folderTokens = new FolderSelectionTokens();
   const pickFolder = options.folderPicker ?? defaultFolderPicker;
@@ -280,6 +284,18 @@ export function buildApp(
       return workspaceRegistry.projection(workspaceId);
     } catch {
       return reply.code(404).send({ error: 'projection_unavailable', message: 'The workspace projection is unavailable' });
+    }
+  });
+
+  app.get('/api/workspaces/:workspaceId/continuity', async (request, reply) => {
+    try {
+      const { workspaceId } = request.params as { workspaceId: string };
+      const projection = workspaceRegistry.projection(workspaceId) as { focus?: { projectId?: string } | null; continuity?: unknown };
+      const projectId = projection.focus?.projectId;
+      if (!projectId) return { summary: null, records: [] };
+      return { summary: projection.continuity ?? null, records: workLedger.records({ projectId }) };
+    } catch {
+      return reply.code(404).send({ error: 'continuity_unavailable', message: 'Continuity history is unavailable' });
     }
   });
 

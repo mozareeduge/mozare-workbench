@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 258,
+  "file_count": 263,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -126,8 +126,8 @@
     },
     {
       "path": "config/handoff.schema.json",
-      "bytes": 5531,
-      "sha256": "aa590aec8fb9d19b93e4df7b2295a7395a5bbf2258354b69097d296cf1dae3cb"
+      "bytes": 6440,
+      "sha256": "0d598a92726f0ca98b88339b75a110a97ca87e467b79bba5f2f98194e989be8d"
     },
     {
       "path": "config/mission.schema.json",
@@ -178,6 +178,11 @@
       "path": "config/ui-prefs.example.yaml",
       "bytes": 285,
       "sha256": "eac04287aa5b6524879d35d335c53ce90cb187046c3c3b170b631326d21630f1"
+    },
+    {
+      "path": "config/work-run.schema.json",
+      "bytes": 2615,
+      "sha256": "f2afa8603909d55a8cf0954dc0131c32e431c7eacf896893466d9217cfca57e6"
     },
     {
       "path": "config/workspace.example.yaml",
@@ -496,8 +501,8 @@
     },
     {
       "path": "playwright.config.ts",
-      "bytes": 597,
-      "sha256": "ec632041e8f5f67b1716dae49c7b9ad71647941473dbb5eafdb8c48ce553edbe"
+      "bytes": 723,
+      "sha256": "862aeeed754565cd88a1ec549bd3ff80af63b017fe489a50fe2707e5278b4430"
     },
     {
       "path": "prompts/IMPLEMENTATION_MISSION.md",
@@ -795,6 +800,16 @@
       "sha256": "7cf99f2814ac0cd0715fb0729378fe3103bc8327ef890f869f17b1f36e64d132"
     },
     {
+      "path": "src/core/continuity/ContinuationService.ts",
+      "bytes": 2043,
+      "sha256": "eb1e6040e0ae4d90f33fa126c752df5b7fba4b99bbdd4797a5f736ec32ccd2e3"
+    },
+    {
+      "path": "src/core/continuity/WorkLedger.ts",
+      "bytes": 11482,
+      "sha256": "818c6398108105010c87a3265660007a19c2039814c77c274291d9d5b3246bd2"
+    },
+    {
       "path": "src/core/projection/FieldProjection.ts",
       "bytes": 1995,
       "sha256": "a5efbd8a7fa69429b953e8b3c0c02bb64ef7727aba87f6b128b57b8fb1d66e58"
@@ -891,8 +906,8 @@
     },
     {
       "path": "src/server/app.ts",
-      "bytes": 22356,
-      "sha256": "8546ea865d3f68f2e93b229ad068ab657adf3dd03be15b7270c8fc0cff17cd97"
+      "bytes": 23316,
+      "sha256": "fa4fe313f1023870432bbd7eea37fddfcce9aa9ecc9d67de6b715f696c7b582f"
     },
     {
       "path": "src/server/git/GitAdapter.ts",
@@ -916,8 +931,8 @@
     },
     {
       "path": "src/server/workspaces/WorkspaceRegistry.ts",
-      "bytes": 11486,
-      "sha256": "a8953c534a901532a8d6541d23167293d058665bed09c9f812a39c19c91c72da"
+      "bytes": 11818,
+      "sha256": "8e08f2aa88f279b0005dd595f1036b3c3f2a097f45246b0c2c2063edfb0050aa"
     },
     {
       "path": "src/shared/contextTypes.ts",
@@ -926,8 +941,8 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 16072,
-      "sha256": "ed1d71ba5c46fd04353d8eaad5a5ce3ae21f91a98878cca2d87b0759e2d98e96"
+      "bytes": 16579,
+      "sha256": "e7a33acec03f20d3dad20ad844c25eafaca58d68dbd32e92fe9244fa476d2f4f"
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
@@ -951,8 +966,8 @@
     },
     {
       "path": "src/web/liveTypes.ts",
-      "bytes": 1883,
-      "sha256": "c5c8161882600986e2b7cc04f2f4d4d1fe82f4955878a64d08b175888d83059c"
+      "bytes": 2315,
+      "sha256": "8a18a48df56cb23c41c39e8bfd47dc5f9306bf2f60944fa04bc3534929dffdca"
     },
     {
       "path": "src/web/main.tsx",
@@ -996,8 +1011,8 @@
     },
     {
       "path": "src/web/surfaces/Flow.tsx",
-      "bytes": 1610,
-      "sha256": "f1487a1179228df67ae013a744c65e8040e220895a17690283ef2d3522db34fb"
+      "bytes": 2281,
+      "sha256": "03f8e2929476aa9483f382a038b7fabb6ae4d6c945bd5a724ff29653a5768043"
     },
     {
       "path": "src/web/surfaces/Output.tsx",
@@ -1006,8 +1021,8 @@
     },
     {
       "path": "src/web/surfaces/Review.tsx",
-      "bytes": 935,
-      "sha256": "409f90442d3c164057ea90cc79f3192c923cd8e64a767dd04a5ce30c4e96ef38"
+      "bytes": 1534,
+      "sha256": "46c14b2a89756113ca302980c0b21834770665856ea7d02c60f2665895bc8a01"
     },
     {
       "path": "START_HERE_PROMPT.md",
@@ -1066,13 +1081,13 @@
     },
     {
       "path": "tests/e2e/live-setup.ts",
-      "bytes": 1613,
-      "sha256": "625778718c99ed4e2292f2ae81f51877772d59000db4f4cb4b3e3b109b2654ea"
+      "bytes": 2625,
+      "sha256": "a0237ace74b499d3bd58495833b4894844dd4da1e6f46bff19f3ab397806847c"
     },
     {
       "path": "tests/e2e/live-workspace.spec.ts",
-      "bytes": 4639,
-      "sha256": "e8c05206ccad2b7ddf249362766554eeacb1a504a249280ee6b8cac51ad57695"
+      "bytes": 5084,
+      "sha256": "60a69323ac11928fb7b68468e92aa9dcb1459df439ab8d23636c4cbc267afa6b"
     },
     {
       "path": "tests/e2e/mission-sheet.spec.ts",
@@ -1118,6 +1133,11 @@
       "path": "tests/integration/context-capsules-api.test.ts",
       "bytes": 8154,
       "sha256": "6bf6263e11bcbf2c83c1abe5c9e97f1a61624711284e7c39276d5b2c9f23f229"
+    },
+    {
+      "path": "tests/integration/continuity-api.test.ts",
+      "bytes": 3015,
+      "sha256": "1c893d694a591c9ccb9b4b94611a9d7ec71c9f078e6be939718216c933d2c2a0"
     },
     {
       "path": "tests/integration/health-api.test.ts",
@@ -1253,6 +1273,11 @@
       "path": "tests/unit/token-telemetry.test.ts",
       "bytes": 7843,
       "sha256": "646dc45736e59ac6790bf143a828f8e51c7a2f644da333a63aae0499be93180c"
+    },
+    {
+      "path": "tests/unit/work-ledger.test.ts",
+      "bytes": 6784,
+      "sha256": "f8d681c64cefb355d2e6654476bc7342638c7334b793a0617ba9ec979cc76e8a"
     },
     {
       "path": "tests/unit/workspace-registry.test.ts",
