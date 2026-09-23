@@ -165,6 +165,9 @@ export class WorkLedger {
       if (record.taskVersion > resolved.current.taskVersion && record.supersedesRunId !== resolved.current.runId) {
         throw new Error('A successor task version must name the current run it supersedes');
       }
+      if (record.taskVersion > resolved.current.taskVersion + 1) {
+        throw new Error('A successor task version cannot skip an intermediate version');
+      }
       if (record.taskVersion === resolved.current.taskVersion && record.supersedesRunId !== resolved.current.runId) {
         throw new Error('Same-version continuation must name the current run it continues');
       }

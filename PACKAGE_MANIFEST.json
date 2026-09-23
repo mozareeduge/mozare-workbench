@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 263,
+  "file_count": 267,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -655,6 +655,11 @@
       "sha256": "d9b25408bb2950b7a760cf5fc19c8b01694e027f78559f30ef599ffc97274b77"
     },
     {
+      "path": "scripts/probe_harnesses.ts",
+      "bytes": 3158,
+      "sha256": "21e26c886b05ca096bf1225f787b75b7ae8b3ff71d4f2c62f8e5c1a9c20689f0"
+    },
+    {
       "path": "scripts/qa_package.py",
       "bytes": 14834,
       "sha256": "e06b7b2460f31f69529fefbe834d611dfc19b8b9ad525def360d8b6ab35b643c"
@@ -806,8 +811,8 @@
     },
     {
       "path": "src/core/continuity/WorkLedger.ts",
-      "bytes": 11482,
-      "sha256": "818c6398108105010c87a3265660007a19c2039814c77c274291d9d5b3246bd2"
+      "bytes": 11646,
+      "sha256": "243c3f1b4c1c5e54a08984ffe6b2358ad219f932201d1f88f0c432758db7a992"
     },
     {
       "path": "src/core/projection/FieldProjection.ts",
@@ -900,6 +905,16 @@
       "sha256": "b0c4154e3f0b90e29ff65afe1389672fd03fdc5699aa614ba8b3aa8a92520bec"
     },
     {
+      "path": "src/server/agents/HarnessAdapter.ts",
+      "bytes": 11287,
+      "sha256": "12aa36f9da9352788d85ac94ef363eab9f99bc06c76c2816785a160c88cdc8f9"
+    },
+    {
+      "path": "src/server/agents/HarnessCoordinator.ts",
+      "bytes": 7155,
+      "sha256": "4949f8eaf62d6481be39a0c139a6ee4d9ad7f162e03493dd8510a5f78334f446"
+    },
+    {
       "path": "src/server/agents/RunManager.ts",
       "bytes": 5785,
       "sha256": "080122a30ec3621bea3c12c9831bc7e722b295e701c2d40395219ecc9e5dbe3a"
@@ -926,8 +941,8 @@
     },
     {
       "path": "src/server/process/ProcessRunner.ts",
-      "bytes": 638,
-      "sha256": "be931f4381c79fce9e010856802e770c7a241255ec4ae3ef8e6005fac789c6e9"
+      "bytes": 1323,
+      "sha256": "de2887809604cba02c3075fabfc41b19f7c94b31204b0f73038aef45c280bb46"
     },
     {
       "path": "src/server/workspaces/WorkspaceRegistry.ts",
@@ -1220,6 +1235,11 @@
       "sha256": "30caa0ba6ad84960b74df1238a56f5d6c58fed07408f6dd943beb7714442de7f"
     },
     {
+      "path": "tests/unit/harness-adapter.test.ts",
+      "bytes": 10723,
+      "sha256": "2e9d5202ccadd8dc3adba5e01d689f96823407b5e1c049a593a3dff8c2655629"
+    },
+    {
       "path": "tests/unit/harness-canary.test.ts",
       "bytes": 366,
       "sha256": "b1e5a152db909672afb953567c16923d7990dc382e7d80fd493bc2165bbb30b4"
@@ -1276,8 +1296,8 @@
     },
     {
       "path": "tests/unit/work-ledger.test.ts",
-      "bytes": 6784,
-      "sha256": "f8d681c64cefb355d2e6654476bc7342638c7334b793a0617ba9ec979cc76e8a"
+      "bytes": 7151,
+      "sha256": "63cb5150ccdc2004e4fdcef6fe4201af6ccaf6a524e2e0b826bebc5be7c25327"
     },
     {
       "path": "tests/unit/workspace-registry.test.ts",

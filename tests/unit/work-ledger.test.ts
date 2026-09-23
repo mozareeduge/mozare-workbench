@@ -63,6 +63,13 @@ describe('TEST-026: durable append-only work ledger and task versions', () => {
     expect(ledger.records()).toHaveLength(2);
   });
 
+  it('rejects a successor that skips an immutable task version', () => {
+    const ledger = new WorkLedger(temp());
+    const first = ledger.append(record({ status: 'completed' }));
+    expect(() => ledger.append(record({ runId: 'run-v3', taskVersion: 3, supersedesRunId: first.runId }))).toThrow(/cannot skip/i);
+    expect(ledger.records()).toHaveLength(1);
+  });
+
   it('persists only the allowlisted bounded record and rejects secret/transcript/log canaries', () => {
     const directory = temp();
     const ledger = new WorkLedger(directory);
