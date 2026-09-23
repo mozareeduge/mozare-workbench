@@ -136,6 +136,30 @@ The production application does not exist yet. All runtime oracles below are `UN
 - **Pass:** commands succeed on the supported local Node LTS; no external-interface listener is opened; a clean reinstall produces the same dependency lock resolution.
 - **Evidence:** exact candidate SHA, Node/npm versions, command outputs, listener address, and lockfile hash.
 
+### TEST-022 — Workspace registry, classification and creation
+- **Oracle:** ORACLE-046/048.
+- **Path:** use temp roots for a valid canonical seed, ordinary folder, partial/corrupt canonical folder, two registered roots, fresh create, and create collision.
+- **Pass:** classification is `ready`/`needs_onboarding`/`invalid` as observed; registration leaves target bytes unchanged; activation and stable IDs persist across restart; public responses omit absolute roots; fresh scaffold validates with no fabricated records and may have no active question; collisions do not overwrite.
+- **Evidence:** exact candidate, before/after hashes, registry snapshot, focused unit/integration/API results.
+
+### TEST-023 — Live five-surface and switching path
+- **Oracle:** ORACLE-045/047.
+- **Path:** start API and client together; register/activate canonical seed; observe network projection and Focus/Field/Flow/Review/Output; switch to a second workspace.
+- **Pass:** visible identity and supported content come from the active API projection; unsupported surfaces are truthfully empty; switching removes stale prior-workspace truth; production render modules contain no demo fallback.
+- **Evidence:** exact candidate, Playwright network assertions, visible markers for both workspaces, screenshots/traces where useful.
+
+### TEST-024 — Real noncanonical project liveness
+- **Oracle:** ORACLE-046/049.
+- **Path:** observe a current safe marker from the owner-selected `mozare-wiki` root, hash/status the root, register and activate without onboarding, then launch through the owner path.
+- **Pass:** the folder is unchanged; current classification and safe marker are visible; setup need is truthful; all five surfaces remain reachable without demo substitute; dark is default; browser response proves running API data flow.
+- **Evidence:** exact candidate, current marker source, before/after Git/hash evidence, API response, browser observation, launcher/listener evidence.
+
+### TEST-025 — GATE-LIVE static negative canary
+- **Oracle:** ORACLE-045/049.
+- **Path:** run the applied static gate, inject one disposable forbidden production marker, observe RED, remove it, then observe GREEN.
+- **Pass:** known fixture regressions are rejected and the unchanged clean candidate passes; this supplements rather than replaces TEST-023/024.
+- **Evidence:** commands/results and candidate identity before/after canary removal.
+
 ## Blind/informed repair loop
 
 For every implementation candidate:

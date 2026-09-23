@@ -419,11 +419,69 @@ tasks:
   - ORACLE-023
   gate: GATE-WINDOWS
   phase: 2
+- id: TASK-P10-01
+  objective: Expose persistent multi-project workspace state through the loopback API
+  deps:
+  - TASK-P09-01
+  scenarios:
+  - SCN-ORI-01
+  - SCN-ORI-02
+  - SCN-FOC-02
+  - SCN-LOC-01
+  - SCN-ERR-04
+  oracles:
+  - ORACLE-018
+  - ORACLE-019
+  - ORACLE-046
+  - ORACLE-048
+  gate: GATE-LIVE-API
+  phase: 2
+- id: TASK-P10-02
+  objective: Wire Focus, Field, Flow, Review and Output to the active live workspace
+  deps:
+  - TASK-P10-01
+  scenarios:
+  - SCN-ORI-01
+  - SCN-ORI-02
+  - SCN-FOC-02
+  - SCN-RSP-01
+  - SCN-A11Y-01
+  - SCN-BIDI-01
+  - SCN-LOC-02
+  oracles:
+  - ORACLE-002
+  - ORACLE-003
+  - ORACLE-020
+  - ORACLE-021
+  - ORACLE-022
+  - ORACLE-023
+  - ORACLE-045
+  - ORACLE-047
+  gate: GATE-LIVE-UI
+  phase: 2
+- id: TASK-P10-03
+  objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
+  deps:
+  - TASK-P10-02
+  scenarios:
+  - SCN-ORI-01
+  - SCN-LOC-01
+  - SCN-LOC-02
+  oracles:
+  - ORACLE-019
+  - ORACLE-023
+  - ORACLE-045
+  - ORACLE-046
+  - ORACLE-047
+  - ORACLE-049
+  gate: GATE-LIVE
+  phase: 2
 - id: TASK-P09-02
   objective: Execute real Mozare project pilot and measure value criteria
   deps:
   - TASK-P05-06
   - TASK-P09-01
+  - TASK-P10-03
   scenarios:
   - SCN-ORI-03
   oracles:

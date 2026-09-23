@@ -39,6 +39,11 @@ Oracles are frozen for this revision. If product/design authority changes, creat
 | ORACLE-042 | 1 | AUTH | SCN-FLO-01..04 | Flow represents outcome state as Ready/Active/Blocked/Review/Accepted; technical subtasks remain nested, blockers/dependencies remain visible, and a completed run awaiting review is never shown Accepted | critical |
 | ORACLE-043 | 1 | EXEC | TASK-P00-01 | the distributed handoff matches its manifest, package/contract QA passes without mutating signed evidence, and required local capabilities are observed before implementation | critical |
 | ORACLE-044 | 1 | EXEC | TASK-P00-02 | the locked TypeScript/React scaffold installs reproducibly, typechecks, runs a unit smoke, builds, and binds its development server to loopback | critical |
+| ORACLE-045 | 1 | AUTH | P10-DEC-07 | normal product surfaces show active-workspace runtime facts or truthful empty/setup/error states, never fixture fallback | critical |
+| ORACLE-046 | 1 | AUTH | P10-DEC-02/05/06 | arbitrary-folder registration is non-destructive, classified truthfully, addressed by opaque ID, and does not expose roots through ordinary browser responses | critical |
+| ORACLE-047 | 1 | AUTH | P10-DEC-01 | switching registered projects replaces visible identity and projections without stale prior-project truth | critical |
+| ORACLE-048 | 1 | AUTH | P10-DEC-04 | new-project creation validates a minimal scaffold with no fabricated semantic records and permits no active question | critical |
+| ORACLE-049 | 1 | AUTH | P10-DEC-08 | owner-test readiness requires observed running browser-to-API liveness on the exact candidate and cannot be inferred from component tests | critical |
 
 ## Heuristic release review
 

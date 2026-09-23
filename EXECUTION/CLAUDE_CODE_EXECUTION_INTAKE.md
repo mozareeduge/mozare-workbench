@@ -456,11 +456,17 @@ Exit: one seed project opens to Focus, ORACLE-001..003 partially proven.
 - eliminate card soup/technical leakage discovered in real data.
 
 ### P09 — Pilot + release candidate
-- real Mozare project import/registry;
+- owner pilot on the live P10 candidate;
 - ≥3 real missions (research/design, technical implementation, review);
 - pilot metrics;
 - Windows launcher;
 - exact-head full QA; release report/known limits.
+
+### P10 — Live multi-project correction before P09 pilot
+- persistent opaque-ID registry with non-destructive existing-folder registration;
+- first-class new-project creation and project switching;
+- API-backed Focus/Field/Flow/Review/Output with truthful empty/setup/error states;
+- `GATE-LIVE` browser/API/launcher observation against the current `mozare-wiki` target without onboarding mutation.
 
 ---
 
@@ -494,6 +500,7 @@ Do not weaken oracle/test thresholds to get green.
 - `GATE-FULL` — all mandatory automated gates on unchanged exact HEAD.
 - `GATE-WINDOWS` — launcher/process-stop/manual smoke on user's Windows environment.
 - `GATE-PILOT` — owner/user pilot metrics, not automated fake acceptance.
+- `GATE-LIVE` — no production fixture fallback plus observed real browser-to-API project liveness on one candidate.
 
 Release candidate requires all except aesthetic/pilot owner acceptance to have clear dispositions; unresolved pilot metrics produce `CANDIDATE_READY_FOR_REVIEW`, not “released”.
 

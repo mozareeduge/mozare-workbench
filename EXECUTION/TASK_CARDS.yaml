@@ -1138,6 +1138,140 @@ cards:
   - Changed files and externally visible behavior
   - Commands/tests actually run and observed outcomes
   - Open blockers/quality risks without claiming them passed
+- task_id: TASK-P10-01
+  objective: Expose persistent multi-project workspace state through the loopback API
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md
+  - TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md
+  - QA/P10_LIVENESS_ADDENDUM.md
+  - EXECUTION/P10_HANDOFF_REVIEW.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  create_or_modify:
+  - config/project.schema.json
+  - src/core/
+  - src/server/
+  - src/mcp/
+  - tests/unit/
+  - tests/integration/
+  must_preserve:
+  - Registration never writes inside an existing selected project
+  - Public browser responses do not expose registered absolute roots
+  - Canonical project truth and registry operator state remain separate
+  - Path, symlink, secret, loopback and argv-safe process protections remain intact
+  - Existing-project onboarding is not silently implemented by registration
+  implementation_steps:
+  - Characterize current canonical loader behavior, fixture-only client path, and no-active-question mismatch
+  - Implement the atomic injectable registry, classification, safe folder-selection token, and minimal create service
+  - Expose opaque-ID workspace list, register, create, activate and projection routes through Fastify
+  - Reuse the registry from MCP where practical without widening MCP mutation authority
+  - Run TEST-022 plus focused security/server regressions and record exact candidate evidence
+  tests:
+  - TEST-022
+  done_when:
+  - Existing canonical, ordinary, invalid and newly created temp folders satisfy TEST-022
+  - Browser-facing contracts use opaque IDs and omit absolute roots after selection
+  - No-active-question canonical project validates and projects without fabricated semantics
+  - Mapped gate GATE-LIVE-API passes on the committed candidate
+  stop_if:
+  - Arbitrary-folder support requires a database/cloud authority or generic filesystem endpoint
+  - Registration or classification would mutate the selected existing folder
+  - Required authority files disagree on a consequential behavior
+  - Protected path or symlink containment cannot be preserved
+  handoff:
+  - Exact git SHA and changed public contracts
+  - TEST-022 and focused security evidence
+  - Registry location and public/private field boundary
+  - Residual risks and next mapped MAWS/execution task
+- task_id: TASK-P10-02
+  objective: Wire Focus, Field, Flow, Review and Output to the active live workspace
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md
+  - TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md
+  - QA/P10_LIVENESS_ADDENDUM.md
+  - EXECUTION/P10_HANDOFF_REVIEW.md
+  - EXECUTION/LIGHT_MODEL_EXECUTION_PLAYBOOK.md
+  - EXECUTION/IMPLEMENTATION_STACK_LOCK.yaml
+  create_or_modify:
+  - src/web/
+  - vite.config.ts
+  - tests/e2e/
+  must_preserve:
+  - Five conceptual surfaces and progressive disclosure remain unchanged
+  - Dark-default theme and persisted light opt-in remain functional
+  - Responsive keyboard bidi and proposal boundaries remain intact
+  - Missing live records render truthful empty setup unavailable or error states
+  - Test fixtures stay outside production render modules
+  implementation_steps:
+  - Characterize current production demo literals and fixture arrays with a failing liveness assertion
+  - Add one relative-API client data path with loading error refresh and stale-switch protection
+  - Add project add create and switch shell controls using the folder-selection token contract
+  - Replace project-specific fixture rendering in all five surfaces with live projection or honest absence
+  - Run TEST-023 plus focused responsive accessibility bidi and theme regressions
+  tests:
+  - TEST-023
+  done_when:
+  - Canonical seed reaches all supported surfaces through the running API
+  - Switching workspaces replaces visible identity and data without stale prior-project truth
+  - Production render modules contain no demo fallback and unsupported surfaces are honestly empty
+  - Mapped gate GATE-LIVE-UI passes on the committed candidate
+  stop_if:
+  - A surface requires invented canonical semantics to appear populated
+  - Client transport would require permissive arbitrary-origin filesystem access
+  - Required authority files disagree on a consequential behavior
+  handoff:
+  - Exact git SHA and owner-visible behavior
+  - TEST-023 network and visible-state evidence
+  - Fixture paths removed or isolated to tests
+  - Residual risks and next mapped MAWS/execution task
+- task_id: TASK-P10-03
+  objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
+  required_reads:
+  - MIDDLE_LAYER_INDEX.md
+  - AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md
+  - TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md
+  - QA/P10_LIVENESS_ADDENDUM.md
+  - EXECUTION/P10_HANDOFF_REVIEW.md
+  - EXECUTION/P10_PREFABS/gate-live-static.mjs
+  - EXECUTION/P10_PREFABS/live-workspace.e2e.spec.ts
+  - QA/FINALIZATION_CHECKLIST.md
+  create_or_modify:
+  - scripts/
+  - START_MOZARE.cmd
+  - tests/e2e/
+  - package.json
+  - evidence/
+  must_preserve:
+  - Real-project registration does not mutate mozare-wiki
+  - Runtime observation and exact candidate identity bind all readiness claims
+  - API absence is a visible degraded state not a fully usable claim
+  - Owner pilot and aesthetic acceptance remain human authority
+  - Static scanning supplements rather than substitutes for runtime proof
+  implementation_steps:
+  - Apply the prefabs to current source routes and Playwright startup without weakening their semantics
+  - Observe the static negative canary RED then clean GREEN
+  - Re-run canonical seed and current real-project liveness with a newly observed safe marker
+  - Launch through the Windows owner path and observe both loopback services plus visible live state
+  - Obtain a MAWS full-verification permit and run the full regression once on the unchanged candidate
+  tests:
+  - TEST-024
+  - TEST-025
+  done_when:
+  - TEST-024 and TEST-025 pass on the exact committed candidate
+  - Full typecheck lint unit integration Playwright and launcher suites pass after MAWS verification permit
+  - Evidence states exactly what the owner sees and records no demo fallback or target-folder mutation
+  - Status is OWNER_TEST_READY and execution stops before TASK-P09-02
+  stop_if:
+  - Current target reality contradicts the frozen classification or requires destructive onboarding
+  - The launcher cannot start both required loopback services
+  - Any fix changes the candidate after evidence was collected without rerunning affected proof
+  handoff:
+  - Exact git SHA build and launcher identity
+  - Current marker classification and target non-mutation evidence
+  - Commands results screenshots or traces and owner-visible state
+  - Explicit OWNER_TEST_READY or NOT_READY verdict
 - task_id: TASK-P09-02
   objective: Execute real Mozare project pilot and measure value criteria
   required_reads:

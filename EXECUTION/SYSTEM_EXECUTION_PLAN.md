@@ -10,7 +10,8 @@ Move the validated handoff to one exact local candidate that Mozare can open, us
 2. **Project instrument — P01–P03:** implement recoverable project state plus Focus, Field, Flow, Output, proposal transactions, and bounded Review.
 3. **Agent economy — P04–P06:** implement Git safety, technical translation, context compilation, capsules/deltas, routing/telemetry, mission lifecycle, adapters, controlled representation, and read/proposal-only MCP.
 4. **Integration and hardening — P07–P08:** add Mozare Wiki/QMD reading, then close responsive, keyboard, bidi, process, path, secret, preview, and loopback gates.
-5. **Candidate freeze — P09:** verify Windows launch/recovery, run the real-project pilot, freeze the unchanged candidate, and execute independent final QA.
+5. **Live-product correction — P10:** add persistent multi-project selection, wire all five surfaces to live API projections, and establish `GATE-LIVE` on the real owner launch path.
+6. **Candidate freeze — P09:** run the owner pilot only on the live product, freeze the unchanged candidate, and execute independent final QA.
 
 ## Control loop
 
@@ -25,4 +26,3 @@ The deterministic loop owns progress. Codex performs the bounded task. `harness-
 - Carry forward IDs, hashes, paths, results, and open risks—not prose history.
 - Use zero-model scripts for selection, packet assembly, status, hashes, schema checks, and gate bookkeeping.
 - Escalate reasoning only after a recorded failure/ambiguity; never solve uncertainty by dumping the whole package.
-

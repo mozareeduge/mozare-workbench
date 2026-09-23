@@ -17,6 +17,7 @@ Navigation/identity metadata only; it cannot override the authorities below.
 `AUTHORITY/04_COPY_DECK.md` → consequential copy  
 `AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md` → supersession  
 `AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md` → context/token/GenUI contract
+`AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md` → live multi-project correction and owner-test boundary
 
 Status: `PRODUCT_DESIGN_AUTHORITY_CLOSED`.
 
@@ -34,8 +35,9 @@ Status: `PRODUCT_DESIGN_AUTHORITY_CLOSED`.
 ## QA authority
 
 `QA/QA_STATE.yaml`  
-`QA/QA_ORACLE_REGISTER.md` (`ORACLE-001..040`)  
+`QA/QA_ORACLE_REGISTER.md` (`ORACLE-001..049`)
 `QA/CLAUDE_QA_CONTRACT.md` including `TEST-CTX/TOK/GUI/MET`  
+`QA/P10_LIVENESS_ADDENDUM.md` → `GATE-LIVE` proof boundary
 `QA/EVIDENCE_INDEX.md`
 
 Status: `QA_CONTRACT_READY_FOR_EXECUTION`.
@@ -46,6 +48,7 @@ Status: `QA_CONTRACT_READY_FOR_EXECUTION`.
 `EXECUTION/TASK_DAG.yaml`  
 `EXECUTION/TRACEABILITY.csv`  
 `EXECUTION/LAUNCH_MANIFEST.yaml`
+`EXECUTION/P10_HANDOFF_REVIEW.md` → reviewed package provenance, native task mapping, and executor entry
 
 Status: `READY_FOR_CODE_EXECUTION`.
 
@@ -70,3 +73,9 @@ v0.3 supersedes v0.2 wherever v0.2 would permit whole-project prompt loading, re
 - `EXECUTION/FRESH_CONTEXT_PROMPT.md` — minimal restart instruction.
 - `scripts/execution_loop.py` — deterministic state, task selection, packet compilation, and handoff gate.
 - `QA/EXECUTION_READINESS_AUDIT_v0.3.2.md` + `QA/FINALIZATION_CHECKLIST.md` — corrected readiness and terminal proof boundary.
+
+## P10 live-product correction
+
+- `TASK-P10-01..03` are the deterministic-loop counterparts of MAWS `WIRE-01`, `WIRE-02`, and `REOPEN-GATE`.
+- They must complete before `TASK-P09-02`; fixture-backed surfaces cannot satisfy owner-test readiness.
+- `TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md` and `EXECUTION/P10_PREFABS/` are bounded implementation inputs, not observed completion evidence.

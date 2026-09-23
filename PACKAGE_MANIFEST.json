@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 235,
+  "file_count": 248,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -96,13 +96,18 @@
     },
     {
       "path": "AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md",
-      "bytes": 8833,
-      "sha256": "e8624e3cd1d289b00df834040931677d2eda967b66f49e41add573cf495e8100"
+      "bytes": 9698,
+      "sha256": "69644cdbd76ed8843f8c27c2605da5886dd794ad934f9b3b1f0aa0514af7871a"
     },
     {
       "path": "AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md",
       "bytes": 4909,
       "sha256": "f7a592950f3bc21320605f1cddbac6a45eede9ee0caf462a3c4329007a371ffb"
+    },
+    {
+      "path": "AUTHORITY/07_P10_LIVE_MULTI_PROJECT_ADDENDUM.md",
+      "bytes": 4022,
+      "sha256": "8bea1e27f5db42e969822bd72bdd1def0d75f9e94097ee3d9e7ced68f2ae55b9"
     },
     {
       "path": "CLAUDE.md",
@@ -266,8 +271,8 @@
     },
     {
       "path": "EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md",
-      "bytes": 22577,
-      "sha256": "f903023ad5747e5cdc3a92a1b5bd5231a8db74d6cbd84a6876fe204bde4dfb8c"
+      "bytes": 23099,
+      "sha256": "385dd56b174095ea049ac8a916dafa60ed182e0af956a0dca2c8aa172a5d1864"
     },
     {
       "path": "EXECUTION/CLAUDE_CODE_HANDOFF_2026-09-20.md",
@@ -320,24 +325,39 @@
       "sha256": "a520e5b889dc7de83089fd5008690a7ed634af880df3fb65192b2b44dcd7f366"
     },
     {
+      "path": "EXECUTION/P10_HANDOFF_REVIEW.md",
+      "bytes": 2319,
+      "sha256": "48c622be1e8593cb50c3826636689095f5301466f9bcb778b4adb1b86698be95"
+    },
+    {
+      "path": "EXECUTION/P10_PREFABS/gate-live-static.mjs",
+      "bytes": 1222,
+      "sha256": "0ea9b2d10d00af897327e45e893dff0f01ccc5ba90f0bd51d5b35bcb510f4e32"
+    },
+    {
+      "path": "EXECUTION/P10_PREFABS/live-workspace.e2e.spec.ts",
+      "bytes": 1812,
+      "sha256": "36b722956e53c039a1648f54558d43cb04dc6a2577154c58f60e825f752e468d"
+    },
+    {
       "path": "EXECUTION/REPOSITORY_BLUEPRINT.yaml",
       "bytes": 2702,
       "sha256": "1713f995101d5a1299bd17c9767cedcbb55c2b3007e0d8d1914e249bfbf9d94b"
     },
     {
       "path": "EXECUTION/SYSTEM_EXECUTION_PLAN.md",
-      "bytes": 1986,
-      "sha256": "dc6801e1c5f927b44a42d87e36e4259b212ecce53fb6e246325854361d3ac6a8"
+      "bytes": 2156,
+      "sha256": "6ae90277f8e621af95ecae61bbbbc472fc87853d64d99bfce7815e2100430d02"
     },
     {
       "path": "EXECUTION/TASK_CARDS.yaml",
-      "bytes": 58907,
-      "sha256": "18ee75cbde0e6564288ccdc3d8668908d9ea8c1eab14faead063c3b2543ffffb"
+      "bytes": 65721,
+      "sha256": "406ff8705713b5420dfda916076338a779e4ee360d1e9c8b3c6dd5a9ada9a9c0"
     },
     {
       "path": "EXECUTION/TASK_DAG.yaml",
-      "bytes": 8447,
-      "sha256": "c72f244f6a4d7273c942197919ea6c65acf3887e0237370e86867416cc21f885"
+      "bytes": 9521,
+      "sha256": "895ad7dd61b869721edb19c8024c895c942a10fb1cd811b0d80461c31f914580"
     },
     {
       "path": "EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md",
@@ -346,8 +366,8 @@
     },
     {
       "path": "EXECUTION/TRACEABILITY.csv",
-      "bytes": 8934,
-      "sha256": "0899fa14008366835dffe840dd9ecfa4037f3862bca99e1745c18880bbaa2fc3"
+      "bytes": 10668,
+      "sha256": "4c932c700b1f26f258730360ac0fc972a38cea04372cefb00bed44a175a13677"
     },
     {
       "path": "GENUI/component-registry.yaml",
@@ -451,8 +471,8 @@
     },
     {
       "path": "MIDDLE_LAYER_INDEX.md",
-      "bytes": 3752,
-      "sha256": "cfe0301d2e66f3cf94ae70bf25dc1b6305cbad0cc7ac6faf9210498767003e8b"
+      "bytes": 4414,
+      "sha256": "e7dd6605c782aad31efe13bcd6c12c35836add2a3b24fd78efbddb97193c10d4"
     },
     {
       "path": "package-lock.json",
@@ -516,8 +536,8 @@
     },
     {
       "path": "QA/CLAUDE_QA_CONTRACT.md",
-      "bytes": 12140,
-      "sha256": "1411336841a2fb4b3bd811883281d08066740c458d872c5f5109c4d4908b3502"
+      "bytes": 14560,
+      "sha256": "d2dc2084273ef68c5f4eacbdf2fc4d046e3bfa89fb6da534201f06de9575df22"
     },
     {
       "path": "QA/EVIDENCE_INDEX.md",
@@ -540,14 +560,19 @@
       "sha256": "862da6330198461a736db0affe11e5de80e4dbffa60a57717b1b62f39d130c3f"
     },
     {
+      "path": "QA/P10_LIVENESS_ADDENDUM.md",
+      "bytes": 1395,
+      "sha256": "38b9ba867ee9fc3afa7749ff874d241a4ff73cd5b263da1b8cd67d31794ae999"
+    },
+    {
       "path": "QA/PACKAGE_BUILD_REVIEW.md",
       "bytes": 3014,
       "sha256": "cda6a8dc0a18fa7fe13376beb27fcf6a2f4922c73e978503d72476e1c1168d4f"
     },
     {
       "path": "QA/QA_ORACLE_REGISTER.md",
-      "bytes": 7920,
-      "sha256": "d54b1498f642395b0ca2da1b3a9d060601b95a782e5c160686dbdd8c164e7cc9"
+      "bytes": 8826,
+      "sha256": "69fc345af82c94e32c7ca0c54810becc3a656c477d760097b0d0466f1e1981ca"
     },
     {
       "path": "QA/QA_STATE.yaml",
@@ -590,6 +615,11 @@
       "sha256": "cb9ea2d4299e3ac564a2c5ec6f0705a7f102b8450103218c74fcfb515ddbb1b0"
     },
     {
+      "path": "scripts/diagnostics.ps1",
+      "bytes": 7413,
+      "sha256": "171b5932bbc1275c26b5f8924d39e79910dd4cc7d55bfb4e1d2ba74003678ce9"
+    },
+    {
       "path": "scripts/execution_loop.py",
       "bytes": 16409,
       "sha256": "cecc4052ec6cfb2bb116036af4e6e200c047ed7bf6623844680b9e50a272f913"
@@ -600,14 +630,24 @@
       "sha256": "7e8c9bd47256befa71978f9da9b76a3c6ae749cc70c60147dcfc07232e2fa10b"
     },
     {
+      "path": "scripts/preflight.ps1",
+      "bytes": 7078,
+      "sha256": "d9b25408bb2950b7a760cf5fc19c8b01694e027f78559f30ef599ffc97274b77"
+    },
+    {
       "path": "scripts/qa_package.py",
-      "bytes": 14372,
-      "sha256": "d636765e853625ce36c647642f97b6a2307dcffe50902f6705b62a34a3c3cb73"
+      "bytes": 14643,
+      "sha256": "ce8ee901869a5eae48cd99e1c718ef505c6e54e067eac7361f66441c49aa7ccc"
     },
     {
       "path": "scripts/start-claude-handoff.ps1",
       "bytes": 824,
       "sha256": "3b1b394f6e3014a593990cddc8d2b73f1fb99abd8961bc210275ab50e4043da2"
+    },
+    {
+      "path": "scripts/start-mozare.ps1",
+      "bytes": 4403,
+      "sha256": "b06b54be3f1d1deec81ecbbb9f4e0e6eaafb84b79d4f8954764d5f7c276047c5"
     },
     {
       "path": "scripts/sync_skills.py",
@@ -866,13 +906,13 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 7758,
-      "sha256": "2085085d34ccfd25a580604fdc805ca5b32aa320d3f9da70865ff5ce65671b8f"
+      "bytes": 8248,
+      "sha256": "3760078111e3b6f2214d198ad7d6fe47c60073ccecf3963815eae999ef5fb6ca"
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
-      "bytes": 6072,
-      "sha256": "6d0bc516350ca8726499df80a1c93be27fed47929ff766d5fbf51ff96cdd8550"
+      "bytes": 6175,
+      "sha256": "4747fec5cf31a67387ee3189eba796755d1067959b1a1a1bed3a2e7f6e084753"
     },
     {
       "path": "src/web/components/SystemLadder.tsx",
@@ -885,14 +925,19 @@
       "sha256": "ed5f5e76ca130e49fcc9c90fecc889b7202e496a754b1bfbe0c516cd9ba85647"
     },
     {
+      "path": "src/web/components/ThemeToggle.tsx",
+      "bytes": 970,
+      "sha256": "ae2f409e39f077524fe913b5d53ab77a57fb41ac099a38cafed2108123fd2a3b"
+    },
+    {
       "path": "src/web/main.tsx",
       "bytes": 387,
       "sha256": "7945db2ff55729ae6e0dc7fdc26a458f8dd58e533b413655237e4ef398700cd6"
     },
     {
       "path": "src/web/styles/app.css",
-      "bytes": 6358,
-      "sha256": "ee6ba0c8674166b819a758f1f235d0a5914148155b02bdd48618f4e59f65df7f"
+      "bytes": 6426,
+      "sha256": "bc4c6c4d474d1032f22f1f0386846db3dab67234d158baf3d84c574e82635bef"
     },
     {
       "path": "src/web/styles/field.css",
@@ -906,8 +951,8 @@
     },
     {
       "path": "src/web/styles/output.css",
-      "bytes": 4052,
-      "sha256": "73e956b6908f6ab5329b66de41224f1ac4d53a42584c2236153d2df503d29006"
+      "bytes": 4090,
+      "sha256": "6fcce2ececb5523ee370b2e777f903df81e498a3847c4ef6ba68d86b4ab70029"
     },
     {
       "path": "src/web/styles/review.css",
@@ -916,8 +961,8 @@
     },
     {
       "path": "src/web/styles/tokens.css",
-      "bytes": 2347,
-      "sha256": "67edddbce7da722500a13bbc16bed58140a7b86d860b9b83136cde758a998dc6"
+      "bytes": 3589,
+      "sha256": "d3168e7a1d2ac42bcfe4fe43f1873a067181f708e093baee4a6d75168c26db05"
     },
     {
       "path": "src/web/surfaces/Field.tsx",
@@ -945,6 +990,11 @@
       "sha256": "276ef0b9b283214459073848cd7d721b19e189adee3a3e0bbb5037626f3b9c15"
     },
     {
+      "path": "START_MOZARE.cmd",
+      "bytes": 578,
+      "sha256": "8c15f8da838a9e68d17116cb336b437ef0fd7dadd8480ca8cf88965ba38fb42d"
+    },
+    {
       "path": "TECH/ARCHITECTURE.md",
       "bytes": 8288,
       "sha256": "3ee54b3b13d4b2e4f5b4ce9ab10cee1d647d656e4f02acd183cea3c5b76a7c60"
@@ -953,6 +1003,11 @@
       "path": "TECH/INTEGRATIONS.md",
       "bytes": 2828,
       "sha256": "1a1f6ce72426e0c4f999ba64dfc283d3e46a77683fdd04abe0d3abf05f7cea6e"
+    },
+    {
+      "path": "TECH/P10_LIVE_WORKSPACE_ARCHITECTURE.md",
+      "bytes": 4782,
+      "sha256": "80e8bcc76d08b987ed0c5c77504ce2ef2a59ed9a43fac9d3b4c150ab1bcfe7f1"
     },
     {
       "path": "TECH/SECURITY.md",
@@ -968,6 +1023,11 @@
       "path": "tests/context/test_context_compiler.py",
       "bytes": 1214,
       "sha256": "939f336e30dbc5e9362f17b7286ab34aa49d907b3a16cf72a3dc55cc38e81bdc"
+    },
+    {
+      "path": "tests/e2e/accessibility-bidi.spec.ts",
+      "bytes": 1787,
+      "sha256": "40213180a2e58b437da98acc3c0016f9cb10ea0740137d5314f99d541f22589e"
     },
     {
       "path": "tests/e2e/focus-shell.spec.ts",
@@ -1098,6 +1158,11 @@
       "path": "tests/unit/harness-canary.test.ts",
       "bytes": 366,
       "sha256": "b1e5a152db909672afb953567c16923d7990dc382e7d80fd493bc2165bbb30b4"
+    },
+    {
+      "path": "tests/unit/launcher-diagnostics.test.ts",
+      "bytes": 13392,
+      "sha256": "1ce4a759793a5a0dae1c81fd39e85c5c9095111e2a6ada05574c67917127a70d"
     },
     {
       "path": "tests/unit/model-router.test.ts",
