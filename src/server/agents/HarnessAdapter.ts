@@ -74,6 +74,9 @@ function atomicJson(path: string, value: unknown): void {
   renameSync(temporary, path);
 }
 
+// Hermes (uv/Python) cold-starts in ~15s on Windows; a tighter limit falsely reports it unavailable.
+const PROBE_TIMEOUT_MS = 60_000;
+
 function safeFailure(result: ProcessResult, stopRequested: boolean, timeoutMs: number): string {
   if (stopRequested) return 'process stopped by operator';
   if (result.timedOut) return `process exceeded ${timeoutMs}ms limit`;
@@ -102,9 +105,9 @@ export class HarnessAdapter {
   async probe(): Promise<HarnessCapability> {
     const observedAt = new Date().toISOString();
     try {
-      const version = await this.runner.run(this.executable, ['--version'], process.cwd(), { timeoutMs: 15_000 });
+      const version = await this.runner.run(this.executable, ['--version'], process.cwd(), { timeoutMs: PROBE_TIMEOUT_MS });
       if (version.exitCode !== 0) return { harness: this.id, level: 'unavailable', executable: this.executable, version: null, reason: version.stderr.trim() || 'version probe failed', observedAt };
-      const help = await this.runner.run(this.executable, this.helpArgs(), process.cwd(), { timeoutMs: 15_000 });
+      const help = await this.runner.run(this.executable, this.helpArgs(), process.cwd(), { timeoutMs: PROBE_TIMEOUT_MS });
       if (help.exitCode !== 0) return { harness: this.id, level: 'partial', executable: this.executable, version: version.stdout.trim().split(/\r?\n/)[0] || 'unknown', reason: 'help probe failed', observedAt };
       return { harness: this.id, level: 'available', executable: this.executable, version: version.stdout.trim().split(/\r?\n/)[0] || 'unknown', reason: null, observedAt };
     } catch (error) {

@@ -7,9 +7,10 @@ import { realHarnessAdapters, type RealHarnessId } from '../src/server/agents/Ha
 const execute = process.argv.includes('--execute');
 const adapters = realHarnessAdapters();
 const harnessIndex = process.argv.indexOf('--harness');
-const selected = harnessIndex >= 0 ? [process.argv[harnessIndex + 1] as RealHarnessId] : Object.keys(adapters) as RealHarnessId[];
+// --harness accepts one id or an ordered chain, e.g. codex,claude,hermes,codex
+const selected = harnessIndex >= 0 ? process.argv[harnessIndex + 1].split(',') as RealHarnessId[] : Object.keys(adapters) as RealHarnessId[];
 if (selected.some((id) => !['claude', 'codex', 'hermes'].includes(id))) throw new Error('Unknown --harness value');
-const matrix = await Promise.all(selected.map((id) => adapters[id].probe()));
+const matrix = await Promise.all([...new Set(selected)].map((id) => adapters[id].probe()));
 console.log(JSON.stringify({ mode: execute ? 'safe-mission' : 'capability-only', matrix }, null, 2));
 if (!execute) process.exit(0);
 
@@ -19,8 +20,8 @@ copyFileSync(join(process.cwd(), 'config', 'handoff.schema.json'), join(root, 'c
 const ledger = new WorkLedger(join(root, '.mozare', 'runtime', 'work-ledger'));
 const coordinator = new HarnessCoordinator(adapters, ledger);
 const results = [];
-for (const harness of selected) {
-  const runId = `probe-${harness}`;
+for (const [step, harness] of selected.entries()) {
+  const runId = selected.length > 1 ? `probe-${step + 1}-${harness}` : `probe-${harness}`;
   const runDirectory = join(root, '.mozare', 'runtime', 'runs', runId);
   mkdirSync(runDirectory, { recursive: true });
   const contextPackRef = join(runDirectory, 'context-pack.json');
@@ -47,4 +48,11 @@ for (const harness of selected) {
     failure: result.harnessResult?.failureReason ?? result.record.blockers[0] ?? null,
   });
 }
-console.log(JSON.stringify({ root, results }, null, 2));
+const chain = ledger.records({ projectId: 'project-harness-probe', missionId: 'mission-harness-probe', taskId: 'task-harness-probe' });
+const continuity = {
+  sameIdentity: chain.length === selected.length,
+  harnessSequence: chain.map((record) => record.harness),
+  allCompleted: results.every((result) => result.status === 'completed'),
+  resolved: ledger.resolveTask('project-harness-probe', 'mission-harness-probe', 'task-harness-probe'),
+};
+console.log(JSON.stringify({ root, results, continuity }, null, 2));
