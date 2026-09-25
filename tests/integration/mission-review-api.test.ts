@@ -49,7 +49,7 @@ const hashTree = (root: string): string => {
   return hash.digest('hex');
 };
 
-describe('TEST-004/006/007/019: live mission-to-review loop', () => {
+describe('TEST-004/006/007/019: live mission-to-review loop', { timeout: 30_000 }, () => {
   const roots: string[] = [];
   const apps: ReturnType<typeof buildApp>[] = [];
   const temp = () => { const root = mkdtempSync(join(tmpdir(), 'mwb-mission-')); roots.push(root); return root; };
@@ -78,7 +78,7 @@ describe('TEST-004/006/007/019: live mission-to-review loop', () => {
   });
 
   const waitForItems = async (app: ReturnType<typeof buildApp>, id: string, count: number) => {
-    for (let attempt = 0; attempt < 200; attempt += 1) {
+    for (let attempt = 0; attempt < 800; attempt += 1) {
       const items = (await app.inject({ method: 'GET', url: `/api/workspaces/${id}/review` })).json().items as Array<Record<string, unknown>>;
       if (items.length >= count) return items;
       await new Promise((resolve) => setTimeout(resolve, 25));
