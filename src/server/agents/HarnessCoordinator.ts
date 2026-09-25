@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { WorkLedger, type WorkRunRecord } from '../../core/continuity/WorkLedger.js';
 import { HarnessAdapter, type HarnessMission, type HarnessResult, type RealHarnessId } from './HarnessAdapter.js';
@@ -22,6 +22,16 @@ export type ActiveHarnessRun = {
   runId: string;
   completion: Promise<CoordinatedResult>;
 };
+
+/** The handoff was schema-validated by the adapter; only its bounded summary is reused, never prompts or logs. */
+function readHandoffSummary(path: string): { summary: string } | null {
+  try {
+    const value = JSON.parse(readFileSync(path, 'utf8')) as { summary?: unknown };
+    return typeof value.summary === 'string' && value.summary.trim() ? { summary: value.summary.trim().slice(0, 500) } : null;
+  } catch {
+    return null;
+  }
+}
 
 const emptyObserver: CandidateObserver = async () => ({ candidate: null, changedRefs: [] });
 
@@ -105,13 +115,14 @@ export class HarnessCoordinator {
     const status = harnessResult.status === 'completed' ? 'completed' : harnessResult.status === 'interrupted' ? 'interrupted' : 'failed';
     const handoffRef = harnessResult.handoffRef ? relative(mission.workspaceRoot, harnessResult.handoffRef) : null;
     const evidenceRefs = handoffRef ? [`handoff:${handoffRef}:schema-valid`] : [];
+    const reported = harnessResult.handoffRef ? readHandoffSummary(harnessResult.handoffRef) : null;
     return {
       capability,
       harnessResult,
       record: this.append(mission, harness, {
         status, startedAt, candidateBefore: before.candidate, candidateAfter: after.candidate,
         changedRefs: after.changedRefs, evidenceRefs, handoffRef,
-        resultSummary: status === 'completed' ? `${harness} produced a valid structured handoff.` : `${harness} ${status}; prior work remains durable.`,
+        resultSummary: status === 'completed' ? reported?.summary ?? `${harness} produced a valid structured handoff.` : `${harness} ${status}; prior work remains durable.`,
         blockers: harnessResult.failureReason ? [harnessResult.failureReason] : [],
         capabilityRef,
       }),

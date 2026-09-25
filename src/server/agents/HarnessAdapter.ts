@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { ProcessRunner, type ProcessResult, type RunningProcess } from '../process/ProcessRunner.js';
@@ -30,6 +30,8 @@ export type HarnessMission = {
   oracleRefs: string[];
   model: string | null;
   effort: string | null;
+  /** `probe` proves the contract without edits; `work` may edit the (sandboxed) workspace to reach the objective. */
+  mode?: 'probe' | 'work';
 };
 
 export type SafeInvocation = {
@@ -125,6 +127,10 @@ export class HarnessAdapter {
     const handoffRef = join(mission.runDirectory, 'handoff.json');
     const contractRef = join(mission.runDirectory, 'mission-contract.json');
     const queryRef = join(mission.runDirectory, 'query.txt');
+    const schemaRef = join(mission.runDirectory, 'handoff.schema.json');
+    copyFileSync(join(process.cwd(), 'config', 'handoff.schema.json'), schemaRef);
+    const work = mission.mode === 'work';
+    const runDirectoryRef = relative(mission.workspaceRoot, mission.runDirectory);
     atomicJson(contractRef, {
       contractVersion: 1,
       ids: { projectId: mission.projectId, missionId: mission.missionId, taskId: mission.taskId, taskVersion: mission.taskVersion, runId: mission.runId },
@@ -132,16 +138,27 @@ export class HarnessAdapter {
       contextPackRef: relative(mission.workspaceRoot, mission.contextPackRef),
       authorityRefs: mission.authorityRefs,
       oracleRefs: mission.oracleRefs,
-      constraints: [
-        'Read only the bounded contract and referenced context.',
-        'Do not modify canonical project content for this harmless continuity probe.',
-        `Write a schema-valid handoff to ${relative(mission.workspaceRoot, handoffRef)}.`,
-        'Do not include prompts, transcripts, hidden reasoning, secrets, or raw logs in the handoff.',
-      ],
-      handoffSchemaRef: 'config/handoff.schema.json',
+      constraints: work
+        ? [
+          'This folder is a disposable Workbench copy of the project; your file changes become a proposal the owner accepts or rejects.',
+          'Change only what the objective needs, inside this folder. Do not touch paths outside it.',
+          `Do not edit anything under ${runDirectoryRef} except the handoff file.`,
+          `When done, write a schema-valid handoff to ${relative(mission.workspaceRoot, handoffRef)}; list real verification you ran in tests[] and leave unobserved claims out.`,
+          'Do not include prompts, transcripts, hidden reasoning, secrets, or raw logs in the handoff.',
+        ]
+        : [
+          'Read only the bounded contract and referenced context.',
+          'Do not modify canonical project content for this harmless continuity probe.',
+          `Write a schema-valid handoff to ${relative(mission.workspaceRoot, handoffRef)}.`,
+          'Do not include prompts, transcripts, hidden reasoning, secrets, or raw logs in the handoff.',
+        ],
+      handoffSchemaRef: relative(mission.workspaceRoot, schemaRef),
     });
-    const query = `Execute the bounded mission contract at ${relative(mission.workspaceRoot, contractRef)}. Write only the required structured handoff; do not change canonical project files.`;
-    writeFileSync(queryRef, `${query}\n`, { encoding: 'utf8', mode: 0o600 });
+    const query = work
+      ? `Execute the mission contract at ${relative(mission.workspaceRoot, contractRef)}: do the objective in this workspace copy, then write the required structured handoff.`
+      : `Execute the bounded mission contract at ${relative(mission.workspaceRoot, contractRef)}. Write only the required structured handoff; do not change canonical project files.`;
+    writeFileSync(queryRef, `${query}
+`, { encoding: 'utf8', mode: 0o600 });
     const invocation = this.invocation(mission, query, queryRef);
     if (resolve(invocation.cwd) !== resolve(mission.workspaceRoot)) throw new Error('adapter cwd must equal the registered workspace root');
     return invocation;
@@ -199,7 +216,7 @@ export class HarnessAdapter {
     const model = mission.model ? ['--model', mission.model] : [];
     if (this.id === 'claude') {
       const effort = mission.effort ? ['--effort', mission.effort] : [];
-      return { executable: this.executable, args: ['-p', '--output-format', 'json', '--permission-mode', 'dontAsk', '--allowedTools', 'Read,Write', ...model, ...effort], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
+      return { executable: this.executable, args: ['-p', '--output-format', 'json', '--permission-mode', 'dontAsk', '--allowedTools', mission.mode === 'work' ? 'Read,Write,Edit,Glob,Grep' : 'Read,Write', ...model, ...effort], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
     }
     if (this.id === 'codex') {
       return { executable: this.executable, args: ['exec', '--sandbox', 'workspace-write', '--ephemeral', '--json', ...model, '-'], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };

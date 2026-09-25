@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WorkLedger } from '../src/core/continuity/WorkLedger.js';
 import { HarnessCoordinator, type CoordinatedMission } from '../src/server/agents/HarnessCoordinator.js';
@@ -18,8 +18,8 @@ const effortIndex = process.argv.indexOf('--effort');
 const effort = effortIndex >= 0 ? process.argv[effortIndex + 1] : null;
 
 const root = join(process.cwd(), '.mozare-runtime', `harness-probe-${Date.now()}`);
-mkdirSync(join(root, 'config'), { recursive: true });
-copyFileSync(join(process.cwd(), 'config', 'handoff.schema.json'), join(root, 'config', 'handoff.schema.json'));
+mkdirSync(root, { recursive: true });
+
 const ledger = new WorkLedger(join(root, '.mozare', 'runtime', 'work-ledger'));
 const coordinator = new HarnessCoordinator(adapters, ledger);
 const results = [];

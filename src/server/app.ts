@@ -28,6 +28,10 @@ import {
 import { ProcessRunner } from './process/ProcessRunner.js';
 import { FolderSelectionTokens, WorkspaceRegistry } from './workspaces/WorkspaceRegistry.js';
 import { WorkLedger } from '../core/continuity/WorkLedger.js';
+import { realHarnessAdapters, type HarnessAdapter, type RealHarnessId } from './agents/HarnessAdapter.js';
+import { MissionService, MissionUnavailableError } from './missions/MissionService.js';
+import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
+import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
 
 const compileInputSchema = {
   type: 'object',
@@ -147,6 +151,8 @@ export type AppOptions = {
   workspaceRegistryFile?: string;
   folderPicker?: () => Promise<string | null>;
   workLedger?: WorkLedger;
+  harnessAdapters?: Record<RealHarnessId, HarnessAdapter>;
+  runtimeDir?: string;
 };
 
 async function defaultFolderPicker(): Promise<string | null> {
@@ -202,6 +208,15 @@ export function buildApp(
     options.workspaceRegistryFile ?? process.env.MWB_WORKSPACE_REGISTRY_FILE ?? join(process.cwd(), '.mozare', 'runtime', 'workspaces.json'),
     workLedger,
   );
+  const runtimeDir = options.runtimeDir ?? process.env.MWB_RUNTIME_DIR ?? join(process.cwd(), '.mozare', 'runtime');
+  const proposalStore = new ProposalStore(join(runtimeDir, 'proposals'));
+  const missions = new MissionService(options.harnessAdapters ?? realHarnessAdapters(), workLedger, proposalStore, runtimeDir);
+  const missionContext = (workspaceId: string) => {
+    const root = workspaceRegistry.rootFor(workspaceId);
+    if (!root) return null;
+    const projection = workspaceRegistry.projection(workspaceId) as { focus?: { projectId?: string } | null };
+    return { workspaceId, projectRoot: root, projectId: projection.focus?.projectId ?? workspaceId };
+  };
   const folderTokens = new FolderSelectionTokens();
   const pickFolder = options.folderPicker ?? defaultFolderPicker;
 
@@ -281,7 +296,13 @@ export function buildApp(
   app.get('/api/workspaces/:workspaceId/projection', async (request, reply) => {
     try {
       const { workspaceId } = request.params as { workspaceId: string };
-      return workspaceRegistry.projection(workspaceId);
+      const projection = workspaceRegistry.projection(workspaceId) as { focus?: { humanReviewNeed: { count: number; status: string } } | null };
+      const pending = proposalStore.list(workspaceId).filter((proposal) => !proposalStore.latestDecision(workspaceId, proposal.id)).length;
+      if (projection.focus && pending > 0) {
+        const count = projection.focus.humanReviewNeed.count + pending;
+        projection.focus.humanReviewNeed = { count, status: 'needs_review' };
+      }
+      return projection;
     } catch {
       return reply.code(404).send({ error: 'projection_unavailable', message: 'The workspace projection is unavailable' });
     }
@@ -296,6 +317,72 @@ export function buildApp(
       return { summary: projection.continuity ?? null, records: workLedger.records({ projectId }) };
     } catch {
       return reply.code(404).send({ error: 'continuity_unavailable', message: 'Continuity history is unavailable' });
+    }
+  });
+
+  app.get('/api/workspaces/:workspaceId/missions/capabilities', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    if (!missionContext(workspaceId)) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    const capabilities = await missions.capabilities();
+    return { agents: capabilities.map(({ harness, level, version, reason }) => ({ id: harness, level, version, reason })) };
+  });
+
+  app.post('/api/workspaces/:workspaceId/missions', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    const context = missionContext(workspaceId);
+    if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    const text = (value: unknown) => (typeof value === 'string' ? value : '');
+    try {
+      const receipt = await missions.start(context, {
+        harness: text(body.harness) as RealHarnessId,
+        target: text(body.target),
+        outcome: text(body.outcome),
+        acceptance: Array.isArray(body.acceptance) ? body.acceptance.map(text) : [],
+        effort: typeof body.effort === 'string' ? body.effort : null,
+        continueProposalId: typeof body.continueProposalId === 'string' ? body.continueProposalId : null,
+      });
+      return reply.code(202).send({ mission: receipt });
+    } catch (error) {
+      if (error instanceof MissionUnavailableError || error instanceof SnapshotLimitError) return reply.code(409).send({ error: 'mission_unavailable', message: error.message });
+      return reply.code(500).send({ error: 'mission_failed', message: 'The mission could not be started; the project was not changed.' });
+    }
+  });
+
+  app.post('/api/workspaces/:workspaceId/missions/:runId/stop', async (request) => {
+    const { runId } = request.params as { runId: string };
+    return { stopped: missions.stop(runId) };
+  });
+
+  app.get('/api/workspaces/:workspaceId/flow', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    const context = missionContext(workspaceId);
+    if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    return { outcomes: missions.flowOutcomes(context) };
+  });
+
+  app.get('/api/workspaces/:workspaceId/review', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    const context = missionContext(workspaceId);
+    if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    return { items: proposalStore.list(workspaceId).map((proposal) => proposalStore.toPublic(proposal, context.projectRoot)) };
+  });
+
+  app.post('/api/workspaces/:workspaceId/review/:proposalId/decision', async (request, reply) => {
+    const { workspaceId, proposalId } = request.params as { workspaceId: string; proposalId: string };
+    const context = missionContext(workspaceId);
+    const proposal = context ? proposalStore.get(workspaceId, proposalId) : null;
+    if (!context || !proposal) return reply.code(404).send({ error: 'unknown_proposal', message: 'The proposal was not found' });
+    const body = (request.body ?? {}) as { state?: string; rationale?: string; revisionNote?: string };
+    const states = ['accepted', 'revision_requested', 'rejected', 'preserved_as_residue'] as const;
+    const state = states.find((candidate) => candidate === body.state);
+    if (!state) return reply.code(400).send({ error: 'invalid_decision', message: 'Unknown decision' });
+    try {
+      const decision = proposalStore.decide(proposal, context.projectRoot, join(runtimeDir, 'residue', workspaceId), { state, rationale: body.rationale ?? null, revisionNote: body.revisionNote ?? null });
+      return { decision: { state: decision.state, decidedAt: decision.decidedAt, written: decision.applied?.written ?? [], movedToResidue: decision.applied?.movedToResidue ?? [] }, item: proposalStore.toPublic(proposal, context.projectRoot) };
+    } catch (error) {
+      if (error instanceof ProposalConflictError) return reply.code(409).send({ error: error.code, message: error.message });
+      return reply.code(500).send({ error: 'decision_failed', message: 'The decision could not be recorded.' });
     }
   });
 
