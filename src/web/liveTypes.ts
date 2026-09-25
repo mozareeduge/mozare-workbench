@@ -1,3 +1,6 @@
+import type { ReviewItemFixture } from '../core/projection/ReviewProjection.js';
+import type { FlowOutcomeFixture } from '../core/projection/FlowProjection.js';
+
 export type View = 'FOCUS' | 'FIELD' | 'FLOW' | 'REVIEW' | 'OUTPUT';
 
 export type WorkspaceSummary = {
@@ -85,4 +88,29 @@ export type ContinuitySummary = {
   remaining: string[];
   nextAction: string;
   recordedAt: string;
+};
+
+export type AgentCapability = { id: 'claude' | 'codex' | 'hermes'; level: 'available' | 'partial' | 'unavailable'; version: string | null; reason: string | null };
+
+export type FileChange = { path: string; kind: 'added' | 'modified' | 'deleted' };
+
+/** A live Review proposal from a sandboxed mission; it carries its own current base hash for stale detection. */
+export type LiveReviewItem = ReviewItemFixture & {
+  currentBaseCanonicalHash: string;
+  runId: string;
+  missionId: string;
+  taskId: string;
+  taskVersion: number;
+  harness: AgentCapability['id'];
+  changes: FileChange[];
+};
+
+export type LiveFlowOutcome = FlowOutcomeFixture;
+
+export type MissionStartRequest = {
+  harness: AgentCapability['id'];
+  target: string;
+  outcome: string;
+  acceptance: string[];
+  continueProposalId?: string | null;
 };

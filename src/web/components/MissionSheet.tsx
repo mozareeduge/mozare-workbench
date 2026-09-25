@@ -1,21 +1,15 @@
 import { useState } from 'react';
-import {
-  agentOptions,
-  buildMissionPacket,
-  buildMissionSheetPrefill,
-  HISTORY_EXCLUSION_NOTE,
-  type AgentOption,
-  type MissionDraft,
-  type MissionPacketPreview,
-} from '../../core/context/missionPacket.js';
+import { buildMissionSheetPrefill, HISTORY_EXCLUSION_NOTE, type MissionDraft } from '../../core/context/missionPacket.js';
+import type { AgentCapability } from '../liveTypes';
 
 /**
- * MissionSheet (TASK-P05-01, TEST-004, ORACLE-007).
+ * MissionSheet (TASK-P05-01, TASK-P10-06, TEST-004, ORACLE-007).
  * Guided mission composition: four concise sections (Target/Outcome/Context/
  * Acceptance) + advanced disclosure (Agent). Prefilled from target/context —
  * never a blank prompt. Start requires at least one observable acceptance
- * criterion (inline error, edits preserved). Unavailable agent options are
- * disabled with a reason and a setup route; the mission can remain a draft.
+ * criterion (inline error, edits preserved). Agents come from the live
+ * capability probe; unavailable ones are disabled with a reason and setup
+ * route, and the mission can remain a draft.
  */
 
 export type { MissionDraft };
@@ -23,34 +17,50 @@ export type { MissionDraft };
 export type MissionSheetProps = {
   target: string;
   objective: string;
+  /** Live agent capabilities; null while the probe is still running. */
+  agents: AgentCapability[] | null;
+  /** Shown when this mission continues an existing task (revision or agent switch). */
+  continuation?: string | null;
   onClose: () => void;
-  /** Receives the deterministic packet preview built from the sheet state. */
-  onStart: (mission: MissionDraft, packet: MissionPacketPreview) => void;
+  /** Starts the mission; rejects with a reason to show inline (edits are kept). */
+  onStart: (mission: MissionDraft & { agent: AgentCapability['id'] }) => Promise<void>;
   onDraft: (mission: MissionDraft) => void;
 };
 
-const DETERMINISTIC_CONTEXT = 'Deterministic compile: routed to NONE, zero model tokens.';
+export const AGENT_LABELS: Record<AgentCapability['id'], string> = { claude: 'Claude Code', codex: 'Codex', hermes: 'Hermes' };
+const SETUP_ROUTES: Record<AgentCapability['id'], string> = {
+  claude: 'sign in with "claude auth login", then Refresh',
+  codex: 'sign in with "codex login", then Refresh',
+  hermes: 'run "hermes setup" to choose a model, then Refresh',
+};
 
-export function MissionSheet({ target, objective, onClose, onStart, onDraft }: MissionSheetProps) {
+export function MissionSheet({ target, objective, agents, continuation, onClose, onStart, onDraft }: MissionSheetProps) {
   const [prefill] = useState(() => buildMissionSheetPrefill({ target, objective }));
   const [targetValue, setTargetValue] = useState(prefill.target);
   const [outcome, setOutcome] = useState(prefill.outcome);
   const [context, setContext] = useState(prefill.context);
   const [acceptance, setAcceptance] = useState<string[]>(prefill.acceptance);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [agent, setAgent] = useState<string | null>(null);
-  const [packetPreview, setPacketPreview] = useState<MissionPacketPreview | null>(null);
+  const [chosen, setChosen] = useState<AgentCapability['id'] | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
 
-  const options: AgentOption[] = agentOptions();
+  const available = (agents ?? []).filter((agent) => agent.level === 'available');
+  const agent = chosen && available.some((candidate) => candidate.id === chosen) ? chosen : available[0]?.id ?? null;
   const hasCriterion = acceptance.some((c) => c.trim().length > 0);
-  const canStart = hasCriterion;
+  const canStart = hasCriterion && agent !== null && !starting;
 
-  function tryStart() {
-    if (!canStart) return;
-    const mission: MissionDraft = { target: targetValue, outcome, context, acceptance, agent };
-    const packet = buildMissionPacket(mission);
-    setPacketPreview(packet);
-    onStart(mission, packet);
+  async function tryStart() {
+    if (!canStart || !agent) return;
+    setStarting(true);
+    setStartError(null);
+    try {
+      await onStart({ target: targetValue, outcome, context, acceptance, agent });
+    } catch (cause) {
+      setStartError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setStarting(false);
+    }
   }
 
   function saveDraft() {
@@ -77,90 +87,79 @@ export function MissionSheet({ target, objective, onClose, onStart, onDraft }: M
         {/* SCN-RSP-05: the sheet body scrolls while the decision actions stay
             pinned as a fixed footer (compact/mobile shell, UI/layout-contracts.md). */}
         <div className="mission-body">
+          {continuation && <p className="quiet" role="note">{continuation}</p>}
           <section aria-labelledby="mission-section-target">
-          <h3>Target</h3>
-          <input
-            aria-label="Target"
-            autoFocus
-            value={targetValue}
-            onChange={(e) => setTargetValue(e.target.value)}
-          />
-        </section>
+            <h3 id="mission-section-target">Target</h3>
+            <input aria-label="Target" autoFocus value={targetValue} onChange={(e) => setTargetValue(e.target.value)} />
+          </section>
 
-        <section aria-labelledby="mission-section-outcome">
-          <h3>Outcome</h3>
-          <input
-            aria-label="Outcome"
-            value={outcome}
-            placeholder="What should exist when this mission is done?"
-            onChange={(e) => setOutcome(e.target.value)}
-          />
-        </section>
+          <section aria-labelledby="mission-section-outcome">
+            <h3 id="mission-section-outcome">Outcome</h3>
+            <input aria-label="Outcome" value={outcome} placeholder="What should exist when this mission is done?" onChange={(e) => setOutcome(e.target.value)} />
+          </section>
 
-        <section aria-labelledby="mission-section-context">
-          <h3>Context</h3>
-          <input
-            aria-label="Context"
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-          />
-          <p className="quiet">{HISTORY_EXCLUSION_NOTE}</p>
-        </section>
+          <section aria-labelledby="mission-section-context">
+            <h3 id="mission-section-context">Context</h3>
+            <input aria-label="Context" value={context} onChange={(e) => setContext(e.target.value)} />
+            <p className="quiet">{HISTORY_EXCLUSION_NOTE}</p>
+          </section>
 
-        <section aria-labelledby="mission-section-acceptance">
-          <h3>Acceptance</h3>
-          <input
-            aria-label="Acceptance criterion 1"
-            value={acceptance[0] ?? ''}
-            placeholder="One observable criterion"
-            onChange={(e) => {
-              const next = [...acceptance];
-              next[0] = e.target.value;
-              setAcceptance(next);
-            }}
-          />
-          {!hasCriterion && (
-            <p className="quiet" role="note">
-              Start needs at least one observable acceptance criterion — add one above; your edits are kept.
-            </p>
-          )}
-        </section>
+          <section aria-labelledby="mission-section-acceptance">
+            <h3 id="mission-section-acceptance">Acceptance</h3>
+            <input
+              aria-label="Acceptance criterion 1"
+              value={acceptance[0] ?? ''}
+              placeholder="One observable criterion"
+              onChange={(e) => {
+                const next = [...acceptance];
+                next[0] = e.target.value;
+                setAcceptance(next);
+              }}
+            />
+            {!hasCriterion && (
+              <p className="quiet" role="note">
+                Start needs at least one observable acceptance criterion — add one above; your edits are kept.
+              </p>
+            )}
+          </section>
+
+          <p className="quiet">
+            {agents === null ? 'Checking which agents are available…'
+              : agent ? `Runs with ${AGENT_LABELS[agent]} on a copy of the project. Nothing changes in the project until you accept the result in Review.`
+                : 'No agent is available right now. You can save this mission as a draft.'}
+          </p>
 
           <button type="button" className="text-action" onClick={() => setAdvancedOpen(true)}>
             Advanced
           </button>
 
-        {advancedOpen && (
-          <section aria-labelledby="mission-section-agent">
-            <h3>Agent</h3>
-            <select
-              aria-label="Agent"
-              value={agent ?? ''}
-              onChange={(e) => setAgent(e.target.value || null)}
-            >
-              <option value="">Choose an agent</option>
-              {options.map((option) => (
-                <option key={option.id} value={option.available ? option.id : ''} disabled={!option.available}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            {options
-              .filter((option) => !option.available)
-              .map((option) => (
-                <p className="quiet" key={option.id}>
-                  {option.label} unavailable — {option.reason}. Setup: {option.setup_route}
-                </p>
-              ))}
-          </section>
-        )}
+          {advancedOpen && (
+            <section aria-labelledby="mission-section-agent">
+              <h3 id="mission-section-agent">Agent</h3>
+              <select aria-label="Agent" value={agent ?? ''} onChange={(e) => setChosen((e.target.value || null) as AgentCapability['id'] | null)}>
+                {agent === null && <option value="">No agent available</option>}
+                {(agents ?? []).map((option) => (
+                  <option key={option.id} value={option.id} disabled={option.level !== 'available'}>
+                    {AGENT_LABELS[option.id]}
+                  </option>
+                ))}
+              </select>
+              {(agents ?? [])
+                .filter((option) => option.level !== 'available')
+                .map((option) => (
+                  <p className="quiet" key={option.id}>
+                    {AGENT_LABELS[option.id]} unavailable — {option.reason ?? option.level}. Setup: {SETUP_ROUTES[option.id]}
+                  </p>
+                ))}
+            </section>
+          )}
 
-        {packetPreview && <p className="quiet">{DETERMINISTIC_CONTEXT} Packet {packetPreview.id} compiled ({packetPreview.budget.estimated_tokens} tokens).</p>}
+          {startError && <p className="quiet" role="alert">{startError}</p>}
         </div>
 
         <div className="mission-sheet-actions">
-          <button type="button" className="button button-primary" disabled={!canStart} onClick={tryStart}>
-            Start mission
+          <button type="button" className="button button-primary" disabled={!canStart} onClick={() => void tryStart()}>
+            {starting ? 'Starting…' : 'Start mission'}
           </button>
           <button type="button" className="text-action" onClick={saveDraft}>
             Save as draft

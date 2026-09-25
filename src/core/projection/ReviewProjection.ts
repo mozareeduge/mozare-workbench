@@ -240,14 +240,19 @@ function toQueueItem(fixture: ReviewItemFixture, currentBaseCanonicalHash: strin
  * unverified state), then projects a finite queue ordered critical/stale first, then newest
  * (SCN-REV-01).
  */
-export function projectReviewQueue(fixtures: ReviewItemFixture[], currentBaseCanonicalHash: string): ReviewQueueItem[] {
+export function projectReviewQueue(
+  fixtures: ReviewItemFixture[],
+  /** One project-wide base hash, or a per-item resolver when each live proposal tracks its own touched files. */
+  currentBaseCanonicalHash: string | ((fixture: ReviewItemFixture) => string),
+): ReviewQueueItem[] {
+  const currentFor = typeof currentBaseCanonicalHash === 'function' ? currentBaseCanonicalHash : () => currentBaseCanonicalHash;
   for (const fixture of fixtures) {
     if (fixture.evidence.length === 0) {
       throw new ReviewFixtureValidationError(`Fixture "${fixture.id}" declares no evidence entries; provenance cannot be shown.`, fixture.id);
     }
   }
   return fixtures
-    .map((fixture) => toQueueItem(fixture, currentBaseCanonicalHash))
+    .map((fixture) => toQueueItem(fixture, currentFor(fixture)))
     .sort((a, b) => {
       const aPriority = a.risk === 'critical' || a.isStale ? 0 : 1;
       const bPriority = b.risk === 'critical' || b.isStale ? 0 : 1;

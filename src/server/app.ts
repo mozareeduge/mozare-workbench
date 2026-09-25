@@ -32,6 +32,7 @@ import { realHarnessAdapters, type HarnessAdapter, type RealHarnessId } from './
 import { MissionService, MissionUnavailableError } from './missions/MissionService.js';
 import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
 import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
+import { artifactFixtures, artifactMediaType, resolveArtifactFile, type RegisteredArtifact } from './missions/ArtifactPreviews.js';
 
 const compileInputSchema = {
   type: 'object',
@@ -359,6 +360,30 @@ export function buildApp(
     const context = missionContext(workspaceId);
     if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
     return { outcomes: missions.flowOutcomes(context) };
+  });
+
+  const registeredArtifacts = (workspaceId: string) =>
+    ((workspaceRegistry.projection(workspaceId) as { artifacts?: RegisteredArtifact[] }).artifacts ?? []);
+
+  app.get('/api/workspaces/:workspaceId/artifacts', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    const context = missionContext(workspaceId);
+    if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    return { artifacts: artifactFixtures(context.projectRoot, workspaceId, registeredArtifacts(workspaceId)) };
+  });
+
+  /** Media previews only (image/audio/video/PDF); served sandboxed so a hostile file cannot script the Workbench origin. */
+  app.get('/api/workspaces/:workspaceId/artifacts/:artifactId/content', async (request, reply) => {
+    const { workspaceId, artifactId } = request.params as { workspaceId: string; artifactId: string };
+    const context = missionContext(workspaceId);
+    const artifact = context ? registeredArtifacts(workspaceId).find((candidate) => candidate.id === artifactId) : undefined;
+    const file = context && artifact && ['image', 'audio', 'video', 'pdf'].includes(artifact.kind) ? resolveArtifactFile(context.projectRoot, artifact.ref) : null;
+    if (!file) return reply.code(404).send({ error: 'artifact_unavailable', message: 'No previewable file for this artifact' });
+    return reply
+      .header('content-type', artifactMediaType(file))
+      .header('x-content-type-options', 'nosniff')
+      .header('content-security-policy', "sandbox; default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'")
+      .send(readFileSync(file));
   });
 
   app.get('/api/workspaces/:workspaceId/review', async (request, reply) => {

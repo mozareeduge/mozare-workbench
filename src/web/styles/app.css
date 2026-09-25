@@ -21,3 +21,4 @@ body { margin: 0; min-width: 0; } button { font: inherit; } button:focus-visible
 .create-project input,.create-project textarea { box-sizing:border-box;width:100%;min-height:42px;padding:var(--s-2);border:1px solid var(--c-line-strong);border-radius:var(--r-control);background:var(--c-surface-raised);color:var(--c-ink) }
 .create-project textarea { min-height:100px;resize:vertical }
 @media (max-width:759px) { .context-bar { flex-wrap:wrap;height:auto;min-height:var(--mobile-topbar);padding-block:var(--s-2) }.workspace-controls { order:3;width:100% }.workspace-controls select { flex:1;min-width:0 }.workspace-controls button { min-width:44px }.context-actions .refresh-button { display:none }.orientation-card ul { columns:1 } }
+.review-preline { white-space: pre-line; }

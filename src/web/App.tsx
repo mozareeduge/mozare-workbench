@@ -3,9 +3,15 @@ import { Field } from './surfaces/Field';
 import { Flow } from './surfaces/Flow';
 import { Output } from './surfaces/Output';
 import { Review } from './surfaces/Review';
-import { MissionSheet } from './components/MissionSheet';
+import { AGENT_LABELS, MissionSheet } from './components/MissionSheet';
 import { ThemeToggle } from './components/ThemeToggle';
-import type { ContinuitySummary, FocusProjection, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
+import type { AgentCapability, ContinuitySummary, FocusProjection, LiveFlowOutcome, LiveReviewItem, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
+import type { ReviewDecisionInput } from './surfaces/Review';
+import type { ArtifactFixture } from '../core/projection/OutputProjection.js';
+
+/** Where a mission sheet was opened from; a continuation keeps the proposal's task lineage. */
+type MissionIntent = { target: string; continueProposalId: string | null; note: string | null };
+const LIVE_POLL_MS = 4_000;
 
 const views: Array<{ id: View; label: string }> = [
   { id: 'FOCUS', label: 'Focus' },
@@ -90,9 +96,29 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [createDraft, setCreateDraft] = useState<CreateDraft | null>(null);
-  const [missionSheetOpen, setMissionSheetOpen] = useState(false);
+  const [missionIntent, setMissionIntent] = useState<MissionIntent | null>(null);
   const [missionNotice, setMissionNotice] = useState<string | null>(null);
+  const [agents, setAgents] = useState<AgentCapability[] | null>(null);
+  const [reviewItems, setReviewItems] = useState<LiveReviewItem[]>([]);
+  const [flowOutcomes, setFlowOutcomes] = useState<LiveFlowOutcome[]>([]);
+  const [artifacts, setArtifacts] = useState<ArtifactFixture[]>([]);
   const requestSerial = useRef(0);
+  const liveSerial = useRef(0);
+
+  /** Review and Flow records for the active workspace; stale responses from a previous workspace are dropped. */
+  const loadLive = useCallback(async (workspaceId: string) => {
+    const serial = ++liveSerial.current;
+    try {
+      const [review, flow, output] = await Promise.all([
+        api<{ items: LiveReviewItem[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/review`),
+        api<{ outcomes: LiveFlowOutcome[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/flow`),
+        api<{ artifacts: ArtifactFixture[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/artifacts`),
+      ]);
+      if (serial === liveSerial.current) { setReviewItems(review.items); setFlowOutcomes(flow.outcomes); setArtifacts(output.artifacts); }
+    } catch {
+      if (serial === liveSerial.current) { setReviewItems([]); setFlowOutcomes([]); setArtifacts([]); }
+    }
+  }, []);
 
   const loadProjection = useCallback(async (workspaceId: string) => {
     const serial = ++requestSerial.current;
@@ -100,7 +126,7 @@ export function App() {
     setError(null);
     try {
       const next = await api<WorkspaceProjection>(`/api/workspaces/${encodeURIComponent(workspaceId)}/projection`);
-      if (serial === requestSerial.current) setProjection(next);
+      if (serial === requestSerial.current) { setProjection(next); void loadLive(workspaceId); }
     } catch (cause) {
       if (serial === requestSerial.current) {
         setProjection(null);
@@ -109,7 +135,7 @@ export function App() {
     } finally {
       if (serial === requestSerial.current) setLoading(false);
     }
-  }, []);
+  }, [loadLive]);
 
   const loadWorkspaces = useCallback(async () => {
     setLoading(true);
@@ -161,8 +187,12 @@ export function App() {
   };
   const switchWorkspace = async (id: string) => {
     requestSerial.current += 1;
+    liveSerial.current += 1;
     setProjection(null);
-    setMissionSheetOpen(false);
+    setReviewItems([]);
+    setFlowOutcomes([]);
+    setArtifacts([]);
+    setMissionIntent(null);
     setMissionNotice(null);
     setLoading(true);
     try {
@@ -173,8 +203,53 @@ export function App() {
   };
 
   const focus = projection?.focus ?? null;
+  const workspaceId = projection?.workspace.id ?? null;
   const reviewCount = focus?.humanReviewNeed.count ?? 0;
-  const closeMission = () => { setMissionSheetOpen(false); window.requestAnimationFrame(() => document.getElementById('work-on-this')?.focus()); };
+  const closeMission = () => { setMissionIntent(null); window.requestAnimationFrame(() => document.getElementById('work-on-this')?.focus()); };
+
+  const openMission = (intent: MissionIntent) => {
+    setMissionNotice(null);
+    setMissionIntent(intent);
+    setAgents(null);
+    void api<{ agents: AgentCapability[] }>(`/api/workspaces/${encodeURIComponent(workspaceId ?? '')}/missions/capabilities`)
+      .then((result) => setAgents(result.agents))
+      .catch(() => setAgents([]));
+  };
+
+  const startMission = async (mission: { target: string; outcome: string; acceptance: string[]; agent: AgentCapability['id'] }) => {
+    if (!workspaceId || !missionIntent) return;
+    await api(`/api/workspaces/${encodeURIComponent(workspaceId)}/missions`, {
+      method: 'POST',
+      body: JSON.stringify({ harness: mission.agent, target: mission.target, outcome: mission.outcome, acceptance: mission.acceptance, continueProposalId: missionIntent.continueProposalId }),
+    });
+    setMissionIntent(null);
+    setMissionNotice(`Mission started with ${AGENT_LABELS[mission.agent]}. It works on a copy of the project; its result will appear in Review for your decision.`);
+    void loadLive(workspaceId);
+  };
+
+  const decide = async (item: LiveReviewItem, decision: ReviewDecisionInput): Promise<string> => {
+    if (!workspaceId) throw new Error('No active project.');
+    const result = await api<{ decision: { state: string; written: string[]; movedToResidue: string[] } }>(
+      `/api/workspaces/${encodeURIComponent(workspaceId)}/review/${encodeURIComponent(item.id)}/decision`,
+      { method: 'POST', body: JSON.stringify(decision) },
+    );
+    await loadProjection(workspaceId);
+    const { written, movedToResidue } = result.decision;
+    switch (decision.state) {
+      case 'accepted': return `"${item.title}" accepted — ${written.length} file${written.length === 1 ? '' : 's'} written to the project${movedToResidue.length > 0 ? `, ${movedToResidue.length} moved to Workbench residue` : ''}.`;
+      case 'revision_requested': return 'Revision requested — the proposal stays attached to the same proposal/mission lineage; prior evidence is preserved.';
+      case 'rejected': return `"${item.title}" rejected. The record is retained for reference; canonical state is unchanged.`;
+      default: return `"${item.title}" preserved as residue — retained for reference with no active authority.`;
+    }
+  };
+
+  // While an agent is running, keep Flow and Review current without a manual refresh.
+  const running = flowOutcomes.some((outcome) => outcome.runState === 'in_progress' && !outcome.blockedBy);
+  useEffect(() => {
+    if (!running || !workspaceId) return undefined;
+    const timer = window.setInterval(() => { void loadProjection(workspaceId); }, LIVE_POLL_MS);
+    return () => window.clearInterval(timer);
+  }, [running, workspaceId, loadProjection]);
 
   return <div className="app-shell">
     <ShellNav active={activeView} reviewCount={reviewCount} onSelect={setActiveView} />
@@ -196,13 +271,13 @@ export function App() {
           : workspaces.length === 0 ? <FirstUse busy={busy} onAdd={() => void addProject()} onCreate={() => void beginCreate()} />
             : !projection ? <section className="empty-state"><h1>Project unavailable</h1><p>Workbench could not load the selected project. Refresh or select another registered project.</p></section>
               : activeView === 'FOCUS' && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} />
-                : activeView === 'FOCUS' && missionSheetOpen && focus?.currentQuestion ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet target={focus.currentQuestion.name} objective={focus.currentObjective} onClose={closeMission} onStart={(mission, packet) => { setMissionSheetOpen(false); setMissionNotice(`Mission started from packet ${packet.id} (${packet.budget.estimated_tokens} tokens) — deterministic compile, no model called. Target: ${mission.target}`); }} onDraft={() => { setMissionSheetOpen(false); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
-                  : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet">{missionNotice}</p><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button></section>
-                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} onWork={() => setMissionSheetOpen(true)} onReview={() => setActiveView('REVIEW')} />
+                : missionIntent ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet key={`${missionIntent.continueProposalId ?? ''}${missionIntent.target}`} target={missionIntent.target} objective={focus?.currentObjective ?? ''} agents={agents} continuation={missionIntent.note} onClose={closeMission} onStart={startMission} onDraft={() => { setMissionIntent(null); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
+                  : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet" role="status">{missionNotice}</p><div className="setup-actions"><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button><button className="button" type="button" onClick={() => { setMissionNotice(null); setActiveView('FLOW'); }}>Open Flow</button></div></section>
+                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} onWork={() => openMission({ target: focus.currentQuestion?.name ?? focus.currentObjective, continueProposalId: null, note: null })} onReview={() => setActiveView('REVIEW')} />
                       : activeView === 'FIELD' ? <Field field={projection.field} canonicalHash={focus?.canonicalHash ?? ''} projectId={focus?.projectId ?? projection.workspace.id} />
-                        : activeView === 'FLOW' ? <Flow continuity={projection.continuity} />
-                          : activeView === 'REVIEW' ? <Review continuity={projection.continuity} />
-                            : activeView === 'OUTPUT' ? <Output artifacts={projection.artifacts} />
+                        : activeView === 'FLOW' ? <Flow outcomes={flowOutcomes} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
+                          : activeView === 'REVIEW' ? <Review items={reviewItems} continuity={projection.continuity} onDecide={decide} onContinue={(item) => openMission({ target: item.target, continueProposalId: item.id, note: `Continues task ${item.taskId} as version ${item.taskVersion + 1}${item.revisionNote ? ` with your revision note: “${item.revisionNote}”` : ''}. You can pick a different agent under Advanced.` })} />
+                            : activeView === 'OUTPUT' ? <Output artifacts={artifacts} />
                               : <SetupNeeded projection={projection} />}
       </main>
     </div>
