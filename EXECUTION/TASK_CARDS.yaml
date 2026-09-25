@@ -1317,6 +1317,45 @@ cards:
   - TEST-028/029 evidence with safe mission and switch sequence
   - Actual model effort context and privacy records
   - Explicit parity verdict and residual provider limits
+- task_id: TASK-P10-06
+  objective: Wire the live mission-to-review loop (Mission sheet start, sandboxed agent run, Review decisions, Flow lanes, Output) and rebaseline fixture-era specs
+  required_reads:
+  - AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md
+  - AUTHORITY/08_CROSS_HARNESS_CONTINUITY_ADDENDUM.md
+  create_or_modify:
+  - src/server/
+  - src/core/
+  - src/web/
+  - tests/unit/
+  - tests/integration/
+  - tests/e2e/
+  must_preserve:
+  - Agents work only in a Workbench-owned sandbox copy, never the registered project
+  - Only owner Accept writes to the project, after a base-hash stale check; deletions go to residue
+  - Agent-declared test results render as Claimed, never Passed
+  - Browser responses never contain absolute project roots
+  - Production render modules contain no fixture fallback
+  implementation_steps:
+  - Add a mission service that snapshots the project into a sandbox, runs the chosen harness via HarnessCoordinator, and turns the result into a proposal
+  - Add a durable proposal and decision store plus workspace-scoped mission, capability, proposal and decision APIs
+  - Wire Mission sheet, Review, Flow and Output to those APIs using the existing projection logic
+  - Rebaseline fixture-era E2E specs onto seeded live records
+  tests:
+  - TEST-004
+  - TEST-006
+  - TEST-007
+  - TEST-009
+  - TEST-019
+  - TEST-023
+  done_when:
+  - A mission started from the UI runs in a sandbox and appears in Review as a proposal
+  - Accept applies it to the project only when the base is unchanged; revise, reject and preserve keep the record
+  - Flow lanes and Output reflect live records; full Playwright suite passes on the committed candidate
+  stop_if:
+  - Applying a proposal would require overwriting a file changed since the proposal base
+  - A harness cannot be contained to the sandbox
+  handoff:
+  - Exact git SHA, API routes, sandbox containment evidence and full E2E result
 - task_id: TASK-P10-03
   objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
   required_reads:

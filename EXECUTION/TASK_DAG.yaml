@@ -504,10 +504,44 @@ tasks:
   - ORACLE-055
   gate: GATE-HARNESS-CONTINUITY
   phase: 2
+- id: TASK-P10-06
+  objective: Wire the live mission-to-review loop (Mission sheet start, sandboxed agent run, Review decisions, Flow lanes, Output) and rebaseline fixture-era specs
+  deps:
+  - TASK-P10-05
+  scenarios:
+  - SCN-MIS-01
+  - SCN-MIS-02
+  - SCN-MIS-03
+  - SCN-REV-01
+  - SCN-REV-02
+  - SCN-REV-03
+  - SCN-REV-04
+  - SCN-REV-05
+  - SCN-REV-07
+  - SCN-REV-08
+  - SCN-REV-09
+  - SCN-REV-10
+  - SCN-X-01
+  - SCN-X-02
+  - SCN-FLO-01
+  - SCN-FLO-02
+  - SCN-OUT-01
+  - SCN-OUT-02
+  oracles:
+  - ORACLE-007
+  - ORACLE-009
+  - ORACLE-010
+  - ORACLE-014
+  - ORACLE-027
+  - ORACLE-045
+  - ORACLE-046
+  - ORACLE-051
+  gate: GATE-LIVE
+  phase: 2
 - id: TASK-P10-03
   objective: Establish GATE-LIVE and prove owner-visible liveness through the Windows launch path
   deps:
-  - TASK-P10-05
+  - TASK-P10-06
   scenarios:
   - SCN-ORI-01
   - SCN-LOC-01

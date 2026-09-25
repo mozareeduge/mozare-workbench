@@ -96,8 +96,8 @@
     },
     {
       "path": "AUTHORITY/05_DECISION_AND_SUPERSESSION_LEDGER.md",
-      "bytes": 10454,
-      "sha256": "222fcbc4811f34b5a6ef97551c216328ee6e4047f698364f0d9b5bfe0588854d"
+      "bytes": 11389,
+      "sha256": "3c43be4c880cb5380e142c69569241ef4863358d3eea4b8ec7c98cc23dff8e3b"
     },
     {
       "path": "AUTHORITY/06_CONTEXT_AND_GENERATIVE_REPRESENTATION.md",
@@ -366,13 +366,13 @@
     },
     {
       "path": "EXECUTION/TASK_CARDS.yaml",
-      "bytes": 70782,
-      "sha256": "cd6992a15e2e98216801d040d7e76d5a695e89056ed02242bcebc1ae23032ed4"
+      "bytes": 74181,
+      "sha256": "1a354f44e0a3c60a61cc65332e1b75eaa6e5664a58eac1fc9f3a0f69c6497ac2"
     },
     {
       "path": "EXECUTION/TASK_DAG.yaml",
-      "bytes": 10389,
-      "sha256": "2ed454778f2426c9083f5d12acae2e9a06dd8f13432e79ab781ecd0384afee73"
+      "bytes": 11614,
+      "sha256": "af80f467df7ff89452d9bf607ebd917e24c6a18ff873e4c6636521b3d6025d79"
     },
     {
       "path": "EXECUTION/TASK_DETAILS_CONTEXT_GENUI.md",
@@ -381,8 +381,8 @@
     },
     {
       "path": "EXECUTION/TRACEABILITY.csv",
-      "bytes": 12784,
-      "sha256": "3862a2aa20eb46c091cd99c6b28fa838b8c8dc5834094c7c68b2bc85ba2cf0c2"
+      "bytes": 15930,
+      "sha256": "02fb15036629d02cdefdec8c1006c2b58c615cd9df5fc7f4d841603de4b1efba"
     },
     {
       "path": "GENUI/component-registry.yaml",
