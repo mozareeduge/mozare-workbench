@@ -6,7 +6,33 @@ import {
   type ReviewDecisionState,
   type ReviewDetailModel,
 } from '../../core/projection/ReviewProjection.js';
+import { SystemLadder, type LadderSection } from '../components/SystemLadder';
 import type { ContinuitySummary, LiveReviewItem } from '../liveTypes';
+
+/** Breaks agent prose into ≤70-character lines, the SystemLadder's reading-width contract. */
+function wrap(text: string): string[] {
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    if (line && `${line} ${word}`.length > 70) { lines.push(line); line = ''; }
+    line = line ? `${line} ${word}` : word.slice(0, 70);
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function ladderSections(view: NonNullable<LiveReviewItem['systemView']>, logText: string): LadderSection[] {
+  const log = logText.trim() ? logText.split(/\r?\n/) : undefined;
+  const sections: LadderSection[] = [
+    { title: 'Intent', lines: view.intent ? wrap(view.intent) : [] },
+    { title: 'Behavior', lines: view.behavior ? wrap(view.behavior) : [] },
+    { title: 'Architecture', lines: view.architecture.flatMap(wrap) },
+    { title: 'Implementation', lines: view.implementation.flatMap(wrap) },
+    // The run log stays collapsed and lazy inside Verification (ORACLE-026).
+    { title: 'Verification', lines: view.verification.length > 0 ? view.verification.flatMap(wrap) : ['The agent listed no verification.'], log },
+  ];
+  return sections.filter((section) => section.lines.length > 0);
+}
 
 export type ReviewDecisionInput = { state: Exclude<ReviewDecisionState, 'under_review'>; rationale?: string | null; revisionNote?: string | null };
 
@@ -156,6 +182,11 @@ export function Review({ items, continuity, onDecide, onContinue }: ReviewProps)
               <dt>What remains unresolved</dt><dd dir="auto">{detail.effect.whatRemainsUnresolved}</dd>
             </dl>
           </section>
+
+          {selectedItem?.systemView && ladderSections(selectedItem.systemView, selectedItem.implementation.logText).length > 0 && <section aria-label="How the agent explains this change">
+            <h3>In plain terms</h3>
+            <SystemLadder sections={ladderSections(selectedItem.systemView, selectedItem.implementation.logText)} terms={selectedItem.systemView.terms} />
+          </section>}
 
           <section aria-labelledby={`review-verification-heading-${detail.id}`}>
             <h3 id={`review-verification-heading-${detail.id}`}>Verification</h3>

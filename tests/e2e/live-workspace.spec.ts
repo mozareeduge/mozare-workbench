@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { resetAlpha } from './live-reset';
+
+test.beforeEach(async ({ request }) => { await resetAlpha(request); });
 
 test('TEST-023: five surfaces use the running active-workspace API and switching removes stale identity', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -22,13 +25,15 @@ test('TEST-023: five surfaces use the running active-workspace API and switching
   await expect(page.getByText(/Continue the same mission in another harness\./)).toBeVisible();
 
   await page.getByRole('button', { name: 'Review', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'No items need review' })).toBeVisible();
+  await expect(page.locator('.review-queue-item').first()).toBeVisible();
+  await expect(page.locator('.review-evidence-row').first()).toBeVisible();
   await page.getByText('Latest work provenance').click();
   await expect(page.getByText('observed-test-model / medium', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Output', exact: true }).click();
   await expect(page.getByText('Interaction reference prototype', { exact: true })).toBeVisible();
-  await expect(page.getByText('partial', { exact: true })).toBeVisible();
+  await expect(page.locator('.artifact-tile', { hasText: 'Interaction reference prototype' }).getByText('Unverified', { exact: true })).toBeVisible();
+  await expect(page.locator('.artifact-tile', { hasText: 'Interaction reference prototype' }).getByText(/outside the project folder/i)).toBeVisible();
 
   const switchedResponse = page.waitForResponse((response) => /\/api\/workspaces\/ws_[a-f0-9]+\/projection$/.test(response.url()) && response.status() === 200);
   await page.getByLabel('Active project').selectOption({ label: 'beta-live-project' });

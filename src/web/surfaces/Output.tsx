@@ -63,9 +63,9 @@ function ArtifactTileView({ tile }: { tile: ArtifactTile }) {
       <p className="artifact-lineage">
         {tile.lineageRouteId ? <button type="button" className="artifact-lineage-link">{tile.lineage}</button> : <span>{tile.lineage}</span>}
       </p>
-      {(tile.medium === 'binary' || tile.medium === 'audio' || tile.medium === 'video' || tile.medium === 'pdf') && <dl className="artifact-technical">
-        {tile.hash && <><dt>Hash</dt><dd>{tile.hash}</dd></>}
-        {tile.path && <><dt>Path</dt><dd>{tile.path}</dd></>}
+      {(tile.path || tile.hash || tile.sizeBytes !== undefined) && <dl className="artifact-technical">
+        {tile.hash && <><dt>Hash</dt><dd><bdi dir="ltr">{tile.hash}</bdi></dd></>}
+        {tile.path && <><dt>Path</dt><dd><bdi dir="ltr">{tile.path}</bdi></dd></>}
         <dt>Size</dt><dd>{formatArtifactSize(tile.sizeBytes)}</dd>
       </dl>}
       <p className="artifact-primary-action">{tile.primaryActionLabel}</p>

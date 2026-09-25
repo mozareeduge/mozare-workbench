@@ -37,7 +37,8 @@ type Handoff = {
   open_questions?: unknown[];
   blockers?: unknown[];
   next_action?: string;
-  system_view?: { architecture?: unknown[]; intent?: string };
+  system_view?: { architecture?: unknown[]; implementation?: unknown[]; verification?: unknown[]; intent?: string; behavior?: string };
+  technical_terms?: Array<{ term?: unknown; plain_system_meaning?: unknown; why_it_matters?: unknown; exact_detail?: unknown }>;
   continuity?: { remaining?: unknown[] };
 };
 
@@ -238,6 +239,19 @@ export class MissionService {
       changes,
       baseHashes,
       sandbox: run.sandbox,
+      systemView: {
+        intent: typeof handoff.system_view?.intent === 'string' ? handoff.system_view.intent.slice(0, 600) : null,
+        behavior: typeof handoff.system_view?.behavior === 'string' ? handoff.system_view.behavior.slice(0, 600) : null,
+        architecture: strings(handoff.system_view?.architecture).slice(0, 12),
+        implementation: strings(handoff.system_view?.implementation).slice(0, 12),
+        verification: strings(handoff.system_view?.verification).slice(0, 12),
+        terms: (handoff.technical_terms ?? []).filter((term) => typeof term.term === 'string' && typeof term.plain_system_meaning === 'string').slice(0, 12).map((term) => ({
+          term: String(term.term).slice(0, 80),
+          plain_system_meaning: String(term.plain_system_meaning).slice(0, 400),
+          why_it_matters: typeof term.why_it_matters === 'string' ? term.why_it_matters.slice(0, 400) : '',
+          exact_detail: typeof term.exact_detail === 'string' ? term.exact_detail.slice(0, 200) : null,
+        })),
+      },
     });
   }
 }

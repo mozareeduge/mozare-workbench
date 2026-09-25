@@ -46,6 +46,9 @@ export type LiveRelation = {
   claimability: string;
   descriptors?: string[];
   uncertainty?: string;
+  evidence_refs?: string[];
+  origin?: { kind?: string };
+  history_event_refs?: string[];
 };
 
 export type FieldProjection = {
@@ -103,6 +106,14 @@ export type LiveReviewItem = ReviewItemFixture & {
   taskVersion: number;
   harness: AgentCapability['id'];
   changes: FileChange[];
+  systemView: {
+    intent: string | null;
+    behavior: string | null;
+    architecture: string[];
+    implementation: string[];
+    verification: string[];
+    terms: Array<{ term: string; plain_system_meaning: string; why_it_matters: string; exact_detail: string | null }>;
+  } | null;
 };
 
 export type LiveFlowOutcome = FlowOutcomeFixture;

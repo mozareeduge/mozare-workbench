@@ -1,9 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { resetAlpha } from './live-reset';
+
+// Review items are live proposals seeded through the proposal store (tests/e2e/live-seed.ts);
+// decisions persist on disk, so each test starts from the seeded decision state.
+test.beforeEach(async ({ request }) => { await resetAlpha(request); });
 
 async function openReview(page: import('@playwright/test').Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'Review', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Review' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Review', exact: true })).toBeVisible();
+  await expect(page.locator('.review-queue-item').first()).toBeVisible();
 }
 
 /** Scoped to the decision bar's action group, so "Reject" never matches a queue item whose decision badge now reads "Rejected · retained" (which contains "Reject" as a substring). */
@@ -15,13 +21,15 @@ test('SCN-REV-01: review queue is finite and sorted critical/stale first, then n
   await page.setViewportSize({ width: 1440, height: 900 });
   await openReview(page);
   const titles = await page.locator('.review-queue-item strong').allTextContents();
-  expect(titles).toEqual([
+  expect(titles.slice(0, 5)).toEqual([
     'Stream raw build log into Implementation disclosure',
     'Transactional canonical apply for relation-connect proposals',
     'Rebase Field connect-proposal descriptor validation',
     'Confirm evidence provenance keeps agent claims out of Passed state',
     'Add responsive breakpoint to Review evidence chips',
   ]);
+  // Finite: the three remaining items are the older Flow-lane proposals, including already-decided ones.
+  expect(titles).toHaveLength(8);
   // ReviewQueueItem contract: no proposal prose excerpt in the queue row, only title/target/risk/freshness/verification cues.
   await expect(page.locator('.review-queue-item', { hasText: 'Transactional canonical apply' })).not.toContainText('Requested outcome');
   await page.screenshot({ path: 'test-results/TEST-006-review-queue-1440x900.png', fullPage: true });
@@ -30,6 +38,7 @@ test('SCN-REV-01: review queue is finite and sorted critical/stale first, then n
 test('ORACLE-009 / SCN-REV-02: technical review opens at effect, before architecture/diff/log, which stay collapsed', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openReview(page);
+  await page.getByRole('button', { name: /Transactional canonical apply for relation-connect proposals/ }).click();
   const detail = page.locator('.review-detail');
   await expect(detail.getByRole('heading', { name: 'Transactional canonical apply for relation-connect proposals' })).toBeVisible();
 
@@ -58,6 +67,7 @@ test('ORACLE-009 / SCN-REV-02: technical review opens at effect, before architec
 test('SCN-REV-04 / SCN-REV-05: expanding architecture and implementation keeps decision controls visible; monospace is confined to Implementation', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openReview(page);
+  await page.getByRole('button', { name: /Transactional canonical apply for relation-connect proposals/ }).click();
   await page.locator('.review-architecture summary').click();
   await expect(page.getByText('A pure isProposalStale')).toBeVisible();
   await expect(decisionActions(page).getByRole('button', { name: 'Accept', exact: true })).toBeVisible();

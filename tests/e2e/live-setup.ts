@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { WorkspaceRegistry } from '../../src/server/workspaces/WorkspaceRegistry.js';
 import { WorkLedger } from '../../src/core/continuity/WorkLedger.js';
+import { seedAlpha } from './live-seed';
 
 export default async function setup() {
   const e2eRuntime = join(process.cwd(), '.mozare-runtime', 'e2e');
@@ -23,6 +24,9 @@ export default async function setup() {
   const first = registry.register(alpha);
   registry.register(beta);
   registry.activate(first.id);
+  // Seed Flow/Review/Output records first so the continuity record below stays the latest meaningful work.
+  seedAlpha(e2eRuntime, first.id, alpha, ledger);
+  writeFileSync(join(e2eRuntime, 'alpha-workspace-id'), first.id, 'utf8');
   ledger.append({
     runId: 'run-e2e-codex-v1', projectId: 'example-artistic-research', missionId: 'mission-e2e', taskId: 'task-e2e', taskVersion: 1,
     supersedesRunId: null, harness: 'codex', model: 'observed-test-model', effort: 'medium', capabilitySnapshotRef: 'evidence/capability.json',

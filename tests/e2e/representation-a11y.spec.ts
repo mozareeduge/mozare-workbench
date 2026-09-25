@@ -1,4 +1,8 @@
 import { expect, test } from '@playwright/test';
+import { resetAlpha } from './live-reset';
+import { openProvenanceLadder } from './live-ladder';
+
+test.beforeEach(async ({ request }) => { await resetAlpha(request); });
 
 /**
  * TEST-GUI-04 — Accessibility/responsive (TASK-P05-05, SCN-GUI-06).
@@ -10,16 +14,16 @@ const widths = [1440, 1024, 390, 320];
 test('TEST-GUI-04: semantic components stay keyboard-reachable across supported widths', async ({ page }) => {
   for (const width of widths) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/?state=demo-handoff');
+    await openProvenanceLadder(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
     // Critical information reachable: ladder sections visible.
-    await expect(page.getByRole('heading', { name: 'Intent' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Verification' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'System view' }).getByRole('heading', { name: 'Intent' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'System view' }).getByRole('heading', { name: 'Verification' })).toBeVisible();
     // Keyboard-only: term chip opens its popover, Close returns.
-    const chip = page.getByRole('button', { name: 'ModelRouter' }).first();
+    const chip = page.getByRole('button', { name: 'ReviewProjection' }).first();
     await chip.focus();
     await page.keyboard.press('Enter');
-    const dialog = page.getByRole('dialog', { name: /Term: ModelRouter/i });
+    const dialog = page.getByRole('dialog', { name: /Term: ReviewProjection/i });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Close' }).focus();
     await page.keyboard.press('Enter');
@@ -30,11 +34,11 @@ test('TEST-GUI-04: semantic components stay keyboard-reachable across supported 
 test('TEST-GUI-04: reduced motion keeps critical information visible and the log expandable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?state=demo-handoff');
+  await openProvenanceLadder(page);
   await expect(page.getByRole('heading', { name: 'Intent' })).toBeVisible();
   await page.getByRole('button', { name: /Verification log/i }).click();
   await expect(page.getByTestId('ladder-log')).toBeVisible();
-  await expect(page.getByTestId('ladder-log')).toContainText('step diagnostic line');
+  await expect(page.getByTestId('ladder-log')).toContainText('Tests 5 passed');
 });
 
 test('TEST-GUI-04: large-text/zoom keeps the mission sheet primary action reachable', async ({ page }) => {

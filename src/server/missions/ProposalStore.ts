@@ -5,6 +5,16 @@ import type { ReviewDecisionState, ReviewItemFixture } from '../../core/projecti
 import type { RealHarnessId } from '../agents/HarnessAdapter.js';
 import { combinedHash, hashFiles, type FileChange } from './ProjectSnapshot.js';
 
+/** The agent's own plain-language account of the change (handoff system_view + technical_terms), bounded. */
+export type ProposalSystemView = {
+  intent: string | null;
+  behavior: string | null;
+  architecture: string[];
+  implementation: string[];
+  verification: string[];
+  terms: Array<{ term: string; plain_system_meaning: string; why_it_matters: string; exact_detail: string | null }>;
+};
+
 /** A review proposal produced by a sandboxed mission run. Sandbox and hashes stay server-side. */
 export type StoredProposal = Omit<ReviewItemFixture, 'decisionState' | 'decisionRationale' | 'revisionNote'> & {
   workspaceId: string;
@@ -17,6 +27,7 @@ export type StoredProposal = Omit<ReviewItemFixture, 'decisionState' | 'decision
   changes: FileChange[];
   baseHashes: Record<string, string | null>;
   sandbox: string;
+  systemView?: ProposalSystemView | null;
 };
 
 export type ProposalDecision = {
@@ -37,6 +48,7 @@ export type PublicReviewItem = ReviewItemFixture & {
   taskVersion: number;
   harness: RealHarnessId;
   changes: FileChange[];
+  systemView: ProposalSystemView | null;
 };
 
 export class ProposalConflictError extends Error {
@@ -105,7 +117,7 @@ export class ProposalStore {
       highRiskPolicy: proposal.highRiskPolicy, createdAt: proposal.createdAt, baseCanonicalHash: proposal.baseCanonicalHash,
       effect: proposal.effect, evidence: proposal.evidence, impact: proposal.impact, architecture: proposal.architecture,
       implementation: proposal.implementation, runId: proposal.runId, missionId: proposal.missionId, taskId: proposal.taskId,
-      taskVersion: proposal.taskVersion, harness: proposal.harness, changes: proposal.changes,
+      taskVersion: proposal.taskVersion, harness: proposal.harness, changes: proposal.changes, systemView: proposal.systemView ?? null,
       currentBaseCanonicalHash: this.currentBaseHash(proposal, projectRoot),
     };
     return {
