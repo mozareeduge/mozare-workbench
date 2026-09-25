@@ -1,3 +1,8 @@
+---
+name: mozare-represent
+description: Choose how project or agent state is shown to Mozare inside the owning Workbench surface, preferring static then deterministic composition and using bounded generative OpenUI only when it adds real value.
+---
+
 # mozare-represent
 
 Use when choosing how project/agent state should be shown to Mozare.

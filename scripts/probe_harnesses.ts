@@ -13,6 +13,9 @@ if (selected.some((id) => !['claude', 'codex', 'hermes'].includes(id))) throw ne
 const matrix = await Promise.all([...new Set(selected)].map((id) => adapters[id].probe()));
 console.log(JSON.stringify({ mode: execute ? 'safe-mission' : 'capability-only', matrix }, null, 2));
 if (!execute) process.exit(0);
+// --effort applies where the adapter forwards it (Claude --effort, Hermes --reasoning); Codex keeps its own configured effort.
+const effortIndex = process.argv.indexOf('--effort');
+const effort = effortIndex >= 0 ? process.argv[effortIndex + 1] : null;
 
 const root = join(process.cwd(), '.mozare-runtime', `harness-probe-${Date.now()}`);
 mkdirSync(join(root, 'config'), { recursive: true });
@@ -35,7 +38,7 @@ for (const [step, harness] of selected.entries()) {
     runId, projectId: 'project-harness-probe', missionId: 'mission-harness-probe', taskId: 'task-harness-probe', taskVersion: 1,
     workspaceRoot: root, runDirectory, objective: 'Read the bounded contract and write a schema-valid handoff. Do not modify canonical content.',
     contextPackRef, contextSnapshotRef: null, authorityRefs: ['AUTHORITY/08'], oracleRefs: ['ORACLE-054', 'ORACLE-055'],
-    model: null, effort: null, routeTier: 'CODING_AGENT', nextAction: 'Continue the same task in the next available harness.',
+    model: null, effort: harness === 'codex' ? null : effort, routeTier: 'CODING_AGENT', nextAction: 'Continue the same task in the next available harness.',
   };
   const result = await coordinator.begin(harness, mission).completion;
   results.push({

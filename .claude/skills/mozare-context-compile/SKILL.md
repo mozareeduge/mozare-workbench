@@ -1,3 +1,8 @@
+---
+name: mozare-context-compile
+description: Compile a bounded, vendor-neutral mission context pack from canonical project records and authority references, never from transcript replay, for an agent run or continuation.
+---
+
 # mozare-context-compile
 
 Use whenever a mission/model call needs project context.

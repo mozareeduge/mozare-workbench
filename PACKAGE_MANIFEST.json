@@ -11,8 +11,8 @@
     },
     {
       "path": ".agents/skills/mozare-context-compile/SKILL.md",
-      "bytes": 706,
-      "sha256": "0c57dcd4882510254f6c7d670f4a36a9c7696808d0a2362ec789d112a14398ad"
+      "bytes": 933,
+      "sha256": "15d5b29409b13260b73562aed2409392c426db11a0747fc03efc6f947463ab4b"
     },
     {
       "path": ".agents/skills/mozare-handoff/SKILL.md",
@@ -36,8 +36,8 @@
     },
     {
       "path": ".agents/skills/mozare-represent/SKILL.md",
-      "bytes": 881,
-      "sha256": "25a84a96261f33700ccdb8476be559eea087159936cf7adf59f2e7271bd76550"
+      "bytes": 1131,
+      "sha256": "fb757a849e4c92c6239e8bef6606c512889c54fb1cf7e9cefbc8bb38ec0f2372"
     },
     {
       "path": ".agents/skills/mozare-research/SKILL.md",
@@ -656,8 +656,8 @@
     },
     {
       "path": "scripts/probe_harnesses.ts",
-      "bytes": 3158,
-      "sha256": "21e26c886b05ca096bf1225f787b75b7ae8b3ff71d4f2c62f8e5c1a9c20689f0"
+      "bytes": 4140,
+      "sha256": "e086519c4a45ab1bffc9886faa282a5985320886a962273ecb37715cb339a737"
     },
     {
       "path": "scripts/qa_package.py",
@@ -906,8 +906,8 @@
     },
     {
       "path": "src/server/agents/HarnessAdapter.ts",
-      "bytes": 11287,
-      "sha256": "12aa36f9da9352788d85ac94ef363eab9f99bc06c76c2816785a160c88cdc8f9"
+      "bytes": 11678,
+      "sha256": "c54d4ae3fc31a745d3c57c0eff13fb86da5c12ac235cee8a01bdf77abb05106a"
     },
     {
       "path": "src/server/agents/HarnessCoordinator.ts",
