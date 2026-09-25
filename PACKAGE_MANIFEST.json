@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 267,
+  "file_count": 268,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -643,6 +643,11 @@
       "path": "scripts/execution_loop.py",
       "bytes": 16409,
       "sha256": "cecc4052ec6cfb2bb116036af4e6e200c047ed7bf6623844680b9e50a272f913"
+    },
+    {
+      "path": "scripts/gate-live-static.mjs",
+      "bytes": 1222,
+      "sha256": "0ea9b2d10d00af897327e45e893dff0f01ccc5ba90f0bd51d5b35bcb510f4e32"
     },
     {
       "path": "scripts/make_manifest.py",
