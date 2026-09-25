@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -22,6 +22,9 @@ class EditingRunner extends ProcessRunner {
       const edited = readdirSync(objects).find((name) => name.startsWith('q_'))!;
       writeFileSync(join(objects, edited), `${readFileSync(join(objects, edited), 'utf8')}\nAgent refinement line.\n`, 'utf8');
       writeFileSync(join(cwd, 'agent-note.md'), '# Agent note\n', 'utf8');
+      // Harness runtime state (as Claude Code hooks write) must never become part of a proposal.
+      mkdirSync(join(cwd, '.claude', 'state'), { recursive: true });
+      writeFileSync(join(cwd, '.claude', 'state', 'session.json'), '{}', 'utf8');
       unlinkSync(join(objects, readdirSync(objects).find((name) => name.startsWith('src_'))!));
       writeFileSync(join(cwd, '.mozare-run', 'handoff.json'), JSON.stringify({
         run_id: 'fake', state: 'completed', summary: 'Refined the question note. Added an agent note.',

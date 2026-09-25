@@ -6,6 +6,12 @@ import { ProcessRunner } from '../process/ProcessRunner.js';
 /** Folders that are tooling state, not project content; agents never receive or return them. */
 const EXCLUDED_DIRECTORIES = new Set(['.git', 'node_modules', '.mozare', '.mozare-runtime', '.venv', 'venv', '__pycache__', 'dist', 'build', '.next', '.cache']);
 export const RUN_DIRECTORY_NAME = '.mozare-run';
+/**
+ * Runtime state agent CLIs write for themselves (sessions, hook logs, memory). It is never
+ * project work, so it is kept out of proposals even when the harness writes it into the copy.
+ */
+const HARNESS_STATE_PREFIXES = ['.claude/state/', '.claude/sessions/', '.claude/memory/', '.claude/settings.local.json', '.codex/', '.hermes/'];
+const isHarnessState = (path: string) => HARNESS_STATE_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix));
 const MAX_FILES = 5_000;
 const MAX_BYTES = 200 * 1024 * 1024;
 const MAX_DIFF_CHARS = 200_000;
@@ -86,10 +92,11 @@ export function sandboxChanges(sandbox: string, baseline: FileHashes): FileChang
   const afterHashes = hashFiles(sandbox, after);
   const changes: FileChange[] = [];
   for (const path of after) {
+    if (isHarnessState(path)) continue;
     if (!(path in baseline)) changes.push({ path, kind: 'added' });
     else if (baseline[path] !== afterHashes[path]) changes.push({ path, kind: 'modified' });
   }
-  for (const path of Object.keys(baseline)) if (!after.includes(path)) changes.push({ path, kind: 'deleted' });
+  for (const path of Object.keys(baseline)) if (!after.includes(path) && !isHarnessState(path)) changes.push({ path, kind: 'deleted' });
   return changes.sort((a, b) => a.path.localeCompare(b.path));
 }
 

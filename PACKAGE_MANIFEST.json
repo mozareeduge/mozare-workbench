@@ -956,8 +956,8 @@
     },
     {
       "path": "src/server/missions/ProjectSnapshot.ts",
-      "bytes": 5360,
-      "sha256": "7ec0bd22f47212cb2650d081923255c01a534c0cfab1473a6cce82275c10555b"
+      "bytes": 6009,
+      "sha256": "b13f9811e01adbbd5762d91811e458410acd5e7e6db829d5998bbfb2504cc1da"
     },
     {
       "path": "src/server/missions/ProposalStore.ts",
@@ -1201,8 +1201,8 @@
     },
     {
       "path": "tests/integration/mission-review-api.test.ts",
-      "bytes": 9552,
-      "sha256": "3073040630242a0c09d35d9faf2f6cd0ad62ddb610af748220053f395a50a32c"
+      "bytes": 9964,
+      "sha256": "504a8247ab774e36966e7b17485bbb91e88f193e6c43517b9cba2f6b13038995"
     },
     {
       "path": "tests/integration/model-routing-api.test.ts",
