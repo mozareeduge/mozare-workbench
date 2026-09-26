@@ -91,3 +91,17 @@ test('Start sends the mission to the chosen agent and says the project stays unc
   await expect(page.getByText(/result will appear in review/i)).toBeVisible();
   expect(sent).toMatchObject({ harness: 'hermes', target: QUESTION, acceptance: ['The question names one testable operation.'], continueProposalId: null });
 });
+
+test('A registered folder without Workbench records can still receive a mission, read-only until Review', async ({ page }) => {
+  await stubAgents(page);
+  await page.route('**/api/workspaces/*/projection', async (route) => {
+    const live = await (await route.fetch()).json();
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ...live, focus: null, field: null, orientation: { label: 'wiki', entryCount: 2, entries: ['00-system', 'README.md'] }, workspace: { ...live.workspace, displayName: 'wiki', classification: 'needs_onboarding' } }) });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'This folder needs Workbench setup' })).toBeVisible();
+  await page.getByRole('button', { name: 'Start a mission' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Compose mission' });
+  await expect(sheet.getByRole('textbox', { name: 'Target' })).toHaveValue('wiki');
+  await expect(sheet.getByText(/on a copy of the project/i)).toBeVisible();
+});

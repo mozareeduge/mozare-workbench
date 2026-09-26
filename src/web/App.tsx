@@ -75,7 +75,7 @@ function Focus({ projection, continuity, onWork, onReview }: { projection: Focus
   </>;
 }
 
-function SetupNeeded({ projection }: { projection: WorkspaceProjection }) {
+function SetupNeeded({ projection, onWork }: { projection: WorkspaceProjection; onWork: (() => void) | null }) {
   const invalid = projection.workspace.classification === 'invalid';
   return <section className="empty-state" aria-labelledby="focus-heading">
     <p className="eyebrow">Focus / <bdi dir="auto">{projection.workspace.displayName}</bdi></p>
@@ -83,6 +83,7 @@ function SetupNeeded({ projection }: { projection: WorkspaceProjection }) {
     <p>{invalid ? projection.workspace.errorReceipt?.message : 'The folder is registered read-only. No canonical questions, relations, decisions, reviews, or outputs have been inferred.'}</p>
     {projection.orientation && <article className="card orientation-card"><p className="card-label">Safe orientation</p><p>{projection.orientation.entryCount} visible top-level entries</p>{projection.orientation.entries.length > 0 && <ul>{projection.orientation.entries.map((entry) => <li key={entry}><bdi dir="auto">{entry}</bdi></li>)}</ul>}</article>}
     <p className="quiet">Registration did not write any files into this folder.</p>
+    {onWork && <div className="setup-actions"><button id="work-on-this" className="button button-primary" type="button" onClick={onWork}>Start a mission</button><p className="quiet">An agent works on a copy of this folder; nothing changes here until you accept its result in Review.</p></div>}
   </section>;
 }
 
@@ -270,7 +271,7 @@ export function App() {
         {loading && !projection ? <section className="empty-state" aria-live="polite"><p className="eyebrow">Workbench</p><h1>Loading project reality…</h1></section>
           : workspaces.length === 0 ? <FirstUse busy={busy} onAdd={() => void addProject()} onCreate={() => void beginCreate()} />
             : !projection ? <section className="empty-state"><h1>Project unavailable</h1><p>Workbench could not load the selected project. Refresh or select another registered project.</p></section>
-              : activeView === 'FOCUS' && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} />
+              : activeView === 'FOCUS' && !missionIntent && !missionNotice && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} onWork={projection.workspace.classification === 'needs_onboarding' ? () => openMission({ target: projection.workspace.displayName, continueProposalId: null, note: null }) : null} />
                 : missionIntent ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet key={`${missionIntent.continueProposalId ?? ''}${missionIntent.target}`} target={missionIntent.target} objective={focus?.currentObjective ?? ''} agents={agents} continuation={missionIntent.note} onClose={closeMission} onStart={startMission} onDraft={() => { setMissionIntent(null); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
                   : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet" role="status">{missionNotice}</p><div className="setup-actions"><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button><button className="button" type="button" onClick={() => { setMissionNotice(null); setActiveView('FLOW'); }}>Open Flow</button></div></section>
                     : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} onWork={() => openMission({ target: focus.currentQuestion?.name ?? focus.currentObjective, continueProposalId: null, note: null })} onReview={() => setActiveView('REVIEW')} />
@@ -278,7 +279,7 @@ export function App() {
                         : activeView === 'FLOW' ? <Flow outcomes={flowOutcomes} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
                           : activeView === 'REVIEW' ? <Review items={reviewItems} continuity={projection.continuity} onDecide={decide} onContinue={(item) => openMission({ target: item.target, continueProposalId: item.id, note: `Continues task ${item.taskId} as version ${item.taskVersion + 1}${item.revisionNote ? ` with your revision note: “${item.revisionNote}”` : ''}. You can pick a different agent under Advanced.` })} />
                             : activeView === 'OUTPUT' ? <Output artifacts={artifacts} />
-                              : <SetupNeeded projection={projection} />}
+                              : <SetupNeeded projection={projection} onWork={null} />}
       </main>
     </div>
   </div>;

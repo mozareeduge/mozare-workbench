@@ -12,8 +12,8 @@ export const RUN_DIRECTORY_NAME = '.mozare-run';
  */
 const HARNESS_STATE_PREFIXES = ['.claude/state/', '.claude/sessions/', '.claude/memory/', '.claude/settings.local.json', '.codex/', '.hermes/'];
 const isHarnessState = (path: string) => HARNESS_STATE_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix));
-const MAX_FILES = 5_000;
-const MAX_BYTES = 200 * 1024 * 1024;
+const MAX_FILES = 20_000;
+const MAX_BYTES = 1024 * 1024 * 1024;
 const MAX_DIFF_CHARS = 200_000;
 
 export type FileHashes = Record<string, string>;
@@ -51,7 +51,7 @@ export function listProjectFiles(root: string, skip: Set<string> = new Set()): s
         files.push(rel);
         bytes += lstatSync(absolute).size;
         if (files.length > MAX_FILES) throw new SnapshotLimitError(`Project has more than ${MAX_FILES} files; missions support smaller projects in this release.`);
-        if (bytes > MAX_BYTES) throw new SnapshotLimitError('Project is larger than 200 MB; missions support smaller projects in this release.');
+        if (bytes > MAX_BYTES) throw new SnapshotLimitError('Project is larger than 1 GB; missions support smaller projects in this release.');
       }
     }
   };

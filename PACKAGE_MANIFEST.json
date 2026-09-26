@@ -676,8 +676,8 @@
     },
     {
       "path": "scripts/start-mozare.ps1",
-      "bytes": 4403,
-      "sha256": "b06b54be3f1d1deec81ecbbb9f4e0e6eaafb84b79d4f8954764d5f7c276047c5"
+      "bytes": 4472,
+      "sha256": "bfb35662b491327d87949924270ca1339001086d44aac840665a9827e6db1e81"
     },
     {
       "path": "scripts/sync_skills.py",
@@ -956,8 +956,8 @@
     },
     {
       "path": "src/server/missions/ProjectSnapshot.ts",
-      "bytes": 6009,
-      "sha256": "b13f9811e01adbbd5762d91811e458410acd5e7e6db829d5998bbfb2504cc1da"
+      "bytes": 5891,
+      "sha256": "36a228aade12a8881b82f948d413f1e874242cf4a6bbd8319e065467388d7aa6"
     },
     {
       "path": "src/server/missions/ProposalStore.ts",
@@ -981,8 +981,8 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 22206,
-      "sha256": "671795e9769aab12cc2bbc3a34a9cdd9138dc0117e5e7a9d4631f75e204289c7"
+      "bytes": 22481,
+      "sha256": "25c2df4efbd239f900db3afa09afc6f27b0cd847d13522d49e39427df89ebc44"
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
@@ -1146,8 +1146,8 @@
     },
     {
       "path": "tests/e2e/mission-sheet.spec.ts",
-      "bytes": 5459,
-      "sha256": "c488a69273e748c26dc1b5c94f625037e15c98c71239dce5d09d63041591bf88"
+      "bytes": 6490,
+      "sha256": "9370424b06ead37c6ffca083c749f5a4e18f508a47483bd9f38c6e4726c0b28e"
     },
     {
       "path": "tests/e2e/representation-a11y.spec.ts",

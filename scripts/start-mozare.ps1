@@ -54,7 +54,7 @@ if (-not $launchWeb -and -not $launchServer) {
   exit 2
 }
 if (-not $launchServer) {
-  Write-Host '[mozare] tsx unavailable: the context/evidence server is OPTIONAL and will not start; the web app is fully usable without it.' -ForegroundColor Yellow
+  Write-Host '[mozare] tsx unavailable: the Workbench API server cannot start, so projects, missions and Review will show as unavailable. Install Node.js LTS and run npm install, then re-run START_MOZARE.cmd.' -ForegroundColor Yellow
 }
 
 $webPort = if ($env:MOZARE_PORT) { $env:MOZARE_PORT } else { '5173' }
