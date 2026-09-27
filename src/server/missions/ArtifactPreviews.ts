@@ -3,7 +3,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { ARTIFACT_MEDIA, type ArtifactCanonicality, type ArtifactFixture, type ArtifactMedium, type ArtifactVerification } from '../../core/projection/OutputProjection.js';
 
-export type RegisteredArtifact = { id: string; name: string; kind: string; ref: string; canonicality: string; verification_state: string };
+export type RegisteredArtifact = { id: string; name: string; kind: string; ref: string; canonicality: string; verification_state: string; source?: 'observed' };
 
 const INLINE_LIMIT = 256 * 1024;
 const MEDIA_TYPES: Record<string, string> = {
@@ -46,7 +46,7 @@ export function artifactFixtures(projectRoot: string, workspaceId: string, artif
       medium,
       canonicality,
       verification,
-      lineage: file ? 'Registered in the project artifact registry' : 'Registered, but the file is missing or outside the project folder — no preview is loaded',
+      lineage: artifact.source === 'observed' ? 'Observed in this project output folder; not registered as canonical and not verified' : file ? 'Registered in the project artifact registry' : 'Registered, but the file is missing or outside the project folder — no preview is loaded',
       createdAt: stats ? stats.mtime.toISOString() : new Date(0).toISOString(),
       path: artifact.ref,
       sizeBytes: stats?.size,

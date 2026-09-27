@@ -52,6 +52,7 @@ export type LiveRelation = {
 };
 
 export type FieldProjection = {
+  source?: 'observed';
   currentObject: LiveObject | null;
   nodes: LiveObject[];
   relations: LiveRelation[];
@@ -66,6 +67,7 @@ export type LiveArtifact = {
   ref: string;
   canonicality: string;
   verification_state: string;
+  source?: 'observed';
 };
 
 export type WorkspaceProjection = {

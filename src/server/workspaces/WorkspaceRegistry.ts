@@ -16,6 +16,7 @@ import { projectField } from '../../core/projection/FieldProjection.js';
 import { loadWorkspace } from '../../core/workspace.js';
 import type { ContinuitySummary } from '../../core/continuity/WorkLedger.js';
 import { canonicalPathKey, isProtectedRelativePath } from '../../mcp/pathSafety.js';
+import { observeStructure } from './ObservedStructure.js';
 
 export type WorkspaceClassification = 'ready' | 'needs_onboarding' | 'invalid';
 
@@ -178,11 +179,12 @@ export class WorkspaceRegistry {
       this.write(state);
     }
     if (classification !== 'ready') {
+      const observed = classification === 'needs_onboarding' ? observeStructure(record.root) : null;
       return {
         workspace: this.publicRecord(record, state),
         focus: null,
-        field: null,
-        artifacts: [],
+        field: observed?.field ?? null,
+        artifacts: observed?.artifacts ?? [],
         orientation: this.orientation(record.root),
         continuity: null,
       };

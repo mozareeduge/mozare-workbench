@@ -75,8 +75,9 @@ function ArtifactTileView({ tile }: { tile: ArtifactTile }) {
 
 export function Output({ artifacts }: { artifacts: ArtifactFixture[] }) {
   const registry = projectArtifacts(artifacts);
+  const observed = artifacts.some((artifact) => artifact.lineage.startsWith('Observed in this project'));
   return <section className="output-surface" aria-labelledby="output-heading">
-    <div className="output-heading"><div><p className="eyebrow">Project surface</p><h1 id="output-heading">Output</h1><p>Recent, important registered artifacts — not a general file browser.</p></div></div>
+    <div className="output-heading"><div><p className="eyebrow">Project surface</p><h1 id="output-heading">Output</h1><p>{observed ? 'Recent files found in this project’s output folders.' : 'Recent, important registered artifacts — not a general file browser.'}</p></div></div>
     <p className="derived-state" role="status">Canonicality and verification are independent: an artifact can be canonical and unverified, or generated and verified. Binary artifacts are never opened or executed automatically.</p>
     {registry.tiles.length === 0 ? <div className="surface-empty"><h2>No registered outputs</h2><p>The active project has no artifact records. Nothing has been inferred from its filesystem.</p></div>
       : <ul className="output-gallery" aria-label="Artifact registry">

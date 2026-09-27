@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -83,5 +83,26 @@ describe('workspace browser API', () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.json()).toMatchObject({ error: 'registration_rejected' });
+  });
+
+  it('shows bounded observed Field structure and output files for an existing project without inventing canonical records', async () => {
+    const runtime = temporaryRoot();
+    const target = temporaryRoot();
+    mkdirSync(join(target, 'docs'));
+    mkdirSync(join(target, 'outputs'));
+    writeFileSync(join(target, 'README.md'), '# Existing project\n', 'utf8');
+    writeFileSync(join(target, 'outputs', 'report.txt'), 'Project result', 'utf8');
+    const app = buildApp({ workspaceRegistryFile: join(runtime, 'workspaces.json'), folderPicker: async () => target });
+    apps.push(app);
+    const picked = await app.inject({ method: 'POST', url: '/api/system/pick-folder' });
+    const registered = await app.inject({ method: 'POST', url: '/api/workspaces/register', payload: { selectionToken: picked.json().selectionToken } });
+    const id = registered.json().workspace.id as string;
+    const projection = (await app.inject({ method: 'GET', url: `/api/workspaces/${id}/projection` })).json();
+    const artifacts = (await app.inject({ method: 'GET', url: `/api/workspaces/${id}/artifacts` })).json().artifacts;
+
+    expect(projection).toMatchObject({ workspace: { classification: 'needs_onboarding' }, focus: null, field: { source: 'observed', relations: [] } });
+    expect(projection.field.nodes.map((node: { name: string }) => node.name)).toEqual(expect.arrayContaining(['docs', 'outputs', 'README.md']));
+    expect(artifacts).toEqual([expect.objectContaining({ title: 'report.txt', canonicality: 'external', verification: 'unverified', lineage: expect.stringContaining('Observed in this project') })]);
+    expect(readFileSync(join(target, 'outputs', 'report.txt'), 'utf8')).toBe('Project result');
   });
 });

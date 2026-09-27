@@ -56,6 +56,7 @@ export type CanonicalArtifact = {
   ref: string;
   canonicality: string;
   verification_state: string;
+  source?: 'observed';
 };
 
 export type WorkspaceSnapshot = {
