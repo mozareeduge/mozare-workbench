@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 284,
+  "file_count": 287,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -68,6 +68,16 @@
       "path": "AGENTS.md",
       "bytes": 2125,
       "sha256": "e55ee1b831d0e08b400620abb822e4347577e1f753bda30f7a183fa2be218ac8"
+    },
+    {
+      "path": "assets/mozare-workbench.ico",
+      "bytes": 25329,
+      "sha256": "0522a7b793f7786a2cb058183b5e1a664c9e36d082cc99400f6ee7f945e9d889"
+    },
+    {
+      "path": "assets/mozare-workbench.png",
+      "bytes": 5165,
+      "sha256": "29f081c60f6558e7484c9f73ffd939a4221544cf8e4a4285de9ee466c478a09d"
     },
     {
       "path": "AUTHORITY/00_PRODUCT_HORIZON.md",
@@ -673,6 +683,11 @@
       "path": "scripts/gate-live-static.mjs",
       "bytes": 1222,
       "sha256": "0ea9b2d10d00af897327e45e893dff0f01ccc5ba90f0bd51d5b35bcb510f4e32"
+    },
+    {
+      "path": "scripts/make_icon.py",
+      "bytes": 1089,
+      "sha256": "66a35661709d3b73f61167de6039d7aa386354ff0a2f65b36646004cadb2a189"
     },
     {
       "path": "scripts/make_manifest.py",
