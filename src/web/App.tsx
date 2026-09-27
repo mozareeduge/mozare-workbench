@@ -5,7 +5,8 @@ import { Output } from './surfaces/Output';
 import { Review } from './surfaces/Review';
 import { AGENT_LABELS, MissionSheet } from './components/MissionSheet';
 import { ThemeToggle } from './components/ThemeToggle';
-import type { AgentCapability, ContinuitySummary, FocusProjection, LiveFlowOutcome, LiveReviewItem, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
+import { CliActivityPanel } from './components/CliActivityPanel';
+import type { AgentCapability, CliActivity, ContinuitySummary, FocusProjection, LiveFlowOutcome, LiveReviewItem, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
 import type { ReviewDecisionInput } from './surfaces/Review';
 import type { ArtifactFixture } from '../core/projection/OutputProjection.js';
 
@@ -51,7 +52,7 @@ function FirstUse({ busy, onAdd, onCreate }: { busy: boolean; onAdd: () => void;
   </section>;
 }
 
-function Focus({ projection, continuity, onWork, onReview }: { projection: FocusProjection; continuity: ContinuitySummary | null; onWork: () => void; onReview: () => void }) {
+function Focus({ projection, continuity, activity, onWork, onReview }: { projection: FocusProjection; continuity: ContinuitySummary | null; activity: CliActivity | null; onWork: () => void; onReview: () => void }) {
   const question = projection.currentQuestion;
   return <>
     <section className="focus-hero" aria-labelledby="focus-heading">
@@ -65,6 +66,7 @@ function Focus({ projection, continuity, onWork, onReview }: { projection: Focus
         <article className="card next-action"><p className="card-label">Next action</p><h2 dir="auto">{projection.nextAction.label}</h2><p>{question ? 'Open a bounded mission for the current canonical question.' : 'Define the first question when you are ready; Workbench has not invented one.'}</p>{question && <button id="work-on-this" className="button button-primary" type="button" onClick={onWork}>Work on this</button>}</article>
         <article className="card evidence-card"><p className="card-label">Evidence summary</p><p>{question ? `${question.evidenceState} evidence for the current question` : 'No focused evidence yet'}</p></article>
         {continuity && <article className="card"><p className="card-label">Latest meaningful work</p><h2 dir="auto">{continuity.resultSummary}</h2><p>{continuity.harness} · task v{continuity.currentTaskVersion} · {continuity.status} · {continuity.evidenceState}</p><p><strong>Next:</strong> {continuity.nextAction}</p></article>}
+        <CliActivityPanel activity={activity} />
       </section>
       <aside className="focus-secondary" aria-label="Project orientation">
         <article className="card needs-you"><div><p className="card-label">Needs you</p><h2>{projection.humanReviewNeed.count === 0 ? 'No review items' : `${projection.humanReviewNeed.count} item${projection.humanReviewNeed.count === 1 ? '' : 's'} await review`}</h2></div>{projection.humanReviewNeed.count > 0 && <button className="text-action" type="button" onClick={onReview}>Open review</button>}</article>
@@ -75,16 +77,31 @@ function Focus({ projection, continuity, onWork, onReview }: { projection: Focus
   </>;
 }
 
-function SetupNeeded({ projection, onWork }: { projection: WorkspaceProjection; onWork: (() => void) | null }) {
+function SetupNeeded({ projection, activity, onWork }: { projection: WorkspaceProjection; activity: CliActivity | null; onWork: (() => void) | null }) {
   const invalid = projection.workspace.classification === 'invalid';
   return <section className="empty-state" aria-labelledby="focus-heading">
     <p className="eyebrow">Focus / <bdi dir="auto">{projection.workspace.displayName}</bdi></p>
-    <h1 id="focus-heading">{invalid ? 'This project needs repair' : 'This folder needs Workbench setup'}</h1>
-    <p>{invalid ? projection.workspace.errorReceipt?.message : 'The folder is registered read-only. No canonical questions, relations, decisions, reviews, or outputs have been inferred.'}</p>
+    <h1 id="focus-heading">{invalid ? 'This project needs repair' : <bdi dir="auto">{projection.workspace.displayName}</bdi>}</h1>
+    <p>{invalid ? projection.workspace.errorReceipt?.message : 'Registered read-only. Workbench shows the work your agent CLIs record here and runs new missions on a copy; it has not invented questions, decisions or outputs.'}</p>
+    {!invalid && <CliActivityPanel activity={activity} />}
     {projection.orientation && <article className="card orientation-card"><p className="card-label">Safe orientation</p><p>{projection.orientation.entryCount} visible top-level entries</p>{projection.orientation.entries.length > 0 && <ul>{projection.orientation.entries.map((entry) => <li key={entry}><bdi dir="auto">{entry}</bdi></li>)}</ul>}</article>}
     <p className="quiet">Registration did not write any files into this folder.</p>
     {onWork && <div className="setup-actions"><button id="work-on-this" className="button button-primary" type="button" onClick={onWork}>Start a mission</button><p className="quiet">An agent works on a copy of this folder; nothing changes here until you accept its result in Review.</p></div>}
   </section>;
+}
+
+/** MAWS work items from the project's own CLI thread, as Flow outcomes. Done items stay in the activity panel, not in Accepted. */
+function mawsOutcomes(activity: CliActivity | null): LiveFlowOutcome[] {
+  const maws = activity?.maws;
+  if (!maws) return [];
+  const owner = `MAWS · ${maws.lastHarness ?? 'CLI'}`;
+  return maws.items.flatMap((item): LiveFlowOutcome[] => {
+    const base = { id: `maws-${item.id}`, title: `${item.id} — ${item.title}`, owner };
+    if (item.status === 'queued') return [{ ...base, runState: 'not_started' }];
+    if (item.status === 'active') return [{ ...base, runState: 'in_progress' }];
+    if (item.status === 'blocked' || item.status === 'failed') return [{ ...base, runState: 'in_progress', blockedBy: { reason: maws.blockers[0] ?? `Item ${item.status} in MAWS.`, routeLabel: 'Continue with an agent', routeId: base.id } }];
+    return [];
+  });
 }
 
 type CreateDraft = { token: string; name: string; kind: string; currentObjective: string };
@@ -103,6 +120,7 @@ export function App() {
   const [reviewItems, setReviewItems] = useState<LiveReviewItem[]>([]);
   const [flowOutcomes, setFlowOutcomes] = useState<LiveFlowOutcome[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactFixture[]>([]);
+  const [activity, setActivity] = useState<CliActivity | null>(null);
   const requestSerial = useRef(0);
   const liveSerial = useRef(0);
 
@@ -110,14 +128,15 @@ export function App() {
   const loadLive = useCallback(async (workspaceId: string) => {
     const serial = ++liveSerial.current;
     try {
-      const [review, flow, output] = await Promise.all([
+      const [review, flow, output, cli] = await Promise.all([
         api<{ items: LiveReviewItem[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/review`),
         api<{ outcomes: LiveFlowOutcome[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/flow`),
         api<{ artifacts: ArtifactFixture[] }>(`/api/workspaces/${encodeURIComponent(workspaceId)}/artifacts`),
+        api<CliActivity>(`/api/workspaces/${encodeURIComponent(workspaceId)}/activity`).catch(() => null),
       ]);
-      if (serial === liveSerial.current) { setReviewItems(review.items); setFlowOutcomes(flow.outcomes); setArtifacts(output.artifacts); }
+      if (serial === liveSerial.current) { setReviewItems(review.items); setFlowOutcomes(flow.outcomes); setArtifacts(output.artifacts); setActivity(cli); }
     } catch {
-      if (serial === liveSerial.current) { setReviewItems([]); setFlowOutcomes([]); setArtifacts([]); }
+      if (serial === liveSerial.current) { setReviewItems([]); setFlowOutcomes([]); setArtifacts([]); setActivity(null); }
     }
   }, []);
 
@@ -193,6 +212,7 @@ export function App() {
     setReviewItems([]);
     setFlowOutcomes([]);
     setArtifacts([]);
+    setActivity(null);
     setMissionIntent(null);
     setMissionNotice(null);
     setLoading(true);
@@ -271,15 +291,15 @@ export function App() {
         {loading && !projection ? <section className="empty-state" aria-live="polite"><p className="eyebrow">Workbench</p><h1>Loading project reality…</h1></section>
           : workspaces.length === 0 ? <FirstUse busy={busy} onAdd={() => void addProject()} onCreate={() => void beginCreate()} />
             : !projection ? <section className="empty-state"><h1>Project unavailable</h1><p>Workbench could not load the selected project. Refresh or select another registered project.</p></section>
-              : activeView === 'FOCUS' && !missionIntent && !missionNotice && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} onWork={projection.workspace.classification === 'needs_onboarding' ? () => openMission({ target: projection.workspace.displayName, continueProposalId: null, note: null }) : null} />
+              : activeView === 'FOCUS' && !missionIntent && !missionNotice && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} activity={activity} onWork={projection.workspace.classification === 'needs_onboarding' ? () => openMission({ target: projection.workspace.displayName, continueProposalId: null, note: null }) : null} />
                 : missionIntent ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet key={`${missionIntent.continueProposalId ?? ''}${missionIntent.target}`} target={missionIntent.target} objective={focus?.currentObjective ?? ''} agents={agents} continuation={missionIntent.note} onClose={closeMission} onStart={startMission} onDraft={() => { setMissionIntent(null); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
                   : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet" role="status">{missionNotice}</p><div className="setup-actions"><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button><button className="button" type="button" onClick={() => { setMissionNotice(null); setActiveView('FLOW'); }}>Open Flow</button></div></section>
-                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} onWork={() => openMission({ target: focus.currentQuestion?.name ?? focus.currentObjective, continueProposalId: null, note: null })} onReview={() => setActiveView('REVIEW')} />
+                    : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} activity={activity} onWork={() => openMission({ target: focus.currentQuestion?.name ?? focus.currentObjective, continueProposalId: null, note: null })} onReview={() => setActiveView('REVIEW')} />
                       : activeView === 'FIELD' ? <Field field={projection.field} canonicalHash={focus?.canonicalHash ?? ''} projectId={focus?.projectId ?? projection.workspace.id} />
-                        : activeView === 'FLOW' ? <Flow outcomes={flowOutcomes} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
+                        : activeView === 'FLOW' ? <Flow outcomes={[...flowOutcomes, ...mawsOutcomes(activity)]} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
                           : activeView === 'REVIEW' ? <Review items={reviewItems} continuity={projection.continuity} onDecide={decide} onContinue={(item) => openMission({ target: item.target, continueProposalId: item.id, note: `Continues task ${item.taskId} as version ${item.taskVersion + 1}${item.revisionNote ? ` with your revision note: “${item.revisionNote}”` : ''}. You can pick a different agent under Advanced.` })} />
                             : activeView === 'OUTPUT' ? <Output artifacts={artifacts} />
-                              : <SetupNeeded projection={projection} onWork={null} />}
+                              : <SetupNeeded projection={projection} activity={activity} onWork={null} />}
       </main>
     </div>
   </div>;

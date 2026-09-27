@@ -99,7 +99,8 @@ test('A registered folder without Workbench records can still receive a mission,
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ...live, focus: null, field: null, orientation: { label: 'wiki', entryCount: 2, entries: ['00-system', 'README.md'] }, workspace: { ...live.workspace, displayName: 'wiki', classification: 'needs_onboarding' } }) });
   });
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'This folder needs Workbench setup' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'wiki' })).toBeVisible();
+  await expect(page.getByText(/registered read-only/i)).toBeVisible();
   await page.getByRole('button', { name: 'Start a mission' }).click();
   const sheet = page.getByRole('dialog', { name: 'Compose mission' });
   await expect(sheet.getByRole('textbox', { name: 'Target' })).toHaveValue('wiki');

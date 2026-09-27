@@ -125,3 +125,14 @@ export type MissionStartRequest = {
   acceptance: string[];
   continueProposalId?: string | null;
 };
+
+export type CliWorkItem = { id: string; title: string; status: 'queued' | 'active' | 'done' | 'failed' | 'blocked' | 'deferred'; closedAt: string | null };
+export type CliActivity = {
+  maws: {
+    threadTitle: string; objective: string; status: string; phase: string; summary: string;
+    lastHarness: 'claude' | 'codex' | 'hermes' | 'other' | null; updatedAt: string | null;
+    activeItem: CliWorkItem | null; items: CliWorkItem[]; blockers: string[]; recentDecisions: string[];
+    recentEvents: Array<{ at: string; harness: 'claude' | 'codex' | 'hermes' | 'other'; kind: string; text: string }>;
+  } | null;
+  git: { branch: string; uncommittedFiles: number; commits: Array<{ sha: string; author: string; at: string; subject: string; harness: 'claude' | 'codex' | 'hermes' | 'other' | null }> } | null;
+};

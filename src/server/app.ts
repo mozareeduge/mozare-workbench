@@ -32,6 +32,7 @@ import { realHarnessAdapters, type HarnessAdapter, type RealHarnessId } from './
 import { MissionService, MissionUnavailableError } from './missions/MissionService.js';
 import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
 import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
+import { readCliActivity } from './workspaces/CliActivity.js';
 import { artifactFixtures, artifactMediaType, resolveArtifactFile, type RegisteredArtifact } from './missions/ArtifactPreviews.js';
 
 const compileInputSchema = {
@@ -384,6 +385,14 @@ export function buildApp(
       .header('x-content-type-options', 'nosniff')
       .header('content-security-policy', "sandbox; default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'")
       .send(readFileSync(file));
+  });
+
+  /** Work done directly in agent CLIs, from the project's own MAWS thread and git history (read-only). */
+  app.get('/api/workspaces/:workspaceId/activity', async (request, reply) => {
+    const { workspaceId } = request.params as { workspaceId: string };
+    const context = missionContext(workspaceId);
+    if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    return readCliActivity(context.projectRoot);
   });
 
   app.get('/api/workspaces/:workspaceId/review', async (request, reply) => {

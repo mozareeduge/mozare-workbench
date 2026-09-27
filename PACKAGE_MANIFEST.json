@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 278,
+  "file_count": 284,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -263,6 +263,21 @@
       "path": "eslint.config.js",
       "bytes": 340,
       "sha256": "09e06cc480f0b23d7bc7add440eac05aa3b5c2c0a472a59bb0f8117f69931adb"
+    },
+    {
+      "path": "evidence/general-flow-mozare-wiki.png",
+      "bytes": 51514,
+      "sha256": "e2a86ab353f48b678c419681ddb67a7fa297d0cab0422315927ad51b347609f1"
+    },
+    {
+      "path": "evidence/general-mozare-wiki.png",
+      "bytes": 90268,
+      "sha256": "6189cf649da60fc5762e12a902e0f02f1e325fe8dae7d237358907b4178ee67c"
+    },
+    {
+      "path": "evidence/general-Mozare_Workbench_Handoff_v0_3_2.png",
+      "bytes": 114257,
+      "sha256": "80c6ca73fbb104fc47ac7d680cbc457fa4b0b9d45af6d8dec964724cf4844939"
     },
     {
       "path": "evidence/P10-03-owner-launch-focus.png",
@@ -936,8 +951,8 @@
     },
     {
       "path": "src/server/app.ts",
-      "bytes": 31154,
-      "sha256": "3615b318514834a231c34ee5d7df330db01b9ef2687e1d12c01f9cc51ce53d63"
+      "bytes": 32392,
+      "sha256": "5787d27cf85afba0d0733f5aa25e6818e6c731e512759eb8379104cf4839a278"
     },
     {
       "path": "src/server/git/GitAdapter.ts",
@@ -980,6 +995,11 @@
       "sha256": "de2887809604cba02c3075fabfc41b19f7c94b31204b0f73038aef45c280bb46"
     },
     {
+      "path": "src/server/workspaces/CliActivity.ts",
+      "bytes": 6142,
+      "sha256": "7c907fcfda87c913db8162aa6078081983d967c66c09d1892f552a107aa9fe95"
+    },
+    {
       "path": "src/server/workspaces/WorkspaceRegistry.ts",
       "bytes": 11818,
       "sha256": "8e08f2aa88f279b0005dd595f1036b3c3f2a097f45246b0c2c2063edfb0050aa"
@@ -991,8 +1011,13 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 22481,
-      "sha256": "25c2df4efbd239f900db3afa09afc6f27b0cd847d13522d49e39427df89ebc44"
+      "bytes": 24340,
+      "sha256": "e57ed4cc1aa674c4089accc536f714aa00eb8880d09c98f235a718d32db289c7"
+    },
+    {
+      "path": "src/web/components/CliActivityPanel.tsx",
+      "bytes": 2919,
+      "sha256": "8b4297c077041fd0a026e197e3a80aec33d14e11a32e4b16665ae4244a9f9a93"
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
@@ -1016,8 +1041,8 @@
     },
     {
       "path": "src/web/liveTypes.ts",
-      "bytes": 3800,
-      "sha256": "9f398e3f595e329fb43c0501273c7ada641390872fd8e62f1085c8d71b0f9e23"
+      "bytes": 4623,
+      "sha256": "7cd3b17d96f4fc28c2a9f6b434c942883367b38df9cc572c231590a760f00288"
     },
     {
       "path": "src/web/main.tsx",
@@ -1026,8 +1051,8 @@
     },
     {
       "path": "src/web/styles/app.css",
-      "bytes": 9035,
-      "sha256": "d5c2d6bc5cdf02c2e09b04d75a38318002a4e4bf7e482d71fa9652360ae7eaa3"
+      "bytes": 9366,
+      "sha256": "a8033313b1e95555a4566108f618f3b67ac459cac6169a219d33dddd941dbe90"
     },
     {
       "path": "src/web/styles/field.css",
@@ -1156,8 +1181,8 @@
     },
     {
       "path": "tests/e2e/mission-sheet.spec.ts",
-      "bytes": 6490,
-      "sha256": "9370424b06ead37c6ffca083c749f5a4e18f508a47483bd9f38c6e4726c0b28e"
+      "bytes": 6542,
+      "sha256": "dd810036aac560b0c4ad7bf92858ca683e95bb43fabfe9159557278d0b4b1949"
     },
     {
       "path": "tests/e2e/representation-a11y.spec.ts",
@@ -1188,6 +1213,11 @@
       "path": "tests/execution/test_execution_loop.py",
       "bytes": 1500,
       "sha256": "92e05400cd49c59ec1effef0fdad068f059913fb031af0ecf1f3405893b4d7df"
+    },
+    {
+      "path": "tests/integration/cli-activity-api.test.ts",
+      "bytes": 4575,
+      "sha256": "1e363cc0c71082a9e06698626a92b23030bbd4dd5278fe3d4ab9d8e804b92c86"
     },
     {
       "path": "tests/integration/context-api.test.ts",

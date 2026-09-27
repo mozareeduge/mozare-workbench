@@ -26,3 +26,4 @@ body { margin: 0; min-width: 0; } button { font: inherit; } button:focus-visible
 .context-bar { flex-wrap:wrap;height:auto;min-height:var(--topbar);row-gap:var(--s-2);padding-block:var(--s-2) }
 .workspace-controls { flex-wrap:wrap;min-width:0 }
 .context-actions { flex-wrap:wrap }
+.cli-activity h2{margin:var(--s-2) 0}.cli-activity-list{margin:var(--s-2) 0 0;padding-left:var(--s-4);display:grid;gap:var(--s-1);font-size:var(--text-small);overflow-wrap:anywhere}.cli-harness{display:inline-block;padding:0 6px;border:1px solid var(--c-line-strong);border-radius:99px;font-size:var(--text-label);font-weight:700}
