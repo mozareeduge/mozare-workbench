@@ -41,9 +41,16 @@ describe('CLI work from any project: MAWS thread + git history', () => {
         { id: 'P4', title: 'Bench', status: 'blocked' },
       ] },
     }), 'utf8');
+    // Real MAWS events name the harness only in message text; there is no host field.
     writeFileSync(join(thread, 'events.jsonl'), [
-      { at: '2026-09-26T10:00:00Z', type: 'item-complete', host: 'codex', message: 'P1 done' },
-      { at: '2026-09-27T10:00:00Z', type: 'checkpoint', host: 'hermes', message: 'Grammar half done' },
+      { at: '2026-09-25T09:00:00Z', type: 'thread-created', message: 'Created by claude' },
+      { at: '2026-09-25T09:00:01Z', type: 'item-added', message: 'P1' },
+      { at: '2026-09-25T09:00:02Z', type: 'item-added', message: 'P2' },
+      { at: '2026-09-26T09:00:00Z', type: 'resumed', message: 'Resumed by codex' },
+      { at: '2026-09-26T09:00:01Z', type: 'item-claimed', message: 'P1' },
+      { at: '2026-09-26T10:00:00Z', type: 'item-completed', message: 'P1' },
+      { at: '2026-09-27T09:00:00Z', type: 'resumed', message: 'Resumed by hermes' },
+      { at: '2026-09-27T09:00:01Z', type: 'item-claimed', message: 'P2' },
     ].map((event) => JSON.stringify(event)).join('\n'), 'utf8');
 
     const runtime = temp();
@@ -57,8 +64,10 @@ describe('CLI work from any project: MAWS thread + git history', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).not.toContain(project);
     const activity = response.json();
-    expect(activity.maws).toMatchObject({ threadTitle: 'Ship the parser', lastHarness: 'hermes', activeItem: { id: 'P2' }, blockers: ['Hermes needs a model configured'] });
-    expect(activity.maws.recentEvents.map((event: { harness: string }) => event.harness)).toEqual(['hermes', 'codex']);
+    expect(activity.maws).toMatchObject({ title: 'Ship the parser', lastHarness: 'hermes', activeItem: { id: 'P2', claimedBy: 'hermes' }, blockers: ['Hermes needs a model configured'] });
+    expect(activity.maws.items.find((item: { id: string }) => item.id === 'P1')).toMatchObject({ createdBy: 'claude', claimedBy: 'codex', completedBy: 'codex' });
+    expect(activity.maws.recentEvents[0]).toMatchObject({ harness: 'hermes', kind: 'item-claimed', itemId: 'P2' });
+    expect(activity.threads).toHaveLength(1);
     expect(activity.git.uncommittedFiles).toBe(2); // dirty.txt and the untracked .maws/ folder
     expect(activity.git.commits.map((commit: { harness: string | null }) => commit.harness)).toEqual([null, 'codex', 'claude']);
   });
@@ -71,6 +80,6 @@ describe('CLI work from any project: MAWS thread + git history', () => {
     const { id } = registry.register(project);
     const app = buildApp({ workspaceRegistry: registry, workLedger: ledger, runtimeDir: runtime });
     apps.push(app);
-    expect((await app.inject({ method: 'GET', url: `/api/workspaces/${id}/activity` })).json()).toEqual({ maws: null, git: null });
+    expect((await app.inject({ method: 'GET', url: `/api/workspaces/${id}/activity` })).json()).toEqual({ maws: null, threads: [], git: null });
   });
 });

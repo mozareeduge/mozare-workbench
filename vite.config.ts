@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '127.0.0.1',
-    proxy: { '/api': 'http://127.0.0.1:5174' },
+    proxy: { '/api': `http://127.0.0.1:${process.env.MOZARE_SERVER_PORT ?? '5174'}` },
   },
   test: {
     // Playwright specs (including the P10 prefab kept as execution evidence) are not Vitest suites.

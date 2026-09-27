@@ -5,13 +5,15 @@ import { Output } from './surfaces/Output';
 import { Review } from './surfaces/Review';
 import { AGENT_LABELS, MissionSheet } from './components/MissionSheet';
 import { ThemeToggle } from './components/ThemeToggle';
-import { CliActivityPanel } from './components/CliActivityPanel';
-import type { AgentCapability, CliActivity, ContinuitySummary, FocusProjection, LiveFlowOutcome, LiveReviewItem, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
+import { CliActivityPanel, harnessLabel } from './components/CliActivityPanel';
+import type { FlowCardDetail } from './surfaces/Flow';
+import type { FlowCard } from '../core/projection/FlowProjection.js';
+import type { AgentCapability, CliActivity, DiscoveredProject, ContinuitySummary, FocusProjection, LiveFlowOutcome, LiveReviewItem, View, WorkspaceProjection, WorkspaceSummary } from './liveTypes';
 import type { ReviewDecisionInput } from './surfaces/Review';
 import type { ArtifactFixture } from '../core/projection/OutputProjection.js';
 
 /** Where a mission sheet was opened from; a continuation keeps the proposal's task lineage. */
-type MissionIntent = { target: string; continueProposalId: string | null; note: string | null };
+type MissionIntent = { target: string; continueProposalId: string | null; note: string | null; context?: string | null };
 const LIVE_POLL_MS = 4_000;
 
 const views: Array<{ id: View; label: string }> = [
@@ -38,17 +40,18 @@ function ShellNav({ active, reviewCount, onSelect }: { active: View; reviewCount
   return <nav className="shell-nav" aria-label="Project views">
     <a className="brand" href="#main-surface" aria-label="Mozare Workbench home">MW</a>
     <div className="nav-list">{views.map(({ id, label }) => <button key={id} type="button" aria-label={label} className={active === id ? 'nav-item is-active' : 'nav-item'} aria-current={active === id ? 'page' : undefined} onClick={() => onSelect(id)}><span aria-hidden="true" className="nav-mark">{label[0]}</span><span className="nav-label">{label}</span>{id === 'REVIEW' && reviewCount > 0 && <span className="nav-badge" aria-label={`${reviewCount} items need review`}>{reviewCount}</span>}</button>)}</div>
-    <button type="button" className="nav-settings" aria-label="Project settings">•••</button>
   </nav>;
 }
 
-function FirstUse({ busy, onAdd, onCreate }: { busy: boolean; onAdd: () => void; onCreate: () => void }) {
+function FirstUse({ busy, discovered, onAdd, onCreate, onOpen }: { busy: boolean; discovered: DiscoveredProject[]; onAdd: () => void; onCreate: () => void; onOpen: (project: DiscoveredProject) => void }) {
+  const local = discovered.filter((project) => project.local).slice(0, 12);
   return <section className="empty-state" aria-labelledby="focus-heading">
     <p className="eyebrow">Focus</p>
     <h1 id="focus-heading">Start with a local project</h1>
-    <p>Choose an existing folder to inspect without changing it, or create a new Workbench project in a location you control.</p>
+    <p>Pick a project your agents already work in, choose any other folder, or create a new project. Opening a folder never changes it.</p>
+    {local.length > 0 && <ul className="found-projects" aria-label="Projects found from your agents">{local.map((project) => <li key={project.id}><button type="button" disabled={busy} onClick={() => onOpen(project)}><strong dir="auto">{project.name}</strong><small dir="auto">{project.locationHint} · used by {project.sources.join(', ')}</small></button></li>)}</ul>}
     <div className="setup-actions"><button className="button button-primary" type="button" disabled={busy} onClick={onAdd}>Choose local folder</button><button className="button" type="button" disabled={busy} onClick={onCreate}>Create new project</button></div>
-    <p className="quiet">No project is configured yet. Nothing has been created or inferred.</p>
+    <p className="quiet">No project is open yet. Nothing has been created or inferred.</p>
   </section>;
 }
 
@@ -90,19 +93,23 @@ function SetupNeeded({ projection, activity, onWork }: { projection: WorkspacePr
   </section>;
 }
 
-/** MAWS work items from the project's own CLI thread, as Flow outcomes. Done items stay in the activity panel, not in Accepted. */
+/**
+ * Open MAWS work items from every thread in the project (active and parked) as Flow outcomes,
+ * each attributed to the harness that last took it. Done items stay in the activity panel, not
+ * in Accepted, because CLI completion is not your decision in Review.
+ */
 function mawsOutcomes(activity: CliActivity | null): LiveFlowOutcome[] {
-  const maws = activity?.maws;
-  if (!maws) return [];
-  const owner = `MAWS · ${maws.lastHarness ?? 'CLI'}`;
-  return maws.items.flatMap((item): LiveFlowOutcome[] => {
-    const base = { id: `maws-${item.id}`, title: `${item.id} — ${item.title}`, owner };
+  return (activity?.threads ?? []).flatMap((thread) => thread.items.flatMap((item): LiveFlowOutcome[] => {
+    const who = item.claimedBy ?? item.createdBy ?? thread.lastHarness;
+    const base = { id: `maws-${thread.id}-${item.id}`, title: `${item.id} — ${item.title}`, owner: `MAWS · ${harnessLabel(who)}${thread.active ? '' : ' · parked'}` };
     if (item.status === 'queued') return [{ ...base, runState: 'not_started' }];
     if (item.status === 'active') return [{ ...base, runState: 'in_progress' }];
-    if (item.status === 'blocked' || item.status === 'failed') return [{ ...base, runState: 'in_progress', blockedBy: { reason: maws.blockers[0] ?? `Item ${item.status} in MAWS.`, routeLabel: 'Continue with an agent', routeId: base.id } }];
+    if (item.status === 'blocked' || item.status === 'failed') return [{ ...base, runState: 'in_progress', blockedBy: { reason: thread.blockers[0] ?? `Item ${item.status} in MAWS.`, routeLabel: 'Continue with an agent', routeId: base.id } }];
     return [];
-  });
+  }));
 }
+
+type MissionDraftState = { target: string; outcome: string; context: string; acceptance: string[]; agent: string | null };
 
 type CreateDraft = { token: string; name: string; kind: string; currentObjective: string };
 
@@ -121,6 +128,8 @@ export function App() {
   const [flowOutcomes, setFlowOutcomes] = useState<LiveFlowOutcome[]>([]);
   const [artifacts, setArtifacts] = useState<ArtifactFixture[]>([]);
   const [activity, setActivity] = useState<CliActivity | null>(null);
+  const [discovered, setDiscovered] = useState<DiscoveredProject[]>([]);
+  const [notice, setNotice] = useState<string | null>(null);
   const requestSerial = useRef(0);
   const liveSerial = useRef(0);
 
@@ -157,9 +166,15 @@ export function App() {
     }
   }, [loadLive]);
 
-  const loadWorkspaces = useCallback(async () => {
+  /** Projects your agent CLIs already work in; loaded in the background so the app never waits on it. */
+  const loadDiscovery = useCallback(async (refresh = false) => {
+    try { setDiscovered((await api<{ projects: DiscoveredProject[] }>(`/api/discovery${refresh ? '?refresh=1' : ''}`)).projects); } catch { setDiscovered([]); }
+  }, []);
+
+  const loadWorkspaces = useCallback(async (refreshDiscovery = false) => {
     setLoading(true);
     setError(null);
+    void loadDiscovery(refreshDiscovery);
     try {
       const result = await api<{ workspaces: WorkspaceSummary[] }>('/api/workspaces');
       setWorkspaces(result.workspaces);
@@ -171,11 +186,32 @@ export function App() {
       setLoading(false);
       setError(cause instanceof Error ? cause.message : String(cause));
     }
-  }, [loadProjection]);
+  }, [loadProjection, loadDiscovery]);
 
   useEffect(() => { void loadWorkspaces(); return () => { requestSerial.current += 1; }; }, [loadWorkspaces]);
 
-  const pick = async () => api<{ selectionToken: string }>('/api/system/pick-folder', { method: 'POST' });
+  const pick = async () => {
+    setNotice('A folder window has opened. Choose a folder there — if you do not see it, check your taskbar.');
+    try { return await api<{ selectionToken: string }>('/api/system/pick-folder', { method: 'POST' }); } finally { setNotice(null); }
+  };
+  /** Adds a project found from your agents (or clones a GitHub-only one after you confirm) and opens it. */
+  const addDiscovered = async (project: DiscoveredProject) => {
+    if (project.workspaceId) { await switchWorkspace(project.workspaceId); return; }
+    if (!project.local && !window.confirm(`Download ${project.cloudRepo} from GitHub into Documents\\Workbench Projects\\${project.name} and open it?`)) return;
+    setBusy(true); setError(null);
+    setNotice(project.local ? null : `Downloading ${project.cloudRepo} from GitHub…`);
+    try {
+      await api('/api/discovery/add', { method: 'POST', body: JSON.stringify({ id: project.id }) });
+      await loadWorkspaces();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : String(cause)); }
+    finally { setBusy(false); setNotice(null); }
+  };
+  const onSwitcherChange = (value: string) => {
+    const [kind, id] = value.split(':');
+    const project = discovered.find((candidate) => candidate.id === id);
+    if (kind === 'found' && project) void addDiscovered(project);
+    else void switchWorkspace(value);
+  };
   const addProject = async () => {
     setBusy(true); setError(null);
     try {
@@ -237,15 +273,49 @@ export function App() {
       .catch(() => setAgents([]));
   };
 
-  const startMission = async (mission: { target: string; outcome: string; acceptance: string[]; agent: AgentCapability['id'] }) => {
+  const draftKey = (target: string) => `mwb-draft:${workspaceId ?? ''}:${target}`;
+  const readDraft = (target: string): MissionDraftState | null => {
+    try { const raw = window.localStorage.getItem(draftKey(target)); return raw ? JSON.parse(raw) as MissionDraftState : null; } catch { return null; }
+  };
+  const startMission = async (mission: { target: string; outcome: string; context: string; acceptance: string[]; agent: AgentCapability['id'] }) => {
     if (!workspaceId || !missionIntent) return;
     await api(`/api/workspaces/${encodeURIComponent(workspaceId)}/missions`, {
       method: 'POST',
-      body: JSON.stringify({ harness: mission.agent, target: mission.target, outcome: mission.outcome, acceptance: mission.acceptance, continueProposalId: missionIntent.continueProposalId }),
+      body: JSON.stringify({ harness: mission.agent, target: mission.target, outcome: mission.outcome, context: mission.context, acceptance: mission.acceptance, continueProposalId: missionIntent.continueProposalId }),
     });
+    try { window.localStorage.removeItem(draftKey(missionIntent.target)); } catch { /* storage unavailable */ }
     setMissionIntent(null);
     setMissionNotice(`Mission started with ${AGENT_LABELS[mission.agent]}. It works on a copy of the project; its result will appear in Review for your decision.`);
     void loadLive(workspaceId);
+  };
+
+  /** Flow card details: MAWS items show their thread, attribution and evidence; Workbench missions link to Review. */
+  const describeCard = (card: FlowCard): FlowCardDetail => {
+    for (const thread of activity?.threads ?? []) {
+      const item = thread.items.find((candidate) => card.id === `maws-${thread.id}-${candidate.id}`);
+      if (!item) continue;
+      return {
+        text: item.outcome || null,
+        facts: [
+          ['MAWS thread', `${thread.title}${thread.active ? '' : ' (parked)'}`],
+          ['Status', item.status],
+          ['Created by', harnessLabel(item.createdBy)],
+          ['Claimed by', item.claimedBy ? harnessLabel(item.claimedBy) : 'not claimed yet'],
+          ...(item.evidence.length > 0 ? [['Evidence', item.evidence.join(' · ')] as [string, string]] : []),
+        ],
+        actions: [{ label: 'Start a mission for this', run: () => openMission({ target: `${item.id} — ${item.title}`, continueProposalId: null, note: `From MAWS thread “${thread.title}”. You can also keep working on it directly in your CLI.`, context: item.outcome }) }],
+      };
+    }
+    const proposals = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion);
+    const latest = proposals[0];
+    return {
+      text: latest?.effect.whatChanged ?? null,
+      facts: latest ? [['Agent', harnessLabel(latest.harness)], ['Task version', String(latest.taskVersion)], ['Decision', (latest.decisionState ?? 'under_review').replace(/_/g, ' ')]] : [['Status', card.lane]],
+      actions: [
+        ...(latest ? [{ label: 'Open in Review', run: () => setActiveView('REVIEW') }] : []),
+        { label: latest ? 'Continue with an agent' : 'Start a mission for this', run: () => openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }) },
+      ],
+    };
   };
 
   const decide = async (item: LiveReviewItem, decision: ReviewDecisionInput): Promise<string> => {
@@ -276,27 +346,34 @@ export function App() {
     <ShellNav active={activeView} reviewCount={reviewCount} onSelect={setActiveView} />
     <div className="shell-body">
       <header className="context-bar">
-        <div className="project-context"><span className="project-dot" aria-hidden="true" /><span><bdi dir="auto">{focus?.projectName ?? projection?.workspace.displayName ?? 'No active project'}</bdi></span>{projection && <><span className="context-separator">/</span><span className="muted">{projection.workspace.classification}</span></>}</div>
+        <div className="project-context"><span className="project-dot" aria-hidden="true" /><span><bdi dir="auto">{focus?.projectName ?? projection?.workspace.displayName ?? 'No active project'}</bdi></span>{projection && <><span className="context-separator">/</span><span className="muted">{projection.workspace.classification === 'ready' ? 'Workbench project' : projection.workspace.classification === 'invalid' ? 'needs repair' : 'CLI project · read-only'}</span></>}</div>
         <div className="workspace-controls">
           <label className="sr-only" htmlFor="workspace-switcher">Active project</label>
-          <select id="workspace-switcher" value={projection?.workspace.id ?? ''} disabled={busy || workspaces.length === 0} onChange={(event) => void switchWorkspace(event.target.value)}><option value="" disabled>Select project</option>{workspaces.map((workspace) => <option key={workspace.id} value={workspace.id}>{workspace.displayName}</option>)}</select>
-          <button type="button" disabled={busy} onClick={() => void addProject()}>Add</button>
-          <button type="button" disabled={busy} onClick={() => void beginCreate()}>Create</button>
+          <select id="workspace-switcher" value={projection?.workspace.id ?? ''} disabled={busy} onChange={(event) => onSwitcherChange(event.target.value)}>
+            <option value="" disabled>{workspaces.length === 0 ? 'Choose a project' : 'Select project'}</option>
+            {workspaces.length > 0 && <optgroup label="Opened in Workbench">{workspaces.map((workspace) => <option key={workspace.id} value={workspace.id}>{workspace.displayName}</option>)}</optgroup>}
+            {discovered.some((project) => project.local && !project.workspaceId) && <optgroup label="Found from your agents (Claude Code, Codex, Hermes, MAWS)">{discovered.filter((project) => project.local && !project.workspaceId).map((project) => <option key={project.id} value={`found:${project.id}`}>{project.name} — {project.locationHint} · {project.sources.join(', ')}</option>)}</optgroup>}
+            {discovered.some((project) => !project.local) && <optgroup label="On GitHub, not on this computer (downloads after you confirm)">{discovered.filter((project) => !project.local).map((project) => <option key={project.id} value={`found:${project.id}`}>{project.name} — {project.cloudRepo}</option>)}</optgroup>}
+          </select>
+          <button type="button" disabled={busy} onClick={() => void addProject()} title="Open any folder on this computer as a project">Add folder…</button>
+          <button type="button" disabled={busy} onClick={() => void beginCreate()} title="Create a new empty project folder">New project…</button>
         </div>
-        <div className="context-actions"><button type="button" className="refresh-button" disabled={loading} onClick={() => void loadWorkspaces()}>Refresh</button><ThemeToggle /></div>
+        <div className="context-actions"><button type="button" className="refresh-button" disabled={loading} onClick={() => void loadWorkspaces(true)} title="Reload this project and look again for projects your agents use">Refresh</button><ThemeToggle /></div>
       </header>
+      {notice && <div className="system-notice" role="status">{notice}</div>}
+      {missionNotice && activeView !== 'FOCUS' && <div className="system-notice" role="status"><span>{missionNotice}</span> <button type="button" className="text-action" onClick={() => setMissionNotice(null)}>Dismiss</button></div>}
       {error && <div className="system-error" role="alert"><span>{error}</span><button type="button" onClick={() => void loadWorkspaces()}>Try again</button></div>}
       {createDraft && <div className="create-overlay"><form className="create-project" role="dialog" aria-modal="true" aria-labelledby="create-heading" onSubmit={createProject}><h2 id="create-heading">Create a project</h2><p>A new non-conflicting child folder will be created in the location you selected.</p><label>Name<input required autoFocus value={createDraft.name} onChange={(event) => setCreateDraft({ ...createDraft, name: event.target.value })} /></label><label>Kind<input required value={createDraft.kind} onChange={(event) => setCreateDraft({ ...createDraft, kind: event.target.value })} /></label><label>Current objective<textarea required value={createDraft.currentObjective} onChange={(event) => setCreateDraft({ ...createDraft, currentObjective: event.target.value })} /></label><div className="setup-actions"><button type="button" onClick={() => setCreateDraft(null)}>Cancel</button><button className="button-primary" type="submit" disabled={busy}>Create project</button></div></form></div>}
       <main className="surface" id="main-surface" tabIndex={-1}>
         {loading && !projection ? <section className="empty-state" aria-live="polite"><p className="eyebrow">Workbench</p><h1>Loading project reality…</h1></section>
-          : workspaces.length === 0 ? <FirstUse busy={busy} onAdd={() => void addProject()} onCreate={() => void beginCreate()} />
+          : workspaces.length === 0 ? <FirstUse busy={busy} discovered={discovered} onAdd={() => void addProject()} onCreate={() => void beginCreate()} onOpen={(project) => void addDiscovered(project)} />
             : !projection ? <section className="empty-state"><h1>Project unavailable</h1><p>Workbench could not load the selected project. Refresh or select another registered project.</p></section>
               : activeView === 'FOCUS' && !missionIntent && !missionNotice && projection.workspace.classification !== 'ready' ? <SetupNeeded projection={projection} activity={activity} onWork={projection.workspace.classification === 'needs_onboarding' ? () => openMission({ target: projection.workspace.displayName, continueProposalId: null, note: null }) : null} />
-                : missionIntent ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet key={`${missionIntent.continueProposalId ?? ''}${missionIntent.target}`} target={missionIntent.target} objective={focus?.currentObjective ?? ''} agents={agents} continuation={missionIntent.note} onClose={closeMission} onStart={startMission} onDraft={() => { setMissionIntent(null); setMissionNotice('Mission saved as draft — nothing started, no model called.'); }} /></section>
+                : missionIntent ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><MissionSheet key={`${missionIntent.continueProposalId ?? ''}${missionIntent.target}`} target={missionIntent.target} objective={missionIntent.context ?? focus?.currentObjective ?? ''} draft={readDraft(missionIntent.target)} agents={agents} continuation={missionIntent.note} onClose={closeMission} onStart={startMission} onDraft={(draft) => { try { window.localStorage.setItem(draftKey(missionIntent.target), JSON.stringify(draft)); setMissionNotice('Mission saved as draft on this computer — nothing started, no model called. Opening the same work again restores it.'); } catch { setMissionNotice('This browser blocked saving the draft; nothing was started.'); } setMissionIntent(null); }} /></section>
                   : activeView === 'FOCUS' && missionNotice ? <section aria-label="Mission composition"><p className="eyebrow">Mission</p><p className="quiet" role="status">{missionNotice}</p><div className="setup-actions"><button className="button" type="button" onClick={() => setMissionNotice(null)}>Back to Focus</button><button className="button" type="button" onClick={() => { setMissionNotice(null); setActiveView('FLOW'); }}>Open Flow</button></div></section>
                     : activeView === 'FOCUS' && focus ? <Focus projection={focus} continuity={projection.continuity} activity={activity} onWork={() => openMission({ target: focus.currentQuestion?.name ?? focus.currentObjective, continueProposalId: null, note: null })} onReview={() => setActiveView('REVIEW')} />
                       : activeView === 'FIELD' ? <Field field={projection.field} canonicalHash={focus?.canonicalHash ?? ''} projectId={focus?.projectId ?? projection.workspace.id} />
-                        : activeView === 'FLOW' ? <Flow outcomes={[...flowOutcomes, ...mawsOutcomes(activity)]} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
+                        : activeView === 'FLOW' ? <Flow describe={describeCard} outcomes={[...flowOutcomes, ...mawsOutcomes(activity)]} continuity={projection.continuity} onRoute={(card) => { const latest = reviewItems.filter((item) => item.taskId === card.id).sort((a, b) => b.taskVersion - a.taskVersion)[0]; openMission({ target: card.title, continueProposalId: latest?.id ?? null, note: latest ? `Continues task ${card.id} as version ${latest.taskVersion + 1}.` : null }); }} />
                           : activeView === 'REVIEW' ? <Review items={reviewItems} continuity={projection.continuity} onDecide={decide} onContinue={(item) => openMission({ target: item.target, continueProposalId: item.id, note: `Continues task ${item.taskId} as version ${item.taskVersion + 1}${item.revisionNote ? ` with your revision note: “${item.revisionNote}”` : ''}. You can pick a different agent under Advanced.` })} />
                             : activeView === 'OUTPUT' ? <Output artifacts={artifacts} />
                               : <SetupNeeded projection={projection} activity={activity} onWork={null} />}

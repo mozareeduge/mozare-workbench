@@ -68,7 +68,7 @@ $jobs = @()
 if ($launchServer) {
   Write-MozareStep "Starting Workbench API server on 127.0.0.1:$serverPort..."
   $previousPort = $env:MOZARE_PORT
-  $env:MOZARE_PORT = $serverPort
+  $env:MOZARE_SERVER_PORT = $serverPort
   $jobs += Start-Process -FilePath 'cmd.exe' -ArgumentList '/d', '/s', '/c', 'npx tsx src/server/index.ts' -WorkingDirectory $Root -WindowStyle Minimized -PassThru
   $env:MOZARE_PORT = $previousPort
 }

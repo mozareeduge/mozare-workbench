@@ -27,3 +27,5 @@ body { margin: 0; min-width: 0; } button { font: inherit; } button:focus-visible
 .workspace-controls { flex-wrap:wrap;min-width:0 }
 .context-actions { flex-wrap:wrap }
 .cli-activity h2{margin:var(--s-2) 0}.cli-activity-list{margin:var(--s-2) 0 0;padding-left:var(--s-4);display:grid;gap:var(--s-1);font-size:var(--text-small);overflow-wrap:anywhere}.cli-harness{display:inline-block;padding:0 6px;border:1px solid var(--c-line-strong);border-radius:99px;font-size:var(--text-label);font-weight:700}
+.system-notice{margin:var(--s-2) var(--s-6) 0;padding:var(--s-2) var(--s-3);border:1px solid var(--c-accent);border-radius:var(--r-control);color:var(--c-ink)}
+.found-projects{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s-2);margin:var(--s-4) 0;padding:0;list-style:none}.found-projects button{display:grid;gap:2px;width:100%;padding:var(--s-3);border:1px solid var(--c-line);border-radius:var(--r-control);background:var(--c-surface-raised);color:var(--c-ink);text-align:left;cursor:pointer}.found-projects button:hover{border-color:var(--c-accent)}.found-projects small{color:var(--c-ink-2);overflow-wrap:anywhere}

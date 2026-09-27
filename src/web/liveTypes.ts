@@ -126,13 +126,29 @@ export type MissionStartRequest = {
   continueProposalId?: string | null;
 };
 
-export type CliWorkItem = { id: string; title: string; status: 'queued' | 'active' | 'done' | 'failed' | 'blocked' | 'deferred'; closedAt: string | null };
+export type CliWorkItem = {
+  id: string; title: string; outcome: string; status: 'queued' | 'active' | 'done' | 'failed' | 'blocked' | 'deferred'; closedAt: string | null;
+  createdBy: string | null; claimedBy: string | null; completedBy: string | null; evidence: string[];
+};
+export type CliThread = {
+  id: string; title: string; objective: string; status: string; phase: string; summary: string; active: boolean;
+  lastHarness: string | null; updatedAt: string | null; activeItem: CliWorkItem | null; items: CliWorkItem[];
+  blockers: string[]; recentDecisions: string[];
+  recentEvents: Array<{ at: string; harness: string | null; kind: string; text: string; itemId: string | null }>;
+};
 export type CliActivity = {
-  maws: {
-    threadTitle: string; objective: string; status: string; phase: string; summary: string;
-    lastHarness: 'claude' | 'codex' | 'hermes' | 'other' | null; updatedAt: string | null;
-    activeItem: CliWorkItem | null; items: CliWorkItem[]; blockers: string[]; recentDecisions: string[];
-    recentEvents: Array<{ at: string; harness: 'claude' | 'codex' | 'hermes' | 'other'; kind: string; text: string }>;
-  } | null;
-  git: { branch: string; uncommittedFiles: number; commits: Array<{ sha: string; author: string; at: string; subject: string; harness: 'claude' | 'codex' | 'hermes' | 'other' | null }> } | null;
+  maws: CliThread | null;
+  threads: CliThread[];
+  git: { branch: string; uncommittedFiles: number; commits: Array<{ sha: string; author: string; at: string; subject: string; harness: string | null }> } | null;
+};
+
+export type DiscoveredProject = {
+  id: string;
+  name: string;
+  locationHint: string;
+  sources: string[];
+  lastUsedAt: string | null;
+  local: boolean;
+  cloudRepo: string | null;
+  workspaceId: string | null;
 };

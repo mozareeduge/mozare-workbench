@@ -33,6 +33,7 @@ import { MissionService, MissionUnavailableError } from './missions/MissionServi
 import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
 import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
 import { readCliActivity } from './workspaces/CliActivity.js';
+import { ProjectDiscovery } from './workspaces/ProjectDiscovery.js';
 import { artifactFixtures, artifactMediaType, resolveArtifactFile, type RegisteredArtifact } from './missions/ArtifactPreviews.js';
 
 const compileInputSchema = {
@@ -151,6 +152,7 @@ export type AppOptions = {
   evidence?: Partial<EvidenceAdapterOptions>;
   workspaceRegistry?: WorkspaceRegistry;
   workspaceRegistryFile?: string;
+  projectDiscovery?: ProjectDiscovery;
   folderPicker?: () => Promise<string | null>;
   workLedger?: WorkLedger;
   harnessAdapters?: Record<RealHarnessId, HarnessAdapter>;
@@ -159,18 +161,15 @@ export type AppOptions = {
 
 async function defaultFolderPicker(): Promise<string | null> {
   if (process.platform !== 'win32') throw new Error('Native folder selection is not available on this platform');
-  const script = [
-    'Add-Type -AssemblyName System.Windows.Forms',
-    '$dialog = New-Object System.Windows.Forms.FolderBrowserDialog',
-    "$dialog.Description = 'Select a Mozare workspace folder'",
-    'if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { [Console]::Out.Write($dialog.SelectedPath) }',
-  ].join('; ');
+  // scripts/pick-folder.ps1 pins the chooser always-on-top so it never opens hidden behind the browser.
   const result = await new ProcessRunner().run(
     'powershell.exe',
-    ['-NoProfile', '-NonInteractive', '-STA', '-Command', script],
+    ['-NoProfile', '-NonInteractive', '-STA', '-ExecutionPolicy', 'Bypass', '-File', join(process.cwd(), 'scripts', 'pick-folder.ps1')],
     process.cwd(),
+    { timeoutMs: 300_000 },
   );
-  if (result.exitCode !== 0) throw new Error('Native folder selection failed');
+  if (result.timedOut) throw new Error('The folder window was open for 5 minutes without a choice, so it was closed. Nothing changed.');
+  if (result.exitCode !== 0) throw new Error('The folder window could not be opened on this computer.');
   return result.stdout.trim() || null;
 }
 
@@ -219,6 +218,7 @@ export function buildApp(
     const projection = workspaceRegistry.projection(workspaceId) as { focus?: { projectId?: string } | null };
     return { workspaceId, projectRoot: root, projectId: projection.focus?.projectId ?? workspaceId };
   };
+  const discovery = options.projectDiscovery ?? new ProjectDiscovery();
   const folderTokens = new FolderSelectionTokens();
   const pickFolder = options.folderPicker ?? defaultFolderPicker;
 
@@ -257,7 +257,7 @@ export function buildApp(
   app.post('/api/system/pick-folder', async (_request, reply) => {
     try {
       const selected = await pickFolder();
-      if (!selected) return reply.code(409).send({ error: 'selection_cancelled' });
+      if (!selected) return reply.code(409).send({ error: 'selection_cancelled', message: 'No folder was chosen; nothing changed.' });
       return folderTokens.issue(selected);
     } catch (error) {
       return reply.code(503).send({ error: 'folder_picker_unavailable', message: error instanceof Error ? error.message : String(error) });
@@ -283,6 +283,31 @@ export function buildApp(
       return { workspace: workspaceRegistry.create(folderTokens.consume(body.parentSelectionToken), body.name, body.kind, body.currentObjective) };
     } catch {
       return reply.code(400).send({ error: 'creation_rejected', message: 'The project could not be created at the selected location' });
+    }
+  });
+
+  /** Projects the owner's agent CLIs already work in (Claude Code, Codex, Hermes) plus GitHub-only repos. */
+  app.get('/api/discovery', async (request) => {
+    const force = (request.query as { refresh?: string }).refresh === '1';
+    const found = await discovery.list(force);
+    const registered = new Map(workspaceRegistry.list().map((workspace) => [(workspaceRegistry.rootFor(workspace.id) ?? '').toLowerCase().replace(/[\\/]+$/, ''), workspace.id]));
+    const projects = await Promise.all(found.map(async (project) => {
+      const root = project.local ? await discovery.rootFor(project.id) : null;
+      return { ...project, workspaceId: root ? registered.get(root.toLowerCase().replace(/[\\/]+$/, '')) ?? null : null };
+    }));
+    return { projects };
+  });
+
+  app.post('/api/discovery/add', async (request, reply) => {
+    const { id } = (request.body ?? {}) as { id?: string };
+    if (typeof id !== 'string') return reply.code(400).send({ error: 'invalid_request', message: 'A discovered project id is required' });
+    try {
+      const root = id.startsWith('gh_') ? await discovery.clone(id) : await discovery.rootFor(id);
+      if (!root) return reply.code(404).send({ error: 'unknown_project', message: 'That project is no longer found; refresh the list.' });
+      const workspace = workspaceRegistry.register(root);
+      return { workspace: workspaceRegistry.activate(workspace.id) };
+    } catch (error) {
+      return reply.code(409).send({ error: 'add_failed', message: error instanceof Error ? error.message : 'The project could not be added.' });
     }
   });
 
@@ -340,6 +365,7 @@ export function buildApp(
         harness: text(body.harness) as RealHarnessId,
         target: text(body.target),
         outcome: text(body.outcome),
+        context: text(body.context),
         acceptance: Array.isArray(body.acceptance) ? body.acceptance.map(text) : [],
         effort: typeof body.effort === 'string' ? body.effort : null,
         continueProposalId: typeof body.continueProposalId === 'string' ? body.continueProposalId : null,

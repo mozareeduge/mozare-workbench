@@ -197,7 +197,7 @@ describe('TEST-013 (ORACLE-019): the application server binds loopback only', ()
     });
     const child = spawn('node', [tsxCli, join(ROOT, 'src', 'server', 'index.ts')], {
       cwd: ROOT,
-      env: { ...process.env, MOZARE_PORT: String(freePort) },
+      env: { ...process.env, MOZARE_SERVER_PORT: String(freePort) },
       stdio: 'ignore',
     });
     children.push(child);

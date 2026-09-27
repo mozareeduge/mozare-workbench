@@ -13,6 +13,8 @@ export type MissionRequest = {
   harness: RealHarnessId;
   target: string;
   outcome: string;
+  /** What the owner typed in the mission's Context field; passed to the agent verbatim. */
+  context?: string | null;
   acceptance: string[];
   effort?: string | null;
   /** Continue a proposal's mission/task as the next task version (revision or harness switch). */
@@ -102,6 +104,7 @@ export class MissionService {
     const objective = [
       `Target: ${request.target.trim()}`,
       `Outcome: ${request.outcome.trim() || request.target.trim()}`,
+      ...(request.context?.trim() ? [`Context from the owner: ${request.context.trim().slice(0, 4000)}`] : []),
       `Acceptance: ${acceptance.join(' | ')}`,
       ...(revisionNote ? [`Owner revision request: ${revisionNote}`] : []),
     ].join('\n');

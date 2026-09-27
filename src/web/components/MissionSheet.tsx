@@ -17,6 +17,8 @@ export type { MissionDraft };
 export type MissionSheetProps = {
   target: string;
   objective: string;
+  /** A previously saved draft for this target; restores every field the owner typed. */
+  draft?: MissionDraft | null;
   /** Live agent capabilities; null while the probe is still running. */
   agents: AgentCapability[] | null;
   /** Shown when this mission continues an existing task (revision or agent switch). */
@@ -34,14 +36,14 @@ const SETUP_ROUTES: Record<AgentCapability['id'], string> = {
   hermes: 'run "hermes setup" to choose a model, then Refresh',
 };
 
-export function MissionSheet({ target, objective, agents, continuation, onClose, onStart, onDraft }: MissionSheetProps) {
-  const [prefill] = useState(() => buildMissionSheetPrefill({ target, objective }));
+export function MissionSheet({ target, objective, draft, agents, continuation, onClose, onStart, onDraft }: MissionSheetProps) {
+  const [prefill] = useState(() => draft ?? buildMissionSheetPrefill({ target, objective }));
   const [targetValue, setTargetValue] = useState(prefill.target);
   const [outcome, setOutcome] = useState(prefill.outcome);
   const [context, setContext] = useState(prefill.context);
   const [acceptance, setAcceptance] = useState<string[]>(prefill.acceptance);
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [chosen, setChosen] = useState<AgentCapability['id'] | null>(null);
+  const [chosen, setChosen] = useState<AgentCapability['id'] | null>((draft?.agent as AgentCapability['id'] | undefined) ?? null);
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
 
