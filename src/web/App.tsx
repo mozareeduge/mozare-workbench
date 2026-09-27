@@ -320,14 +320,14 @@ export function App() {
 
   const decide = async (item: LiveReviewItem, decision: ReviewDecisionInput): Promise<string> => {
     if (!workspaceId) throw new Error('No active project.');
-    const result = await api<{ decision: { state: string; written: string[]; movedToResidue: string[] } }>(
+    const result = await api<{ decision: { state: string; written: string[]; movedToResidue: string[]; mawsRecorded: boolean } }>(
       `/api/workspaces/${encodeURIComponent(workspaceId)}/review/${encodeURIComponent(item.id)}/decision`,
       { method: 'POST', body: JSON.stringify(decision) },
     );
     await loadProjection(workspaceId);
     const { written, movedToResidue } = result.decision;
     switch (decision.state) {
-      case 'accepted': return `"${item.title}" accepted — ${written.length} file${written.length === 1 ? '' : 's'} written to the project${movedToResidue.length > 0 ? `, ${movedToResidue.length} moved to Workbench residue` : ''}.`;
+      case 'accepted': return `"${item.title}" accepted — ${written.length} file${written.length === 1 ? '' : 's'} written to the project${movedToResidue.length > 0 ? `, ${movedToResidue.length} moved to Workbench residue` : ''}. ${result.decision.mawsRecorded ? 'The result was recorded in the project MAWS.' : 'The result could not be recorded in the project MAWS; the accepted files remain saved.'}`;
       case 'revision_requested': return 'Revision requested — the proposal stays attached to the same proposal/mission lineage; prior evidence is preserved.';
       case 'rejected': return `"${item.title}" rejected. The record is retained for reference; canonical state is unchanged.`;
       default: return `"${item.title}" preserved as residue — retained for reference with no active authority.`;

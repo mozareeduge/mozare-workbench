@@ -29,7 +29,7 @@ import { ProcessRunner } from './process/ProcessRunner.js';
 import { FolderSelectionTokens, WorkspaceRegistry } from './workspaces/WorkspaceRegistry.js';
 import { WorkLedger } from '../core/continuity/WorkLedger.js';
 import { realHarnessAdapters, type HarnessAdapter, type RealHarnessId } from './agents/HarnessAdapter.js';
-import { MissionService, MissionUnavailableError } from './missions/MissionService.js';
+import { MissionService, MissionUnavailableError, appendMawsMissionResult } from './missions/MissionService.js';
 import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
 import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
 import { readCliActivity } from './workspaces/CliActivity.js';
@@ -440,7 +440,11 @@ export function buildApp(
     if (!state) return reply.code(400).send({ error: 'invalid_decision', message: 'Unknown decision' });
     try {
       const decision = proposalStore.decide(proposal, context.projectRoot, join(runtimeDir, 'residue', workspaceId), { state, rationale: body.rationale ?? null, revisionNote: body.revisionNote ?? null });
-      return { decision: { state: decision.state, decidedAt: decision.decidedAt, written: decision.applied?.written ?? [], movedToResidue: decision.applied?.movedToResidue ?? [] }, item: proposalStore.toPublic(proposal, context.projectRoot) };
+      let mawsRecorded = false;
+      if (decision.state === 'accepted') {
+        try { appendMawsMissionResult(context.projectRoot, proposal, decision.decidedAt); mawsRecorded = true; } catch { /* review decision remains durable; report the missing MAWS record */ }
+      }
+      return { decision: { state: decision.state, decidedAt: decision.decidedAt, written: decision.applied?.written ?? [], movedToResidue: decision.applied?.movedToResidue ?? [], mawsRecorded }, item: proposalStore.toPublic(proposal, context.projectRoot) };
     } catch (error) {
       if (error instanceof ProposalConflictError) return reply.code(409).send({ error: error.code, message: error.message });
       return reply.code(500).send({ error: 'decision_failed', message: 'The decision could not be recorded.' });

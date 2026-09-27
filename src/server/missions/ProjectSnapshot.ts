@@ -10,7 +10,7 @@ export const RUN_DIRECTORY_NAME = '.mozare-run';
  * Runtime state agent CLIs write for themselves (sessions, hook logs, memory). It is never
  * project work, so it is kept out of proposals even when the harness writes it into the copy.
  */
-const HARNESS_STATE_PREFIXES = ['.claude/state/', '.claude/sessions/', '.claude/memory/', '.claude/settings.local.json', '.codex/', '.hermes/'];
+const HARNESS_STATE_PREFIXES = ['.claude/state/', '.claude/sessions/', '.claude/memory/', '.claude/settings.local.json', '.codex/', '.hermes/', '.maws/'];
 const isHarnessState = (path: string) => HARNESS_STATE_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix));
 const MAX_FILES = 20_000;
 const MAX_BYTES = 1024 * 1024 * 1024;

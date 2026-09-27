@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import type { WorkLedger } from '../../core/continuity/WorkLedger.js';
 import type { EvidenceFixture } from '../../core/projection/ReviewProjection.js';
 import type { FlowOutcomeFixture } from '../../core/projection/FlowProjection.js';
 import { HarnessCoordinator } from '../agents/HarnessCoordinator.js';
 import type { HarnessAdapter, HarnessCapability, RealHarnessId } from '../agents/HarnessAdapter.js';
-import { combinedHash, createSandbox, describeChanges, RUN_DIRECTORY_NAME, sandboxChanges, type FileHashes } from './ProjectSnapshot.js';
+import { combinedHash, createSandbox, describeChanges, hashFiles, RUN_DIRECTORY_NAME, sandboxChanges, type FileHashes } from './ProjectSnapshot.js';
 import type { ProposalStore, StoredProposal } from './ProposalStore.js';
 
 export type MissionRequest = {
@@ -49,6 +49,41 @@ const CAPABILITY_TTL_MS = 60_000;
 
 function strings(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.slice(0, 400)) : [];
+}
+
+function inside(root: string, path: string): string {
+  const target = resolve(root, path);
+  const rel = relative(resolve(root), target);
+  if (!rel || rel === '..' || rel.startsWith(`..\\`) || rel.startsWith('../') || isAbsolute(rel)) throw new MissionUnavailableError('The prior mission contains an unsafe file path.');
+  return target;
+}
+
+/** Carry prior proposed files only where the live project still has their original base. */
+function carryPriorWork(previous: StoredProposal, projectRoot: string, sandbox: string): string[] {
+  const conflicts: string[] = [];
+  for (const change of previous.changes) {
+    const liveHash = hashFiles(projectRoot, [change.path])[change.path];
+    if (liveHash !== previous.baseHashes[change.path]) { conflicts.push(change.path); continue; }
+    const target = inside(sandbox, change.path);
+    if (change.kind === 'deleted') { if (existsSync(target)) unlinkSync(target); continue; }
+    const source = inside(previous.sandbox, change.path);
+    if (!existsSync(source)) { conflicts.push(change.path); continue; }
+    mkdirSync(dirname(target), { recursive: true });
+    copyFileSync(source, target);
+  }
+  return conflicts;
+}
+
+export function appendMawsMissionResult(projectRoot: string, proposal: StoredProposal, acceptedAt: string): void {
+  const directory = join(projectRoot, '.maws');
+  mkdirSync(directory, { recursive: true });
+  appendFileSync(join(directory, 'workbench-missions.jsonl'), `${JSON.stringify({
+    schema: 'mwb.maws-mission.v1', at: acceptedAt, event: 'mission-accepted',
+    mission_id: proposal.missionId, task_id: proposal.taskId, task_version: proposal.taskVersion,
+    run_id: proposal.runId, harness: proposal.harness, proposal_id: proposal.id,
+    outcome: proposal.effect.whatChanged, changed_refs: proposal.changes.map((change) => change.path),
+    evidence_state: 'agent-claim', review_state: 'accepted',
+  })}\n`, 'utf8');
 }
 
 /**
@@ -113,6 +148,7 @@ export class MissionService {
       ...(request.context?.trim() ? [`Context from the owner: ${request.context.trim().slice(0, 4000)}`] : []),
       `Acceptance: ${acceptance.join(' | ')}`,
       ...(revisionNote ? [`Owner revision request: ${revisionNote}`] : []),
+      ...(previous ? ['Read .mozare-run/continuation.json and prior-diff.txt for the previous work; reconcile any paths the owner changed.'] : []),
     ].join('\n');
 
     const missionRoot = join(this.runtimeDirectory, 'missions', context.workspaceId, runId);
@@ -120,6 +156,16 @@ export class MissionService {
     const baseline = createSandbox(context.projectRoot, sandbox);
     const runDirectory = join(sandbox, RUN_DIRECTORY_NAME);
     mkdirSync(runDirectory, { recursive: true });
+    if (previous) {
+      const decision = this.proposals.latestDecision(context.workspaceId, previous.id)?.state ?? 'under_review';
+      const conflicts = decision === 'accepted' ? [] : carryPriorWork(previous, context.projectRoot, sandbox);
+      writeFileSync(join(runDirectory, 'continuation.json'), `${JSON.stringify({
+        priorRunId: previous.runId, priorHarness: previous.harness, priorTaskVersion: previous.taskVersion,
+        priorSummary: previous.effect.whatChanged, priorDecision: decision, priorChanges: previous.changes,
+        ownerRevisionNote: revisionNote, conflicts, priorDiffRef: 'prior-diff.txt',
+      }, null, 2)}\n`, 'utf8');
+      writeFileSync(join(runDirectory, 'prior-diff.txt'), previous.implementation.diffText.slice(0, 200_000), 'utf8');
+    }
     const contextPackRef = join(runDirectory, 'context-pack.json');
     writeFileSync(contextPackRef, `${JSON.stringify({
       id: `CTX-${runId}`, mission_id: missionId, profile: 'technical', objective,

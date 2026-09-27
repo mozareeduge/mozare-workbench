@@ -11,6 +11,7 @@ import { WorkspaceRegistry } from '../../src/server/workspaces/WorkspaceRegistry
 
 /** Simulates an agent: edits one file, adds one, deletes one, then writes a handoff with a self-reported test. */
 class EditingRunner extends ProcessRunner {
+  readonly carriedNotes: string[] = [];
   override async run(command: string, args: string[], cwd: string, options: ProcessOptions = {}): Promise<ProcessResult> {
     if (command === 'git') return super.run(command, args, cwd, options);
     return { command, args, cwd, exitCode: 0, stdout: args.includes('--version') ? `${command} test-version` : 'help', stderr: '' };
@@ -18,6 +19,7 @@ class EditingRunner extends ProcessRunner {
 
   override start(command: string, args: string[], cwd: string): RunningProcess {
     const completion = Promise.resolve().then(() => {
+      if (existsSync(join(cwd, 'agent-note.md'))) this.carriedNotes.push(readFileSync(join(cwd, 'agent-note.md'), 'utf8'));
       const objects = join(cwd, 'objects');
       const edited = readdirSync(objects).find((name) => name.startsWith('q_'))!;
       writeFileSync(join(objects, edited), `${readFileSync(join(objects, edited), 'utf8')}\nAgent refinement line.\n`, 'utf8');
@@ -25,7 +27,8 @@ class EditingRunner extends ProcessRunner {
       // Harness runtime state (as Claude Code hooks write) must never become part of a proposal.
       mkdirSync(join(cwd, '.claude', 'state'), { recursive: true });
       writeFileSync(join(cwd, '.claude', 'state', 'session.json'), '{}', 'utf8');
-      unlinkSync(join(objects, readdirSync(objects).find((name) => name.startsWith('src_'))!));
+      const source = readdirSync(objects).find((name) => name.startsWith('src_'));
+      if (source) unlinkSync(join(objects, source));
       writeFileSync(join(cwd, '.mozare-run', 'handoff.json'), JSON.stringify({
         run_id: 'fake', state: 'completed', summary: 'Refined the question note. Added an agent note.',
         system_view: { intent: 'Tighten the current question.', behavior: 'Note updated.', architecture: ['objects/'], implementation: [], verification: [] },
@@ -69,7 +72,7 @@ describe('TEST-004/006/007/019: live mission-to-review loop', { timeout: 30_000 
     const adapters = Object.fromEntries((['claude', 'codex', 'hermes'] as RealHarnessId[]).map((id) => [id, new HarnessAdapter(id, id, runner)])) as Record<RealHarnessId, HarnessAdapter>;
     const app = buildApp({ workspaceRegistry: registry, workLedger: ledger, harnessAdapters: adapters, runtimeDir: runtime });
     apps.push(app);
-    return { app, project, runtime, id: workspace.id };
+    return { app, project, runtime, runner, id: workspace.id };
   };
 
   const startMission = (app: ReturnType<typeof buildApp>, id: string, extra: Record<string, unknown> = {}) => app.inject({
@@ -117,10 +120,12 @@ describe('TEST-004/006/007/019: live mission-to-review loop', { timeout: 30_000 
     expect(readdirSync(join(runtime, 'residue', id), { recursive: true }).some((name) => String(name).includes('src_'))).toBe(true);
     expect((await app.inject({ method: 'POST', url: `/api/workspaces/${id}/review/${item.id}/decision`, payload: { state: 'rejected' } })).statusCode).toBe(409);
     expect((await app.inject({ method: 'GET', url: `/api/workspaces/${id}/flow` })).json().outcomes).toEqual([expect.objectContaining({ runState: 'accepted' })]);
+    const mawsEvents = readFileSync(join(project, '.maws', 'workbench-missions.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
+    expect(mawsEvents).toEqual([expect.objectContaining({ event: 'mission-accepted', proposal_id: item.id, review_state: 'accepted', harness: 'codex' })]);
   });
 
   it('refuses a stale Accept and writes nothing; revision needs a note and continues the same task', async () => {
-    const { app, project, id } = setup();
+    const { app, project, runner, runtime, id } = setup();
     await startMission(app, id);
     const [item] = await waitForItems(app, id, 1);
 
@@ -141,6 +146,9 @@ describe('TEST-004/006/007/019: live mission-to-review loop', { timeout: 30_000 
     expect(continued.json().mission).toMatchObject({ taskId: item.taskId, missionId: item.missionId, taskVersion: 2, harness: 'hermes' });
     const items = await waitForItems(app, id, 2);
     expect(items.find((candidate) => candidate.taskVersion === 2)).toMatchObject({ harness: 'hermes', taskId: item.taskId });
+    expect(runner.carriedNotes).toContain('# Agent note\n');
+    const continuation = JSON.parse(readFileSync(join(runtime, 'missions', id, continued.json().mission.runId, 'sandbox', '.mozare-run', 'continuation.json'), 'utf8'));
+    expect(continuation).toMatchObject({ priorRunId: item.runId, priorTaskVersion: 1, conflicts: expect.arrayContaining([`objects/${edited}`]) });
   });
 
   it('reports an unavailable agent instead of starting it', async () => {
