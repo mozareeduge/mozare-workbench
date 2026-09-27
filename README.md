@@ -6,6 +6,10 @@ A production-oriented local-first handoff for building **Mozare Workbench** with
 
 Open the prepared Git root in Codex and give it `EXECUTION/FRESH_CONTEXT_PROMPT.md`. The deterministic progress gate is `scripts/execution_loop.py`; the full workload remains `EXECUTION/CLAUDE_CODE_EXECUTION_INTAKE.md`.
 
+For the local app, run `START_MOZARE.cmd` or use the desktop icon. The launcher needs Node and installed packages; the bundled sample project is optional. Workbench keeps its workspace registry, missions, proposals, and work ledger in `%LOCALAPPDATA%\Mozare Workbench\runtime` on Windows. On first launch it copies older `.mozare/runtime` records there and retains the old copy for recovery. Set `MWB_DATA_DIR` to choose another data folder.
+
+The optional read-only Mozare Wiki adapter reads `wikiRoot` from `%LOCALAPPDATA%\Mozare Workbench\settings.json` or `MWB_WIKI_ROOT`. Search hits remain candidates until reviewed against the source. Workbench does not write to the Wiki.
+
 ## v0.3 additions
 
 ### 1. Context economy is implemented, not requested

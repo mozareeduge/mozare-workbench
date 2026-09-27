@@ -1,8 +1,7 @@
 # scripts/diagnostics.ps1 -- TASK-P09-01 recovery diagnostics for the Mozare Workbench.
 #
 # Contract (SCN-LOC-01, ORACLE-001, TEST-017):
-#   - canonical project truth (seed/example-project/PROJECT.md) missing  -> BLOCKING
-#     with a recovery route (ORACLE-001 negative branch);
+#   - bundled sample missing -> advisory; registered projects remain usable;
 #   - derived cache (.mozare/cache) missing -> non-blocking: reported as
 #     reconstructable from canonical records (SCN-LOC-01);
 #   - optional capabilities (qmd, claude, codex, hermes) reported truthfully per
@@ -33,8 +32,9 @@ $advisories = New-Object System.Collections.Generic.List[string]
 # --- git head ---------------------------------------------------------------
 $head = $null
 try {
-  $head = (& git -C $Root 'rev-parse' 'HEAD' 2>$null | Select-Object -First 1)
-  if ($LASTEXITCODE -ne 0) { $head = $null }
+  $headOutput = & git -C $Root 'rev-parse' 'HEAD' 2>$null
+  $gitExit = $LASTEXITCODE
+  if ($gitExit -eq 0) { $head = [string]($headOutput | Select-Object -First 1) }
 } catch { $head = $null }
 
 # --- tool availability ------------------------------------------------------
@@ -59,8 +59,7 @@ foreach ($tool in @('qmd', 'claude', 'codex', 'hermes')) {
 $canonicalMd = Join-Path (Join-Path (Join-Path $Root 'seed') 'example-project') 'PROJECT.md'
 $canonicalPresent = Test-Path $canonicalMd
 if (-not $canonicalPresent) {
-  $blocking.Add('canonical: seed/example-project/PROJECT.md missing (canonical project truth)') | Out-Null
-  $recovery.Add('canonical: restore canonical records via git checkout -- seed/example-project or re-clone the repository') | Out-Null
+  $advisories.Add('sample: seed/example-project is absent; registered projects remain usable') | Out-Null
 }
 
 $derivedCacheDir = Join-Path (Join-Path $Root '.mozare') 'cache'
@@ -68,10 +67,10 @@ $derivedCachePresent = Test-Path $derivedCacheDir
 # Derived cache is disposable by definition: always reconstructable from canonical records.
 $derivedCache = [ordered]@{
   present         = $derivedCachePresent
-  reconstructable = $canonicalPresent
+  reconstructable = $true
 }
-if (-not $derivedCachePresent -and $canonicalPresent) {
-  $recovery.Add('derived_cache: absent but rebuildable -- the context compiler reconstructs it from canonical records on next run (no action required)') | Out-Null
+if (-not $derivedCachePresent) {
+  $recovery.Add('derived_cache: absent but rebuildable from registered project records on next run (no action required)') | Out-Null
 }
 
 # --- server reachability (probe only; never starts the server) ----------------
@@ -110,8 +109,6 @@ if (-not $nodeAvailable) {
   $hint = 'Install the Node.js LTS (22.x) from https://nodejs.org, then re-run START_MOZARE.cmd.'
 } elseif (-not (Test-Path (Join-Path $Root 'node_modules'))) {
   $hint = 'Run npm install in this folder, then re-run START_MOZARE.cmd.'
-} elseif ($blocking.Count -gt 0) {
-  $hint = 'Canonical project truth is missing; restore seed records (git checkout -- seed/example-project) before launching.'
 } elseif (-not $portListens.web) {
   $hint = "The web app is not listening on 127.0.0.1:$webPort; run START_MOZARE.cmd to launch it."
 } elseif (-not $portListens.server) {

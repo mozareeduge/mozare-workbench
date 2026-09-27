@@ -69,12 +69,12 @@ if ($launchServer) {
   Write-MozareStep "Starting Workbench API server on 127.0.0.1:$serverPort..."
   $previousPort = $env:MOZARE_PORT
   $env:MOZARE_SERVER_PORT = $serverPort
-  $jobs += Start-Process -FilePath 'cmd.exe' -ArgumentList '/d', '/s', '/c', 'npx tsx src/server/index.ts' -WorkingDirectory $Root -WindowStyle Minimized -PassThru
+  $jobs += Start-Process -FilePath 'cmd.exe' -ArgumentList '/d', '/s', '/c', 'npx tsx src/server/index.ts' -WorkingDirectory $Root -WindowStyle Hidden -PassThru
   $env:MOZARE_PORT = $previousPort
 }
 
 Write-MozareStep "Starting web app on 127.0.0.1:$webPort (Focus surface)..."
-$jobs += Start-Process -FilePath 'cmd.exe' -ArgumentList '/d', '/s', '/c', 'npm', 'run', 'dev:web', '--', "--port $webPort" -WorkingDirectory $Root -WindowStyle Minimized -PassThru
+$jobs += Start-Process -FilePath 'cmd.exe' -ArgumentList '/d', '/s', '/c', 'npm', 'run', 'dev:web', '--', "--port $webPort" -WorkingDirectory $Root -WindowStyle Hidden -PassThru
 
 # Give Vite a moment, then open the browser on the web app URL.
 Start-Sleep -Seconds 3

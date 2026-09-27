@@ -2,7 +2,7 @@
 #
 # Contract (TEST-017, ORACLE-023):
 #   - required runtime (node >= 22 < 26, npm, package.json, node_modules) and canonical
-#     project truth (seed/example-project/PROJECT.md) are BLOCKING when missing
+#     project truth is read from registered projects; the bundled sample is optional
 #     -- the launcher stops with actionable guidance;
 #   - optional adapters (qmd, claude, codex, hermes) are ADVISORY: their absence
 #     never blocks (the server degrades truthfully at runtime too, SCN-LOC-02);
@@ -90,8 +90,7 @@ $canonicalDir = Join-Path (Join-Path $Root 'seed') 'example-project'
 $canonicalMd = Join-Path $canonicalDir 'PROJECT.md'
 $canonicalPresent = Test-Path $canonicalMd
 if (-not $canonicalPresent) {
-  $blocking.Add('canonical: seed/example-project/PROJECT.md missing (canonical project truth)') | Out-Null
-  $repair.Add('canonical: restore the canonical seed records (git checkout -- seed/example-project, or re-clone the repository)') | Out-Null
+  $advisories.Add('sample: seed/example-project is absent; Workbench opens registered projects without it') | Out-Null
 }
 $canonical = [ordered]@{ present = $canonicalPresent; project_md = $canonicalMd }
 

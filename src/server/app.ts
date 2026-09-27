@@ -30,6 +30,7 @@ import { FolderSelectionTokens, WorkspaceRegistry } from './workspaces/Workspace
 import { WorkLedger } from '../core/continuity/WorkLedger.js';
 import { realHarnessAdapters, type HarnessAdapter, type RealHarnessId } from './agents/HarnessAdapter.js';
 import { MissionService, MissionUnavailableError, appendMawsMissionResult } from './missions/MissionService.js';
+import { configuredWikiRoot, durableRuntimeDirectory } from './RuntimeLocation.js';
 import { ProposalConflictError, ProposalStore } from './missions/ProposalStore.js';
 import { SnapshotLimitError } from './missions/ProjectSnapshot.js';
 import { readCliActivity } from './workspaces/CliActivity.js';
@@ -174,9 +175,7 @@ async function defaultFolderPicker(): Promise<string | null> {
 }
 
 function defaultEvidenceOptions(): EvidenceAdapterOptions {
-  // No external evidence source ships configured: the surface degrades
-  // truthfully and the local project remains fully usable (SCN-EVD-04).
-  return { wikiRoot: null, qmdCommand: null };
+  return { wikiRoot: configuredWikiRoot(), qmdCommand: null };
 }
 
 export function buildApp(
@@ -204,12 +203,12 @@ export function buildApp(
   const wikiAdapter = new WikiReadAdapter(evidenceOptions.wikiRoot);
   const qmdAdapter = new QmdAdapter(evidenceOptions.qmdCommand);
   const captureStore = new EvidenceCaptureStore();
-  const workLedger = options.workLedger ?? new WorkLedger(process.env.MWB_WORK_LEDGER_DIR ?? join(process.cwd(), '.mozare', 'runtime', 'work-ledger'));
+  const runtimeDir = options.runtimeDir ?? durableRuntimeDirectory();
+  const workLedger = options.workLedger ?? new WorkLedger(process.env.MWB_WORK_LEDGER_DIR ?? join(runtimeDir, 'work-ledger'));
   const workspaceRegistry = options.workspaceRegistry ?? new WorkspaceRegistry(
-    options.workspaceRegistryFile ?? process.env.MWB_WORKSPACE_REGISTRY_FILE ?? join(process.cwd(), '.mozare', 'runtime', 'workspaces.json'),
+    options.workspaceRegistryFile ?? process.env.MWB_WORKSPACE_REGISTRY_FILE ?? join(runtimeDir, 'workspaces.json'),
     workLedger,
   );
-  const runtimeDir = options.runtimeDir ?? process.env.MWB_RUNTIME_DIR ?? join(process.cwd(), '.mozare', 'runtime');
   const proposalStore = new ProposalStore(join(runtimeDir, 'proposals'));
   const missions = new MissionService(options.harnessAdapters ?? realHarnessAdapters(), workLedger, proposalStore, runtimeDir);
   const missionContext = (workspaceId: string) => {

@@ -9,7 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 // TASK-P09-01 (TEST-013 loopback, TEST-017 degraded adapters): Windows
 // launcher preflight and recovery diagnostics must observe the real machine
 // state and report truthfully — optional capability absence is advisory, a
-// missing required runtime or canonical project truth is blocking.
+// missing required runtime blocks; the bundled sample is optional.
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const POWERSHELL = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
@@ -96,7 +96,7 @@ describe('TASK-P09-01 preflight: required runtime is blocking, optional capabili
     expect(Array.isArray(body.advisories)).toBe(true);
   });
 
-  it('a root without runtime or canonical records blocks with a repair route', { timeout: 120_000 }, () => {
+  it('a root without required runtime blocks with a repair route', { timeout: 120_000 }, () => {
     const root = makeTempRoot(false, false, false);
     const result = runScript('preflight.ps1', ['-Json', '-Root', root]);
     expect(result.status).toBe(1);
@@ -105,8 +105,18 @@ describe('TASK-P09-01 preflight: required runtime is blocking, optional capabili
     expect(body.blocking.join(' ')).toContain('node');
     expect(body.blocking.join(' ')).toContain('node_modules');
     expect(body.blocking.join(' ')).toContain('package.json');
-    expect(body.blocking.join(' ')).toContain('canonical');
+    expect(body.blocking.join(' ')).not.toContain('canonical');
     expect(body.repair.length).toBeGreaterThan(0);
+  });
+
+  it('preflight accepts a valid installation without the bundled sample project', { timeout: 120_000 }, () => {
+    const root = makeTempRoot(true, true, false);
+    const result = runScript('preflight.ps1', ['-Json', '-Root', root]);
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+    const body = parseJson(result.stdout) as { ok: boolean; canonical: { present: boolean }; advisories: string[] };
+    expect(body.ok).toBe(true);
+    expect(body.canonical.present).toBe(false);
+    expect(body.advisories.join(' ')).toContain('sample:');
   });
 
   it('required-tool absence blocks while all-optional absence stays advisory (TEST-017 path)', { timeout: 120_000 }, () => {
@@ -134,15 +144,15 @@ describe('TASK-P09-01 preflight: required runtime is blocking, optional capabili
   });
 });
 
-describe('TASK-P09-01 diagnostics: recovery reporting distinguishes canonical truth from derived cache', () => {
-  it('missing canonical records is blocking with a repair route (ORACLE-001 negative branch)', { timeout: 120_000 }, () => {
+describe('TASK-P09-01 diagnostics: project-independent launch and cache reporting', () => {
+  it('missing bundled sample is advisory; an existing project can still launch', { timeout: 120_000 }, () => {
     const root = makeTempRoot(true, true, false);
     const result = runScript('diagnostics.ps1', ['-Json', '-Root', root]);
-    expect(result.status).toBe(1);
-    const body = parseJson(result.stdout) as { ok: boolean; blocking: string[]; recovery: string[] };
-    expect(body.ok).toBe(false);
-    expect(body.blocking.join(' ')).toContain('canonical');
-    expect(body.recovery.join(' ')).toMatch(/canonical|restore|re-clone/i);
+    expect(result.status).toBe(0);
+    const body = parseJson(result.stdout) as { ok: boolean; blocking: string[]; advisories: string[] };
+    expect(body.ok).toBe(true);
+    expect(body.blocking).toEqual([]);
+    expect(body.advisories.join(' ')).toContain('sample:');
   });
 
   it('deleted derived cache is non-blocking and reported as rebuildable from canonical records (SCN-LOC-01)', { timeout: 120_000 }, () => {
