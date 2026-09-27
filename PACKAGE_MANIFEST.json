@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 294,
+  "file_count": 297,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -661,8 +661,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4643,
-      "sha256": "2728c7289163af2452a29b0ea180c5d62263b916fe2d5989191044baf5bd2dd1"
+      "bytes": 5323,
+      "sha256": "89e860a8372cb46599efbb65350f239c502413d17a9773324b27bd1152a556e6"
     },
     {
       "path": "scripts/audit_traceability.py",
@@ -691,8 +691,8 @@
     },
     {
       "path": "scripts/diagnostics.ps1",
-      "bytes": 7413,
-      "sha256": "171b5932bbc1275c26b5f8924d39e79910dd4cc7d55bfb4e1d2ba74003678ce9"
+      "bytes": 7026,
+      "sha256": "362928a1fb902ef464988cb524f6a1e398de51836e8f1aab292fffe722022876"
     },
     {
       "path": "scripts/execution_loop.py",
@@ -721,8 +721,8 @@
     },
     {
       "path": "scripts/preflight.ps1",
-      "bytes": 7078,
-      "sha256": "d9b25408bb2950b7a760cf5fc19c8b01694e027f78559f30ef599ffc97274b77"
+      "bytes": 6954,
+      "sha256": "c71dcd708b9c67e302f189322beae706136b7405d2183a0366bd2931de75d828"
     },
     {
       "path": "scripts/probe_harnesses.ts",
@@ -741,8 +741,8 @@
     },
     {
       "path": "scripts/start-mozare.ps1",
-      "bytes": 4455,
-      "sha256": "a3db48f32a380eaf60d66228051a3256c7c2397a4bfc69b04e7f1dfef83a7788"
+      "bytes": 4449,
+      "sha256": "73297a19e6b79d50a332a3e9d2045d15016f241bb40a9b6982027c4c495621e9"
     },
     {
       "path": "scripts/sync_skills.py",
@@ -841,8 +841,8 @@
     },
     {
       "path": "src/core/context/missionPacket.ts",
-      "bytes": 3620,
-      "sha256": "3a8f0d22d036f33a721625c3d1aa4f850337120808a6faaa6869e6aa3159d8f5"
+      "bytes": 3657,
+      "sha256": "8d98a1ea2eb27dae0b58f4f3b303ee2ad16dcad53dec3e1707144b4aebda1dba"
     },
     {
       "path": "src/core/context/ModelRouter.ts",
@@ -946,8 +946,8 @@
     },
     {
       "path": "src/core/workspace.ts",
-      "bytes": 9407,
-      "sha256": "ad8b2ef6be6c78f0ab236189aa71dab18feeb5a48689f465506d3755810c7b62"
+      "bytes": 9430,
+      "sha256": "02f3b7390c4a35a7f56972a4f154e73ff8d6a4bbef03bfef4ad34438a75fc223"
     },
     {
       "path": "src/mcp/McpWorkspaceServer.ts",
@@ -976,8 +976,8 @@
     },
     {
       "path": "src/server/agents/HarnessAdapter.ts",
-      "bytes": 13048,
-      "sha256": "207fe8a76121665c1e9677002faed5ba117e5c25e81c3a5e16c6a26b08ccdf74"
+      "bytes": 13196,
+      "sha256": "0b69b33d5a33ccb001ae1046432d3d0f32ee2d8411b333c1128bc4220e81838b"
     },
     {
       "path": "src/server/agents/HarnessCoordinator.ts",
@@ -991,8 +991,8 @@
     },
     {
       "path": "src/server/app.ts",
-      "bytes": 34297,
-      "sha256": "5352fb9dabd130ec25dd9108d82ed50f2047fc6f0c0867d26af8fa34f2c4581d"
+      "bytes": 33821,
+      "sha256": "9a4461ff05fbe797f2d78f9d1e9eacac3db33bf4a0fbc30679753aef81f2b9f8"
     },
     {
       "path": "src/server/git/GitAdapter.ts",
@@ -1011,18 +1011,18 @@
     },
     {
       "path": "src/server/missions/ArtifactPreviews.ts",
-      "bytes": 3818,
-      "sha256": "60045271a13fc9d1f06975d792813c04bc49d46f2cb35282a0a84efa7c8f7ac6"
+      "bytes": 3961,
+      "sha256": "a44b698539fe00f64aa53fa4b53266b9c6d0d77325fe0a8c39dd98788a8a7a8c"
     },
     {
       "path": "src/server/missions/MissionService.ts",
-      "bytes": 15919,
-      "sha256": "c0d4adec3883c1984f036663e143b0c9720dcd956158ce590474805d908ada37"
+      "bytes": 19164,
+      "sha256": "da7e1eba97d238c8e5245d96bf0ade08814340896c21f27280d88b9a8e84fcab"
     },
     {
       "path": "src/server/missions/ProjectSnapshot.ts",
-      "bytes": 5891,
-      "sha256": "36a228aade12a8881b82f948d413f1e874242cf4a6bbd8319e065467388d7aa6"
+      "bytes": 5901,
+      "sha256": "bcea3915bc3f9954229b859f20ebaafb6451a15b6298f823f9134f942b6b9201"
     },
     {
       "path": "src/server/missions/ProposalStore.ts",
@@ -1035,9 +1035,19 @@
       "sha256": "de2887809604cba02c3075fabfc41b19f7c94b31204b0f73038aef45c280bb46"
     },
     {
+      "path": "src/server/RuntimeLocation.ts",
+      "bytes": 2008,
+      "sha256": "c7b64e2b3d9289fe58475c273ce48934516f08ef2d6c84df00c6e00fe7b3501a"
+    },
+    {
       "path": "src/server/workspaces/CliActivity.ts",
-      "bytes": 10789,
-      "sha256": "dde8804b94ae01507144072fb33f3b5c3f207273e9ee04ce14c2051fbab7e6f2"
+      "bytes": 10582,
+      "sha256": "f301640715241a4dcb4da9f0e212396d75c7fadf2a3e86c305b79a9864e820e5"
+    },
+    {
+      "path": "src/server/workspaces/ObservedStructure.ts",
+      "bytes": 3655,
+      "sha256": "728ee4c4f3a5527de635304a65c79606f8b314749c3b649b75b4a1a35e68effd"
     },
     {
       "path": "src/server/workspaces/ProjectDiscovery.ts",
@@ -1046,8 +1056,8 @@
     },
     {
       "path": "src/server/workspaces/WorkspaceRegistry.ts",
-      "bytes": 11818,
-      "sha256": "8e08f2aa88f279b0005dd595f1036b3c3f2a097f45246b0c2c2063edfb0050aa"
+      "bytes": 12020,
+      "sha256": "4023730090017123e2424ce8dd03ab78f679d9f7f5ffbcbea55f87b20254ba9e"
     },
     {
       "path": "src/shared/contextTypes.ts",
@@ -1056,8 +1066,8 @@
     },
     {
       "path": "src/web/App.tsx",
-      "bytes": 31527,
-      "sha256": "ef683418131e1ac1d682f18cdade2c928b48116941252af956929efa2eda8e21"
+      "bytes": 31418,
+      "sha256": "ca342b31ff4d9a51e2bfb3b9d5391e6774fb53ba90054572cc1c553534fa8b2d"
     },
     {
       "path": "src/web/components/CliActivityPanel.tsx",
@@ -1066,8 +1076,8 @@
     },
     {
       "path": "src/web/components/MissionSheet.tsx",
-      "bytes": 7979,
-      "sha256": "921b1603096acf8a266884e2b862c80832cbbd782b8b69be4ccae25c4008179a"
+      "bytes": 8720,
+      "sha256": "b9234d0d42adc00075aebfa203f731cf0a83d9fd980c73a81ded96553e8628d2"
     },
     {
       "path": "src/web/components/SystemLadder.tsx",
@@ -1086,8 +1096,8 @@
     },
     {
       "path": "src/web/liveTypes.ts",
-      "bytes": 4982,
-      "sha256": "738ac01fc0c0e4577138049e09ee6f4d67a5db60032e88155c64866644622ead"
+      "bytes": 4874,
+      "sha256": "c3238541cbcfbc7f148a6d39e259d7e7fc58dcdf9e8847a27da021dcfcf7720e"
     },
     {
       "path": "src/web/main.tsx",
@@ -1126,18 +1136,18 @@
     },
     {
       "path": "src/web/surfaces/Field.tsx",
-      "bytes": 10129,
-      "sha256": "a60951ef93725edd813fa6b5679c2f5ccee24f19a8acc9cc67eaeb0c6ceee5aa"
+      "bytes": 10605,
+      "sha256": "2e321a0fcfe67942878adaa679c35bf2e13df16c99c0e2f42b27f875e97d58a7"
     },
     {
       "path": "src/web/surfaces/Flow.tsx",
-      "bytes": 6748,
-      "sha256": "0bdc6f06ac360574559239f1f8fd0bb08c892f82312f467da024509c5605c90c"
+      "bytes": 6666,
+      "sha256": "5592a64b329f85f4b94766a8de1fe829fa08591d85d28b33d4ad62a8c56256b9"
     },
     {
       "path": "src/web/surfaces/Output.tsx",
-      "bytes": 5099,
-      "sha256": "739d371c1cf1d6431acea582b9ed095da98daac0204642c8278dff74c332651e"
+      "bytes": 5280,
+      "sha256": "ac203cae922289f89dbccc6770862ac192815ef7a13c672816d8fb0551f43ef0"
     },
     {
       "path": "src/web/surfaces/Review.tsx",
@@ -1261,8 +1271,8 @@
     },
     {
       "path": "tests/integration/cli-activity-api.test.ts",
-      "bytes": 5414,
-      "sha256": "5f77814f92e7ca59f29114a5defbe317c800fb11297ea045ec9177017c17976d"
+      "bytes": 5329,
+      "sha256": "c093c8f94024a151aef4de90c45ad753d28e59ba5ee83fb260275fa4c5f05b24"
     },
     {
       "path": "tests/integration/context-api.test.ts",
@@ -1286,8 +1296,8 @@
     },
     {
       "path": "tests/integration/mission-review-api.test.ts",
-      "bytes": 9833,
-      "sha256": "fac3c4a7a7ada081013db484fa367359d1c894bbc7a1b56fb17e35774291b99f"
+      "bytes": 10743,
+      "sha256": "95735a083d9807296f4ec389a3d0ab57ac0dbff499c39a59cc641efd269e6983"
     },
     {
       "path": "tests/integration/model-routing-api.test.ts",
@@ -1311,8 +1321,8 @@
     },
     {
       "path": "tests/integration/workspaces-api.test.ts",
-      "bytes": 4372,
-      "sha256": "91d12bdf9a871b78d47cda824197688d9e08d84ab635445b2954541635300476"
+      "bytes": 6130,
+      "sha256": "4fc3a0bb8045a72b1e007b50e191e12fa25ddf3692b19a04f2e45899fc21699f"
     },
     {
       "path": "tests/security/mcp-surface.test.ts",
@@ -1366,8 +1376,8 @@
     },
     {
       "path": "tests/unit/harness-adapter.test.ts",
-      "bytes": 10723,
-      "sha256": "2e9d5202ccadd8dc3adba5e01d689f96823407b5e1c049a593a3dff8c2655629"
+      "bytes": 12055,
+      "sha256": "4f981f60e5110671275a675ff7fb9cae17174cf9eef2e69bc9894e8c26f9d3b1"
     },
     {
       "path": "tests/unit/harness-canary.test.ts",
@@ -1376,8 +1386,8 @@
     },
     {
       "path": "tests/unit/launcher-diagnostics.test.ts",
-      "bytes": 13399,
-      "sha256": "0a3d0d2845ea116b14f57f9f297984d0caebf7bc3b96eb53fb0f7eb341708c41"
+      "bytes": 13885,
+      "sha256": "897d94364f0131f107f7f5d3776674b935676a22f7818108f511ed919fc1ca22"
     },
     {
       "path": "tests/unit/model-router.test.ts",
@@ -1418,6 +1428,11 @@
       "path": "tests/unit/run-manager.test.ts",
       "bytes": 5200,
       "sha256": "f9a856d5c7de2d7cfeeb99eff25eb92aa26f137c5384507eb30611e658c84a05"
+    },
+    {
+      "path": "tests/unit/runtime-location.test.ts",
+      "bytes": 1890,
+      "sha256": "d5e195537053027c193f7d688fd559315847c6a6480ce00d062ba5cc9459b2e3"
     },
     {
       "path": "tests/unit/server-smoke.test.ts",
