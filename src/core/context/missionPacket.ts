@@ -39,6 +39,8 @@ export type MissionDraft = {
   context: string;
   acceptance: string[];
   agent: string | null;
+  model?: string;
+  effort?: string;
 };
 
 export type MissionPacketPreview = {

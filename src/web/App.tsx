@@ -277,11 +277,11 @@ export function App() {
   const readDraft = (target: string): MissionDraftState | null => {
     try { const raw = window.localStorage.getItem(draftKey(target)); return raw ? JSON.parse(raw) as MissionDraftState : null; } catch { return null; }
   };
-  const startMission = async (mission: { target: string; outcome: string; context: string; acceptance: string[]; agent: AgentCapability['id'] }) => {
+  const startMission = async (mission: { target: string; outcome: string; context: string; acceptance: string[]; agent: AgentCapability['id']; model?: string; effort?: string }) => {
     if (!workspaceId || !missionIntent) return;
     await api(`/api/workspaces/${encodeURIComponent(workspaceId)}/missions`, {
       method: 'POST',
-      body: JSON.stringify({ harness: mission.agent, target: mission.target, outcome: mission.outcome, context: mission.context, acceptance: mission.acceptance, continueProposalId: missionIntent.continueProposalId }),
+      body: JSON.stringify({ harness: mission.agent, target: mission.target, outcome: mission.outcome, context: mission.context, acceptance: mission.acceptance, model: mission.model, effort: mission.effort, continueProposalId: missionIntent.continueProposalId }),
     });
     try { window.localStorage.removeItem(draftKey(missionIntent.target)); } catch { /* storage unavailable */ }
     setMissionIntent(null);

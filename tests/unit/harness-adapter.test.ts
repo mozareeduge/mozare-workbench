@@ -20,16 +20,16 @@ function handoff(runId: string) {
 }
 
 class ObservedRunner extends ProcessRunner {
-  readonly calls: Array<{ command: string; args: string[]; cwd: string; stdin?: string }> = [];
+  readonly calls: Array<{ command: string; args: string[]; cwd: string; stdin?: string; timeoutMs?: number }> = [];
   constructor(private readonly runDirectory: string, private readonly block = false) { super(); }
 
   override async run(command: string, args: string[], cwd: string, options: ProcessOptions = {}): Promise<ProcessResult> {
-    this.calls.push({ command, args, cwd, stdin: options.stdin });
+    this.calls.push({ command, args, cwd, stdin: options.stdin, timeoutMs: options.timeoutMs });
     return { command, args, cwd, exitCode: 0, stdout: args.includes('--version') ? `${command} test-version` : 'help', stderr: '' };
   }
 
   override start(command: string, args: string[], cwd: string, options: ProcessOptions = {}): RunningProcess {
-    this.calls.push({ command, args, cwd, stdin: options.stdin });
+    this.calls.push({ command, args, cwd, stdin: options.stdin, timeoutMs: options.timeoutMs });
     let finish: ((result: ProcessResult) => void) | null = null;
     const completion = this.block
       ? new Promise<ProcessResult>((resolve) => { finish = resolve; })
@@ -107,6 +107,27 @@ describe('TEST-028: common three-adapter contract and lifecycle', () => {
     const restarted = new WorkLedger(join(root, '.mozare', 'runtime', 'work-ledger'));
     expect(restarted.resolveTask('project-1', 'mission-1', 'task-1').current).toMatchObject({ runId: 'run-hermes', harness: 'hermes' });
     expect(restarted.records()).toHaveLength(3);
+  });
+
+  it('runs work without an adapter time cap and passes model, effort, shell and tests to each CLI', async () => {
+    const root = temp();
+    for (const harness of ['codex', 'claude', 'hermes'] as const) {
+      const current = mission(root, harness, `run-full-${harness}`);
+      current.mode = 'work';
+      const runner = new ObservedRunner(current.runDirectory);
+      const result = await new HarnessAdapter(harness, harness, runner).start(current).completion;
+      const call = runner.calls.at(-1)!;
+      expect(result.status).toBe('completed');
+      expect(call.timeoutMs).toBeUndefined();
+      expect(call.args).toContain(current.model);
+      if (harness === 'claude') expect(call.args).toEqual(expect.arrayContaining(['--allowedTools', 'Read,Write,Edit,Glob,Grep,Bash', '--effort', 'medium']));
+      if (harness === 'codex') expect(call.args).toEqual(expect.arrayContaining(['--sandbox', 'workspace-write', '-c', 'model_reasoning_effort="medium"']));
+      if (harness === 'hermes') {
+        expect(call.args).toEqual(expect.arrayContaining(['--toolsets', 'file,terminal', '--reasoning', 'medium']));
+        expect(call.args).not.toContain('--run-budget');
+        expect(call.args).not.toContain('--max-turns');
+      }
+    }
   });
 
   it('stops an active process and records interruption rather than false completion', async () => {

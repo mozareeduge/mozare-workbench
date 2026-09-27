@@ -367,6 +367,7 @@ export function buildApp(
         outcome: text(body.outcome),
         context: text(body.context),
         acceptance: Array.isArray(body.acceptance) ? body.acceptance.map(text) : [],
+        model: typeof body.model === 'string' ? body.model : null,
         effort: typeof body.effort === 'string' ? body.effort : null,
         continueProposalId: typeof body.continueProposalId === 'string' ? body.continueProposalId : null,
       });

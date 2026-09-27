@@ -16,6 +16,7 @@ export type MissionRequest = {
   /** What the owner typed in the mission's Context field; passed to the agent verbatim. */
   context?: string | null;
   acceptance: string[];
+  model?: string | null;
   effort?: string | null;
   /** Continue a proposal's mission/task as the next task version (revision or harness switch). */
   continueProposalId?: string | null;
@@ -90,6 +91,11 @@ export class MissionService {
     if (!['claude', 'codex', 'hermes'].includes(request.harness)) throw new MissionUnavailableError('Unknown agent.');
     const acceptance = request.acceptance.map((item) => item.trim()).filter(Boolean);
     if (acceptance.length === 0) throw new MissionUnavailableError('At least one observable acceptance criterion is required.');
+    const model = request.model?.trim() || null;
+    const effort = request.effort?.trim() || null;
+    if (model && !/^[\w./:-]{1,100}$/.test(model)) throw new MissionUnavailableError('Model name contains unsupported characters.');
+    const effortChoices = request.harness === 'hermes' ? ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra'] : request.harness === 'claude' ? ['low', 'medium', 'high', 'xhigh', 'max'] : ['low', 'medium', 'high', 'xhigh', 'max', 'ultra'];
+    if (effort && !effortChoices.includes(effort)) throw new MissionUnavailableError('Unsupported effort for the selected agent.');
     const capability = (await this.capabilities()).find((item) => item.harness === request.harness);
     if (capability?.level !== 'available') throw new MissionUnavailableError(`${request.harness} is unavailable: ${capability?.reason ?? 'not detected'}.`);
 
@@ -126,7 +132,7 @@ export class MissionService {
     const execution = this.coordinator.begin(request.harness, {
       runId, projectId, missionId, taskId, taskVersion, workspaceRoot: sandbox, runDirectory,
       objective, contextPackRef, contextSnapshotRef: null, authorityRefs: ['AUTHORITY/08'], oracleRefs: ['ORACLE-007', 'ORACLE-010'],
-      model: null, effort: request.harness === 'codex' ? null : request.effort ?? null, mode: 'work',
+      model, effort, mode: 'work',
       routeTier: 'CODING_AGENT', nextAction: 'Review the proposal, or continue the task with another agent.',
     });
     const done = execution.completion

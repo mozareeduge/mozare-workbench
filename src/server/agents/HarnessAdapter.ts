@@ -79,9 +79,9 @@ function atomicJson(path: string, value: unknown): void {
 // Hermes (uv/Python) cold-starts in ~15s on Windows; a tighter limit falsely reports it unavailable.
 const PROBE_TIMEOUT_MS = 60_000;
 
-function safeFailure(result: ProcessResult, stopRequested: boolean, timeoutMs: number): string {
+function safeFailure(result: ProcessResult, stopRequested: boolean, timeoutMs?: number): string {
   if (stopRequested) return 'process stopped by operator';
-  if (result.timedOut) return `process exceeded ${timeoutMs}ms limit`;
+  if (result.timedOut) return timeoutMs ? `process exceeded ${timeoutMs}ms limit` : 'process timed out';
   const output = `${result.stdout}\n${result.stderr}`;
   if (/failed to authenticate|oauth session expired|authentication required/i.test(output)) return 'harness authentication is unavailable or expired';
   if (/unknown toolsets?/i.test(output)) return 'harness tool configuration is invalid or stale';
@@ -101,7 +101,7 @@ export class HarnessAdapter {
     readonly id: RealHarnessId,
     readonly executable: string,
     private readonly runner: ProcessRunner = new ProcessRunner(),
-    private readonly executionTimeoutMs = 180_000,
+    private readonly executionTimeoutMs?: number,
   ) {}
 
   async probe(): Promise<HarnessCapability> {
@@ -216,13 +216,14 @@ export class HarnessAdapter {
     const model = mission.model ? ['--model', mission.model] : [];
     if (this.id === 'claude') {
       const effort = mission.effort ? ['--effort', mission.effort] : [];
-      return { executable: this.executable, args: ['-p', '--output-format', 'json', '--permission-mode', 'dontAsk', '--allowedTools', mission.mode === 'work' ? 'Read,Write,Edit,Glob,Grep' : 'Read,Write', ...model, ...effort], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
+      return { executable: this.executable, args: ['-p', '--output-format', 'json', '--permission-mode', 'dontAsk', '--allowedTools', mission.mode === 'work' ? 'Read,Write,Edit,Glob,Grep,Bash' : 'Read,Write', ...model, ...effort], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
     }
     if (this.id === 'codex') {
-      return { executable: this.executable, args: ['exec', '--sandbox', 'workspace-write', '--ephemeral', '--json', ...model, '-'], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
+      const effort = mission.effort ? ['-c', `model_reasoning_effort="${mission.effort}"`] : [];
+      return { executable: this.executable, args: ['exec', '--sandbox', 'workspace-write', '--ephemeral', '--json', ...model, ...effort, '-'], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
     }
     const reasoning = mission.effort ? ['--reasoning', mission.effort] : [];
-    return { executable: this.executable, args: ['chat', '--query-file', relative(mission.workspaceRoot, queryRef), '--oneshot', '-Q', '--in', mission.workspaceRoot, '--toolsets', 'file', '--ignore-rules', '--max-turns', '12', '--run-budget', '120', ...model, ...reasoning], cwd: mission.workspaceRoot, input: undefined, promptRef: queryRef };
+    return { executable: this.executable, args: ['chat', '--query-file', relative(mission.workspaceRoot, queryRef), '--oneshot', '-Q', '--in', mission.workspaceRoot, '--toolsets', mission.mode === 'work' ? 'file,terminal' : 'file', '--ignore-rules', ...model, ...reasoning], cwd: mission.workspaceRoot, input: undefined, promptRef: queryRef };
   }
 
   private handoffState(path: string): HarnessResult['handoffState'] {

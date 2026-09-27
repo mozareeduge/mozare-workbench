@@ -44,6 +44,8 @@ export function MissionSheet({ target, objective, draft, agents, continuation, o
   const [acceptance, setAcceptance] = useState<string[]>(prefill.acceptance);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [chosen, setChosen] = useState<AgentCapability['id'] | null>((draft?.agent as AgentCapability['id'] | undefined) ?? null);
+  const [model, setModel] = useState(draft?.model ?? '');
+  const [effort, setEffort] = useState(draft?.effort ?? '');
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
 
@@ -57,7 +59,7 @@ export function MissionSheet({ target, objective, draft, agents, continuation, o
     setStarting(true);
     setStartError(null);
     try {
-      await onStart({ target: targetValue, outcome, context, acceptance, agent });
+      await onStart({ target: targetValue, outcome, context, acceptance, agent, model, effort });
     } catch (cause) {
       setStartError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -66,7 +68,7 @@ export function MissionSheet({ target, objective, draft, agents, continuation, o
   }
 
   function saveDraft() {
-    onDraft({ target: targetValue, outcome, context, acceptance, agent });
+    onDraft({ target: targetValue, outcome, context, acceptance, agent, model, effort });
   }
 
   return (
@@ -145,6 +147,13 @@ export function MissionSheet({ target, objective, draft, agents, continuation, o
                     {AGENT_LABELS[option.id]}
                   </option>
                 ))}
+              </select>
+              <label htmlFor="mission-model">Model</label>
+              <input id="mission-model" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Agent default" />
+              <label htmlFor="mission-effort">Effort</label>
+              <select id="mission-effort" aria-label="Effort" value={effort} onChange={(e) => setEffort(e.target.value)}>
+                <option value="">Agent default</option>
+                {(agent === 'hermes' ? ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra'] : agent === 'claude' ? ['low', 'medium', 'high', 'xhigh', 'max'] : ['low', 'medium', 'high', 'xhigh', 'max', 'ultra']).map((level) => <option key={level} value={level}>{level}</option>)}
               </select>
               {(agents ?? [])
                 .filter((option) => option.level !== 'available')
