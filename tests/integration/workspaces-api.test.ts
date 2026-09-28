@@ -90,8 +90,10 @@ describe('workspace browser API', () => {
     const target = temporaryRoot();
     mkdirSync(join(target, 'docs'));
     mkdirSync(join(target, 'outputs'));
+    mkdirSync(join(target, 'artifacts'));
     writeFileSync(join(target, 'README.md'), '# Existing project\n', 'utf8');
     writeFileSync(join(target, 'outputs', 'report.txt'), 'Project result', 'utf8');
+    writeFileSync(join(target, 'artifacts', 'render.txt'), 'Rendered result', 'utf8');
     const app = buildApp({ workspaceRegistryFile: join(runtime, 'workspaces.json'), folderPicker: async () => target });
     apps.push(app);
     const picked = await app.inject({ method: 'POST', url: '/api/system/pick-folder' });
@@ -102,7 +104,10 @@ describe('workspace browser API', () => {
 
     expect(projection).toMatchObject({ workspace: { classification: 'needs_onboarding' }, focus: null, field: { source: 'observed', relations: [] } });
     expect(projection.field.nodes.map((node: { name: string }) => node.name)).toEqual(expect.arrayContaining(['docs', 'outputs', 'README.md']));
-    expect(artifacts).toEqual([expect.objectContaining({ title: 'report.txt', canonicality: 'external', verification: 'unverified', lineage: expect.stringContaining('Observed in this project') })]);
+    expect(artifacts).toEqual(expect.arrayContaining([
+      expect.objectContaining({ title: 'report.txt', canonicality: 'external', verification: 'unverified', lineage: expect.stringContaining('Observed in this project') }),
+      expect.objectContaining({ title: 'render.txt', canonicality: 'external', verification: 'unverified' }),
+    ]));
     expect(readFileSync(join(target, 'outputs', 'report.txt'), 'utf8')).toBe('Project result');
   });
 });

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import type { ReviewDecisionState, ReviewItemFixture } from '../../core/projection/ReviewProjection.js';
 import type { RealHarnessId } from '../agents/HarnessAdapter.js';
@@ -69,6 +69,15 @@ function contained(root: string, path: string): string {
   const target = resolve(root, path);
   const rel = relative(resolve(root), target);
   if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) throw new Error(`proposal path escapes the project: ${path}`);
+  let step = resolve(root);
+  for (const part of rel.split(/[\\/]/)) {
+    step = join(step, part);
+    try {
+      if (lstatSync(step).isSymbolicLink()) throw new Error(`proposal path crosses a link: ${path}`);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+  }
   return target;
 }
 

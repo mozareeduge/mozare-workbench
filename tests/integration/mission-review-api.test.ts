@@ -11,6 +11,7 @@ import { WorkspaceRegistry } from '../../src/server/workspaces/WorkspaceRegistry
 
 /** Simulates an agent: edits one file, adds one, deletes one, then writes a handoff with a self-reported test. */
 class EditingRunner extends ProcessRunner {
+  override readonly workspaceIsolated = true;
   readonly carriedNotes: string[] = [];
   override async run(command: string, args: string[], cwd: string, options: ProcessOptions = {}): Promise<ProcessResult> {
     if (command === 'git') return super.run(command, args, cwd, options);
@@ -27,6 +28,8 @@ class EditingRunner extends ProcessRunner {
       // Harness runtime state (as Claude Code hooks write) must never become part of a proposal.
       mkdirSync(join(cwd, '.claude', 'state'), { recursive: true });
       writeFileSync(join(cwd, '.claude', 'state', 'session.json'), '{}', 'utf8');
+      mkdirSync(join(cwd, '.harness-mem', 'state'), { recursive: true });
+      writeFileSync(join(cwd, '.harness-mem', 'state', 'continuity.json'), '{}', 'utf8');
       const source = readdirSync(objects).find((name) => name.startsWith('src_'));
       if (source) unlinkSync(join(objects, source));
       writeFileSync(join(cwd, '.mozare-run', 'handoff.json'), JSON.stringify({
@@ -38,6 +41,13 @@ class EditingRunner extends ProcessRunner {
       return { command, args, cwd, exitCode: 0, stdout: '', stderr: '' };
     });
     return { completion, stop: () => true };
+  }
+}
+
+class PendingRunner extends EditingRunner {
+  override start(command: string, args: string[], cwd: string): RunningProcess {
+    writeFileSync(join(cwd, 'partial-work.md'), 'Work saved before shutdown.\n', 'utf8');
+    return { completion: new Promise<ProcessResult>(() => undefined), stop: () => true };
   }
 }
 
@@ -156,5 +166,56 @@ describe('TEST-004/006/007/019: live mission-to-review loop', { timeout: 30_000 
     const capabilities = (await app.inject({ method: 'GET', url: `/api/workspaces/${id}/missions/capabilities` })).json();
     expect(capabilities.agents.map((agent: { id: string }) => agent.id).sort()).toEqual(['claude', 'codex', 'hermes']);
     expect((await startMission(app, id, { harness: 'unknown' })).statusCode).toBe(409);
+  });
+
+  it('recovers partial mission files after a restart and offers a continuation', async () => {
+    const runtime = temp();
+    const project = join(temp(), 'project');
+    cpSync(join(process.cwd(), 'seed', 'example-project'), project, { recursive: true });
+    const ledger = new WorkLedger(join(runtime, 'work-ledger'));
+    const registry = new WorkspaceRegistry(join(runtime, 'workspaces.json'), ledger);
+    const id = registry.register(project).id;
+    const pending = new PendingRunner();
+    const pendingAdapter = new HarnessAdapter('codex', 'codex', pending);
+    const first = buildApp({ workspaceRegistry: registry, workLedger: ledger, harnessAdapters: { codex: pendingAdapter, claude: pendingAdapter, hermes: pendingAdapter }, runtimeDir: runtime });
+    apps.push(first);
+    const started = await startMission(first, id);
+    expect(started.statusCode).toBe(202);
+    const runId = started.json().mission.runId as string;
+    const receiptPath = join(runtime, 'missions', id, runId, 'run.json');
+    for (let attempt = 0; attempt < 50 && !existsSync(join(runtime, 'missions', id, runId, 'sandbox', 'partial-work.md')); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    expect(JSON.parse(readFileSync(receiptPath, 'utf8')).status).toBe('running');
+    await first.close();
+    apps.splice(apps.indexOf(first), 1);
+
+    const runner = new EditingRunner();
+    const adapters = Object.fromEntries((['claude', 'codex', 'hermes'] as RealHarnessId[]).map((harness) => [harness, new HarnessAdapter(harness, harness, runner)])) as Record<RealHarnessId, HarnessAdapter>;
+    const reopened = buildApp({ workspaceRegistry: registry, workLedger: ledger, harnessAdapters: adapters, runtimeDir: runtime });
+    apps.push(reopened);
+    const [recovered] = (await reopened.inject({ method: 'GET', url: `/api/workspaces/${id}/review` })).json().items;
+    expect(recovered).toMatchObject({ runId, risk: 'high', decisionState: 'under_review', changes: [expect.objectContaining({ path: 'partial-work.md' })] });
+    expect(JSON.parse(readFileSync(receiptPath, 'utf8')).status).toBe('recovered');
+    expect((await reopened.inject({ method: 'GET', url: `/api/workspaces/${id}/flow` })).json().outcomes).toEqual([expect.objectContaining({ runState: 'in_progress', blockedBy: expect.any(Object) })]);
+    const continued = await startMission(reopened, id, { continueProposalId: recovered.id });
+    expect(continued.statusCode).toBe(202);
+    await waitForItems(reopened, id, 2);
+    expect(readFileSync(join(runtime, 'missions', id, continued.json().mission.runId, 'sandbox', 'partial-work.md'), 'utf8')).toBe('Work saved before shutdown.\n');
+  });
+
+  it('retries a missed project MAWS entry on Review reload without duplicating it', async () => {
+    const { app, project, id } = setup();
+    await startMission(app, id);
+    const [item] = await waitForItems(app, id, 1);
+    writeFileSync(join(project, '.maws'), 'temporarily blocked', 'utf8');
+    const accepted = await app.inject({ method: 'POST', url: `/api/workspaces/${id}/review/${item.id}/decision`, payload: { state: 'accepted' } });
+    expect(accepted.json().decision.mawsRecorded).toBe(false);
+    unlinkSync(join(project, '.maws'));
+    await app.inject({ method: 'GET', url: `/api/workspaces/${id}/review` });
+    await app.inject({ method: 'GET', url: `/api/workspaces/${id}/review` });
+    const events = readFileSync(join(project, '.maws', 'workbench-missions.jsonl'), 'utf8').trim().split('\n');
+    expect(events).toHaveLength(1);
+    expect(JSON.parse(events[0]).proposal_id).toBe(item.id);
   });
 });

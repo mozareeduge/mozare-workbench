@@ -20,6 +20,7 @@ function handoff(runId: string) {
 }
 
 class ObservedRunner extends ProcessRunner {
+  override readonly workspaceIsolated = true;
   readonly calls: Array<{ command: string; args: string[]; cwd: string; stdin?: string; timeoutMs?: number }> = [];
   constructor(private readonly runDirectory: string, private readonly block = false) { super(); }
 
@@ -123,7 +124,7 @@ describe('TEST-028: common three-adapter contract and lifecycle', () => {
       if (harness === 'claude') expect(call.args).toEqual(expect.arrayContaining(['--allowedTools', 'Read,Write,Edit,Glob,Grep,Bash', '--effort', 'medium']));
       if (harness === 'codex') expect(call.args).toEqual(expect.arrayContaining(['--sandbox', 'workspace-write', '-c', 'model_reasoning_effort="medium"']));
       if (harness === 'hermes') {
-        expect(call.args).toEqual(expect.arrayContaining(['--toolsets', 'file,terminal', '--reasoning', 'medium']));
+        expect(call.args).toEqual(expect.arrayContaining(['--toolsets', 'code_execution', '--reasoning', 'medium']));
         expect(call.args).not.toContain('--run-budget');
         expect(call.args).not.toContain('--max-turns');
       }

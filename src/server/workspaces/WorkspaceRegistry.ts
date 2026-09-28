@@ -206,8 +206,9 @@ export class WorkspaceRegistry {
 
   private inspect(root: string): { classification: WorkspaceClassification; validationError: string | null } {
     if (!isDirectory(root)) return { classification: 'invalid', validationError: 'workspace_unavailable' };
-    const markers = ['PROJECT.md', 'objects', 'relations', 'artifacts'];
-    if (!markers.some((marker) => existsSync(join(root, marker)))) return { classification: 'needs_onboarding', validationError: null };
+    // Generic projects commonly have objects/artifacts folders. PROJECT.md is the
+    // Workbench canonical marker; without it, offer observed read-only views.
+    if (!existsSync(join(root, 'PROJECT.md'))) return { classification: 'needs_onboarding', validationError: null };
     try {
       loadWorkspace(root);
       return { classification: 'ready', validationError: null };

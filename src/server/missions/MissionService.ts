@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import type { WorkLedger } from '../../core/continuity/WorkLedger.js';
 import type { EvidenceFixture } from '../../core/projection/ReviewProjection.js';
 import type { FlowOutcomeFixture } from '../../core/projection/FlowProjection.js';
 import { HarnessCoordinator } from '../agents/HarnessCoordinator.js';
 import type { HarnessAdapter, HarnessCapability, RealHarnessId } from '../agents/HarnessAdapter.js';
-import { combinedHash, createSandbox, describeChanges, hashFiles, RUN_DIRECTORY_NAME, sandboxChanges, type FileHashes } from './ProjectSnapshot.js';
+import { CodexSandboxRunner } from '../process/CodexSandboxRunner.js';
+import { combinedHash, createSandbox, describeChanges, hashFiles, isHarnessState, RUN_DIRECTORY_NAME, sandboxChanges, type FileHashes } from './ProjectSnapshot.js';
 import type { ProposalStore, StoredProposal } from './ProposalStore.js';
 
 export type MissionRequest = {
@@ -46,6 +47,26 @@ type Handoff = {
 };
 
 const CAPABILITY_TTL_MS = 60_000;
+type RunReceipt = {
+  schema: 'mwb.mission-run.v1'; status: 'running' | 'settled' | 'recovered';
+  ownerInstanceId: string; ownerPid: number; startedAt: string;
+  workspaceId: string; projectRoot: string; projectId: string;
+  runId: string; missionId: string; taskId: string; taskVersion: number;
+  harness: RealHarnessId; objective: string; target: string; model: string | null; effort: string | null;
+  sandbox: string; baseline: FileHashes;
+};
+
+function saveRunReceipt(path: string, receipt: RunReceipt): void {
+  mkdirSync(dirname(path), { recursive: true });
+  const temporary = `${path}.${randomUUID()}.tmp`;
+  writeFileSync(temporary, `${JSON.stringify(receipt)}\n`, { encoding: 'utf8', mode: 0o600 });
+  renameSync(temporary, path);
+}
+
+function processAlive(pid: number): boolean {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try { process.kill(pid, 0); return true; } catch { return false; }
+}
 
 function strings(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.slice(0, 400)) : [];
@@ -62,6 +83,7 @@ function inside(root: string, path: string): string {
 function carryPriorWork(previous: StoredProposal, projectRoot: string, sandbox: string): string[] {
   const conflicts: string[] = [];
   for (const change of previous.changes) {
+    if (isHarnessState(change.path)) continue;
     const liveHash = hashFiles(projectRoot, [change.path])[change.path];
     if (liveHash !== previous.baseHashes[change.path]) { conflicts.push(change.path); continue; }
     const target = inside(sandbox, change.path);
@@ -77,7 +99,12 @@ function carryPriorWork(previous: StoredProposal, projectRoot: string, sandbox: 
 export function appendMawsMissionResult(projectRoot: string, proposal: StoredProposal, acceptedAt: string): void {
   const directory = join(projectRoot, '.maws');
   mkdirSync(directory, { recursive: true });
-  appendFileSync(join(directory, 'workbench-missions.jsonl'), `${JSON.stringify({
+  const journal = join(directory, 'workbench-missions.jsonl');
+  const existing = existsSync(journal) ? readFileSync(journal, 'utf8') : '';
+  if (existing.split(/\r?\n/).some((line) => {
+    try { return (JSON.parse(line) as { proposal_id?: string }).proposal_id === proposal.id; } catch { return false; }
+  })) return;
+  appendFileSync(journal, `${existing && !existing.endsWith('\n') ? '\n' : ''}${JSON.stringify({
     schema: 'mwb.maws-mission.v1', at: acceptedAt, event: 'mission-accepted',
     mission_id: proposal.missionId, task_id: proposal.taskId, task_version: proposal.taskVersion,
     run_id: proposal.runId, harness: proposal.harness, proposal_id: proposal.id,
@@ -92,6 +119,7 @@ export function appendMawsMissionResult(projectRoot: string, proposal: StoredPro
  * only an explicit Accept in ProposalStore changes it.
  */
 export class MissionService {
+  private readonly instanceId = randomUUID();
   private readonly coordinator: HarnessCoordinator;
   private capabilityCache: { at: number; value: HarnessCapability[] } | null = null;
   private readonly running = new Map<string, Promise<void>>();
@@ -116,6 +144,54 @@ export class MissionService {
   /** Resolves when the run and its proposal are recorded (used by tests and shutdown). */
   settled(runId: string): Promise<void> {
     return this.running.get(runId) ?? Promise.resolve();
+  }
+
+  /** Rebuild a reviewable continuation from a run interrupted by app or machine shutdown. */
+  async recoverInterrupted(context: MissionContext): Promise<void> {
+    const workspaceRuns = join(this.runtimeDirectory, 'missions', context.workspaceId);
+    if (!existsSync(workspaceRuns)) return;
+    for (const entry of readdirSync(workspaceRuns, { withFileTypes: true })) {
+      if (!entry.isDirectory() || !/^run-[a-zA-Z0-9-]+$/.test(entry.name)) continue;
+      const receiptPath = join(workspaceRuns, entry.name, 'run.json');
+      if (!existsSync(receiptPath)) continue;
+      let receipt: RunReceipt;
+      try { receipt = JSON.parse(readFileSync(receiptPath, 'utf8')) as RunReceipt; } catch { continue; }
+      if (receipt.schema !== 'mwb.mission-run.v1' || receipt.status !== 'running'
+        || receipt.workspaceId !== context.workspaceId || receipt.runId !== entry.name
+        || resolve(receipt.projectRoot) !== resolve(context.projectRoot)
+        || resolve(receipt.sandbox) !== resolve(join(workspaceRuns, entry.name, 'sandbox'))) continue;
+      if (receipt.ownerInstanceId === this.instanceId || (receipt.ownerPid !== process.pid && processAlive(receipt.ownerPid))) continue;
+      try {
+        CodexSandboxRunner.cleanInterruptedHome(receipt.sandbox);
+        const proposalId = `prp_${receipt.runId.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`;
+        if (!this.proposals.get(context.workspaceId, proposalId)) {
+          await this.recordProposal({ ...context, projectId: receipt.projectId }, {
+            runId: receipt.runId, missionId: receipt.missionId, taskId: receipt.taskId, taskVersion: receipt.taskVersion,
+            harness: receipt.harness, objective: receipt.objective, target: receipt.target, sandbox: receipt.sandbox,
+            baseline: receipt.baseline, missionRoot: join(workspaceRuns, entry.name),
+            handoffRef: join(receipt.sandbox, RUN_DIRECTORY_NAME, 'handoff.json'), interrupted: true,
+          });
+        }
+        if (!this.ledger.records({ projectId: receipt.projectId }).some((record) => record.runId === receipt.runId)) {
+          const prior = this.ledger.resolveTask(receipt.projectId, receipt.missionId, receipt.taskId).current;
+          if (!prior || prior.taskVersion <= receipt.taskVersion) this.ledger.append({
+            runId: receipt.runId, projectId: receipt.projectId, missionId: receipt.missionId, taskId: receipt.taskId,
+            taskVersion: receipt.taskVersion, expectedTaskVersion: prior?.taskVersion ?? null,
+            supersedesRunId: prior?.runId ?? null, harness: receipt.harness, model: receipt.model, effort: receipt.effort,
+            capabilitySnapshotRef: `${RUN_DIRECTORY_NAME}/capability.json`, contextPackRef: `${RUN_DIRECTORY_NAME}/context-pack.json`,
+            contextSnapshotRef: null, authorityRefs: ['AUTHORITY/08'], oracleRefs: ['ORACLE-007', 'ORACLE-010'],
+            candidateBefore: null, candidateAfter: null, status: 'interrupted',
+            resultSummary: 'Workbench stopped while this mission was running; partial work was recovered for Review.',
+            changedRefs: sandboxChanges(receipt.sandbox, receipt.baseline).map((change) => change.path).slice(0, 100),
+            evidenceRefs: [], decisions: ['Recovered from a durable mission receipt after restart.'],
+            blockers: ['Mission stopped before a verified completion.'], remaining: ['Review or continue the recovered work.'],
+            nextAction: 'Review or continue the recovered work.', handoffRef: null, operatorRole: 'system',
+            startedAt: receipt.startedAt, endedAt: new Date().toISOString(),
+          });
+        }
+        saveRunReceipt(receiptPath, { ...receipt, status: 'recovered' });
+      } catch { /* keep the durable receipt and retry on the next load */ }
+    }
   }
 
   stop(runId: string): boolean {
@@ -161,7 +237,7 @@ export class MissionService {
       const conflicts = decision === 'accepted' ? [] : carryPriorWork(previous, context.projectRoot, sandbox);
       writeFileSync(join(runDirectory, 'continuation.json'), `${JSON.stringify({
         priorRunId: previous.runId, priorHarness: previous.harness, priorTaskVersion: previous.taskVersion,
-        priorSummary: previous.effect.whatChanged, priorDecision: decision, priorChanges: previous.changes,
+        priorSummary: previous.effect.whatChanged, priorDecision: decision, priorChanges: previous.changes.filter((change) => !isHarnessState(change.path)),
         ownerRevisionNote: revisionNote, conflicts, priorDiffRef: 'prior-diff.txt',
       }, null, 2)}\n`, 'utf8');
       writeFileSync(join(runDirectory, 'prior-diff.txt'), previous.implementation.diffText.slice(0, 200_000), 'utf8');
@@ -175,6 +251,14 @@ export class MissionService {
 
     // A continuation keeps the task's original project identity so its version chain stays intact.
     const projectId = previous?.projectId ?? context.projectId;
+    const receiptPath = join(missionRoot, 'run.json');
+    const receipt: RunReceipt = {
+      schema: 'mwb.mission-run.v1', status: 'running', ownerInstanceId: this.instanceId, ownerPid: process.pid,
+      startedAt: new Date().toISOString(), workspaceId: context.workspaceId, projectRoot: context.projectRoot,
+      projectId, runId, missionId, taskId, taskVersion, harness: request.harness,
+      objective, target: request.target.trim(), model, effort, sandbox, baseline,
+    };
+    saveRunReceipt(receiptPath, receipt);
     const execution = this.coordinator.begin(request.harness, {
       runId, projectId, missionId, taskId, taskVersion, workspaceRoot: sandbox, runDirectory,
       objective, contextPackRef, contextSnapshotRef: null, authorityRefs: ['AUTHORITY/08'], oracleRefs: ['ORACLE-007', 'ORACLE-010'],
@@ -183,8 +267,12 @@ export class MissionService {
     });
     const done = execution.completion
       .then(async (result) => {
-        if (!result.harnessResult?.handoffRef) return;
-        await this.recordProposal({ ...context, projectId }, { runId, missionId, taskId, taskVersion, harness: request.harness, objective, target: request.target.trim(), sandbox, baseline, missionRoot, handoffRef: result.harnessResult.handoffRef });
+        await this.recordProposal({ ...context, projectId }, {
+          runId, missionId, taskId, taskVersion, harness: request.harness, objective, target: request.target.trim(),
+          sandbox, baseline, missionRoot, handoffRef: result.harnessResult?.handoffRef ?? join(runDirectory, 'handoff.json'),
+          interrupted: result.record.status !== 'completed',
+        });
+        saveRunReceipt(receiptPath, { ...receipt, status: 'settled' });
       })
       .catch(() => undefined)
       .finally(() => { this.running.delete(runId); this.active.delete(runId); });
@@ -241,9 +329,12 @@ export class MissionService {
 
   private async recordProposal(
     context: MissionContext,
-    run: { runId: string; missionId: string; taskId: string; taskVersion: number; harness: RealHarnessId; objective: string; target: string; sandbox: string; baseline: FileHashes; missionRoot: string; handoffRef: string },
+    run: { runId: string; missionId: string; taskId: string; taskVersion: number; harness: RealHarnessId; objective: string; target: string; sandbox: string; baseline: FileHashes; missionRoot: string; handoffRef: string; interrupted?: boolean },
   ): Promise<StoredProposal> {
-    const handoff = existsSync(run.handoffRef) ? JSON.parse(readFileSync(run.handoffRef, 'utf8')) as Handoff : {};
+    let handoff: Handoff = {};
+    if (existsSync(run.handoffRef)) {
+      try { handoff = JSON.parse(readFileSync(run.handoffRef, 'utf8')) as Handoff; } catch { /* interrupted writes may leave a partial handoff */ }
+    }
     const changes = sandboxChanges(run.sandbox, run.baseline);
     const baseHashes = Object.fromEntries(changes.map((change) => [change.path, run.baseline[change.path] ?? null]));
     const diffText = changes.length > 0 ? await describeChanges(context.projectRoot, run.sandbox, changes, join(run.missionRoot, 'scratch')) : 'The agent made no file changes.';
@@ -256,7 +347,8 @@ export class MissionService {
     }));
     const evidence = claims.length > 0 ? claims : [{ name: 'The agent reported no verification for this run', status: 'not_run' as const, command: null, evidence: null }];
     const remaining = [...strings(handoff.continuity?.remaining), ...strings(handoff.open_questions), ...strings(handoff.blockers)];
-    const summary = typeof handoff.summary === 'string' && handoff.summary.trim() ? handoff.summary.trim().slice(0, 600) : `${run.harness} finished without a summary.`;
+    const summary = run.interrupted ? 'Mission stopped before verified completion; partial work is available for review or continuation.'
+      : typeof handoff.summary === 'string' && handoff.summary.trim() ? handoff.summary.trim().slice(0, 600) : `${run.harness} finished without a summary.`;
     const counts = (['added', 'modified', 'deleted'] as const).map((kind) => `${changes.filter((change) => change.kind === kind).length} ${kind}`).join(', ');
     return this.proposals.save({
       id: `prp_${run.runId.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`,
@@ -270,7 +362,7 @@ export class MissionService {
       projectId: context.projectId,
       target: run.target,
       title: summary.split(/(?<=[.!?])\s/)[0].slice(0, 140),
-      risk: changes.some((change) => change.kind === 'deleted') ? 'high' : 'normal',
+      risk: run.interrupted || changes.some((change) => change.kind === 'deleted') ? 'high' : 'normal',
       highRiskPolicy: false,
       createdAt: new Date().toISOString(),
       baseCanonicalHash: combinedHash(baseHashes),
@@ -283,7 +375,9 @@ export class MissionService {
       impact: {
         affectedTargets: changes.map((change) => `${change.path} (${change.kind})`),
         blastRadius: changes.length > 5 ? 'broad' : 'narrow',
-        note: 'Nothing has been written to the project. Accept applies these files; deletions move to Workbench residue.',
+        note: run.interrupted
+          ? 'This is partial work from an interrupted run. Verify it before accepting or continue it in another mission.'
+          : 'Nothing has been written to the project. Accept applies these files; deletions move to Workbench residue.',
       },
       architecture: {
         summary: typeof handoff.system_view?.intent === 'string' ? handoff.system_view.intent.slice(0, 600) : 'The agent did not describe the design intent.',

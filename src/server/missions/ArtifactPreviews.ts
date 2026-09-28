@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { ARTIFACT_MEDIA, type ArtifactCanonicality, type ArtifactFixture, type ArtifactMedium, type ArtifactVerification } from '../../core/projection/OutputProjection.js';
 
@@ -15,11 +15,16 @@ const CANONICALITY: ArtifactCanonicality[] = ['canonical', 'generated', 'externa
 
 /** Resolves a registry ref inside the project only (relative to artifacts/, then to the root); anything outside is never read. */
 export function resolveArtifactFile(projectRoot: string, ref: string): string | null {
+  const canonicalRoot = realpathSync(projectRoot);
   for (const base of [join(projectRoot, 'artifacts'), projectRoot]) {
     const candidate = resolve(base, ref);
     const rel = relative(resolve(projectRoot), candidate);
     if (rel === '' || rel.startsWith('..') || isAbsolute(rel)) continue;
-    if (existsSync(candidate) && statSync(candidate).isFile()) return candidate;
+    if (!existsSync(candidate)) continue;
+    const real = realpathSync(candidate);
+    const realRel = relative(canonicalRoot, real);
+    if (realRel === '' || realRel === '..' || realRel.startsWith(`..\\`) || realRel.startsWith('../') || isAbsolute(realRel)) continue;
+    if (statSync(real).isFile()) return real;
   }
   return null;
 }

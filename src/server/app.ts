@@ -360,6 +360,7 @@ export function buildApp(
     const body = (request.body ?? {}) as Record<string, unknown>;
     const text = (value: unknown) => (typeof value === 'string' ? value : '');
     try {
+      await missions.recoverInterrupted(context);
       const receipt = await missions.start(context, {
         harness: text(body.harness) as RealHarnessId,
         target: text(body.target),
@@ -386,6 +387,7 @@ export function buildApp(
     const { workspaceId } = request.params as { workspaceId: string };
     const context = missionContext(workspaceId);
     if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
+    await missions.recoverInterrupted(context);
     return { outcomes: missions.flowOutcomes(context) };
   });
 
@@ -425,7 +427,17 @@ export function buildApp(
     const { workspaceId } = request.params as { workspaceId: string };
     const context = missionContext(workspaceId);
     if (!context) return reply.code(404).send({ error: 'unknown_workspace', message: 'The workspace is not registered' });
-    return { items: proposalStore.list(workspaceId).map((proposal) => proposalStore.toPublic(proposal, context.projectRoot)) };
+    await missions.recoverInterrupted(context);
+    const items = proposalStore.list(workspaceId);
+    // An accepted decision is durable even if its companion project MAWS append
+    // failed (for example, because the disk was briefly full). Retry on reload.
+    for (const proposal of items) {
+      const decision = proposalStore.latestDecision(workspaceId, proposal.id);
+      if (decision?.state === 'accepted') {
+        try { appendMawsMissionResult(context.projectRoot, proposal, decision.decidedAt); } catch { /* retry on the next review load */ }
+      }
+    }
+    return { items: items.map((proposal) => proposalStore.toPublic(proposal, context.projectRoot)) };
   });
 
   app.post('/api/workspaces/:workspaceId/review/:proposalId/decision', async (request, reply) => {

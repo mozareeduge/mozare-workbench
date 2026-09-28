@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, statSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
 import type { CanonicalArtifact, CanonicalObject } from '../../core/workspace.js';
 import type { FieldProjection } from '../../core/projection/FieldProjection.js';
@@ -47,7 +47,7 @@ export function observeStructure(root: string): { field: FieldProjection & { sou
   };
   for (const name of OUTPUT_DIRS) {
     const directory = join(root, name);
-    if (existsSync(directory) && statSync(directory).isDirectory()) visit(directory, 0);
+    if (existsSync(directory) && !lstatSync(directory).isSymbolicLink() && statSync(directory).isDirectory()) visit(directory, 0);
   }
   const artifacts: CanonicalArtifact[] = candidates.sort((a, b) => b.mtime - a.mtime).slice(0, OUTPUT_LIMIT).map(({ path }) => {
     const ref = posix(relative(root, path));

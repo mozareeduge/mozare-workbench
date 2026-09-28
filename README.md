@@ -8,6 +8,8 @@ Open the prepared Git root in Codex and give it `EXECUTION/FRESH_CONTEXT_PROMPT.
 
 For the local app, run `START_MOZARE.cmd` or use the desktop icon. The launcher needs Node and installed packages; the bundled sample project is optional. Workbench keeps its workspace registry, missions, proposals, and work ledger in `%LOCALAPPDATA%\Mozare Workbench\runtime` on Windows. On first launch it copies older `.mozare/runtime` records there and retains the old copy for recovery. Set `MWB_DATA_DIR` to choose another data folder.
 
+Work missions run in a project copy and reach the original only when you accept a Review proposal. On Windows, Workbench checks an operating-system write boundary before enabling Claude or Hermes shell missions; Codex uses its own workspace sandbox. If the boundary check fails, Workbench marks those harnesses partially available and blocks their work missions. Hermes uses its Python code tool for file work under this boundary. An interrupted mission is restored as partial work in Review after restart, so you can inspect or continue it. Workbench's records survive a normal shutdown in the user data folder; keep separate backups if you also need protection against loss of the computer or drive.
+
 The optional read-only Mozare Wiki adapter reads `wikiRoot` from `%LOCALAPPDATA%\Mozare Workbench\settings.json` or `MWB_WIKI_ROOT`. Search hits remain candidates until reviewed against the source. Workbench does not write to the Wiki.
 
 ## v0.3 additions

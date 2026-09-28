@@ -3,6 +3,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFil
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { ProcessRunner, type ProcessResult, type RunningProcess } from '../process/ProcessRunner.js';
+import { CodexSandboxRunner } from '../process/CodexSandboxRunner.js';
 
 export type RealHarnessId = 'claude' | 'codex' | 'hermes';
 export type CapabilityLevel = 'available' | 'partial' | 'unavailable';
@@ -111,6 +112,11 @@ export class HarnessAdapter {
       if (version.exitCode !== 0) return { harness: this.id, level: 'unavailable', executable: this.executable, version: null, reason: version.stderr.trim() || 'version probe failed', observedAt };
       const help = await this.runner.run(this.executable, this.helpArgs(), process.cwd(), { timeoutMs: PROBE_TIMEOUT_MS });
       if (help.exitCode !== 0) return { harness: this.id, level: 'partial', executable: this.executable, version: version.stdout.trim().split(/\r?\n/)[0] || 'unknown', reason: 'help probe failed', observedAt };
+      if (this.id !== 'codex' && !(await this.runner.isolationReady())) return {
+        harness: this.id, level: 'partial', executable: this.executable,
+        version: version.stdout.trim().split(/\r?\n/)[0] || 'unknown',
+        reason: 'Shell missions need an isolated runner before they can safely edit a project copy on this machine.', observedAt,
+      };
       return { harness: this.id, level: 'available', executable: this.executable, version: version.stdout.trim().split(/\r?\n/)[0] || 'unknown', reason: null, observedAt };
     } catch (error) {
       return { harness: this.id, level: 'unavailable', executable: this.executable, version: null, reason: error instanceof Error ? error.message : String(error), observedAt };
@@ -155,7 +161,9 @@ export class HarnessAdapter {
       handoffSchemaRef: relative(mission.workspaceRoot, schemaRef),
     });
     const query = work
-      ? `Execute the mission contract at ${relative(mission.workspaceRoot, contractRef)}: do the objective in this workspace copy, then write the required structured handoff.`
+      ? this.id === 'hermes'
+        ? `Execute the mission contract at ${relative(mission.workspaceRoot, contractRef)}. On Windows use execute_code for file work and subprocess tests; read the contract and write the structured handoff with Python. Work only in this copy.`
+        : `Execute the mission contract at ${relative(mission.workspaceRoot, contractRef)}: do the objective in this workspace copy, then write the required structured handoff.`
       : `Execute the bounded mission contract at ${relative(mission.workspaceRoot, contractRef)}. Write only the required structured handoff; do not change canonical project files.`;
     writeFileSync(queryRef, `${query}
 `, { encoding: 'utf8', mode: 0o600 });
@@ -165,6 +173,9 @@ export class HarnessAdapter {
   }
 
   start(mission: HarnessMission): HarnessExecution {
+    if (mission.mode === 'work' && this.id !== 'codex' && !this.runner.workspaceIsolated) {
+      throw new Error(`${this.id} shell missions require an isolated runner`);
+    }
     const invocation = this.prepare(mission);
     const running: RunningProcess = this.runner.start(invocation.executable, invocation.args, invocation.cwd, { stdin: invocation.input, timeoutMs: this.executionTimeoutMs });
     const diagnosticRef = join(mission.runDirectory, 'diagnostic.json');
@@ -220,10 +231,10 @@ export class HarnessAdapter {
     }
     if (this.id === 'codex') {
       const effort = mission.effort ? ['-c', `model_reasoning_effort="${mission.effort}"`] : [];
-      return { executable: this.executable, args: ['exec', '--sandbox', 'workspace-write', '--ephemeral', '--json', ...model, ...effort, '-'], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
+      return { executable: this.executable, args: ['exec', '--sandbox', 'workspace-write', '--skip-git-repo-check', '--ephemeral', '--json', ...model, ...effort, '-'], cwd: mission.workspaceRoot, input: query, promptRef: queryRef };
     }
     const reasoning = mission.effort ? ['--reasoning', mission.effort] : [];
-    return { executable: this.executable, args: ['chat', '--query-file', relative(mission.workspaceRoot, queryRef), '--oneshot', '-Q', '--in', mission.workspaceRoot, '--toolsets', mission.mode === 'work' ? 'file,terminal' : 'file', '--ignore-rules', ...model, ...reasoning], cwd: mission.workspaceRoot, input: undefined, promptRef: queryRef };
+    return { executable: this.executable, args: ['chat', '--query-file', relative(mission.workspaceRoot, queryRef), '--oneshot', '-Q', '--in', mission.workspaceRoot, '--toolsets', mission.mode === 'work' ? 'code_execution' : 'file', '--ignore-rules', ...model, ...reasoning], cwd: mission.workspaceRoot, input: undefined, promptRef: queryRef };
   }
 
   private handoffState(path: string): HarnessResult['handoffState'] {
@@ -244,10 +255,12 @@ export class HarnessAdapter {
   }
 }
 
-export function realHarnessAdapters(runner: ProcessRunner = new ProcessRunner()): Record<RealHarnessId, HarnessAdapter> {
+export function realHarnessAdapters(runner?: ProcessRunner): Record<RealHarnessId, HarnessAdapter> {
+  const direct = runner ?? new ProcessRunner();
+  const isolated = runner ?? new CodexSandboxRunner();
   return {
-    claude: new HarnessAdapter('claude', 'claude', runner),
-    codex: new HarnessAdapter('codex', 'codex', runner),
-    hermes: new HarnessAdapter('hermes', 'hermes', runner),
+    claude: new HarnessAdapter('claude', 'claude', isolated),
+    codex: new HarnessAdapter('codex', 'codex', direct),
+    hermes: new HarnessAdapter('hermes', 'hermes', isolated),
   };
 }
