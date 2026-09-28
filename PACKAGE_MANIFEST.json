@@ -2,7 +2,7 @@
   "package": "Mozare_Workbench_Handoff",
   "version": "0.3.2",
   "manifest_format": 1,
-  "file_count": 299,
+  "file_count": 300,
   "files": [
     {
       "path": ".agents/skills/mozare-compile-authority/SKILL.md",
@@ -273,6 +273,11 @@
       "path": "eslint.config.js",
       "bytes": 340,
       "sha256": "09e06cc480f0b23d7bc7add440eac05aa3b5c2c0a472a59bb0f8117f69931adb"
+    },
+    {
+      "path": "EVALUATION/2026-09-28_PURPOSE_EVALUATION.md",
+      "bytes": 16599,
+      "sha256": "da7c9768bfe74d7c43f89ba7d923deeca76c5debc40925e6ca02fdfb2f12548f"
     },
     {
       "path": "evidence/A-add-folder-notice.png",
